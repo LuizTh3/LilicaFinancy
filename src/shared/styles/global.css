@@ -1,0 +1,71 @@
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #1c342e;
+  background: #f7f9f6;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+a { color: #245e47; text-underline-offset: 0.25em; }
+:focus-visible { outline: 3px solid #91650b; outline-offset: 5px; }
+.skip-link {
+  position: absolute;
+  top: 0.75rem;
+  left: 1rem;
+  z-index: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 0.35rem;
+  color: #fff;
+  background: #1c342e;
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: translateY(0); }
+.app-header { background: #fff; border-bottom: 1px solid #dce5dd; }
+.header-inner {
+  max-width: 1120px;
+  margin-inline: auto;
+  padding: 1.1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.brand { font-size: 1.3rem; font-weight: 750; letter-spacing: -0.04em; }
+.brand span { color: #397452; font-weight: 500; }
+.nav-link {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.4rem;
+  background: #eaf2eb;
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+.main-content { max-width: 960px; margin-inline: auto; padding: 5rem 2rem 4rem; }
+.eyebrow {
+  margin: 0 0 0.8rem;
+  color: #397452;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.25rem); line-height: 1.15; letter-spacing: -0.045em; }
+.intro { margin: 1.2rem 0 2.75rem; color: #4d625a; font-size: 1.1rem; max-width: 40rem; }
+.setup-notice { padding: 2rem; border: 1px solid #d5e1d6; border-left: 4px solid #54865d; border-radius: 0.5rem; background: #fff; }
+.notice-label { color: #4d625a; font-size: 0.8rem; font-weight: 650; }
+h2 { margin: 0.4rem 0 0.6rem; font-size: 1.3rem; line-height: 1.35; }
+.setup-notice p { margin: 0; max-width: 42rem; color: #4d625a; }
+.scope-note { margin-top: 1.5rem; color: #4d625a; font-size: 0.9rem; }
+.app-footer { max-width: 960px; margin-inline: auto; padding: 1.5rem 2rem 2rem; border-top: 1px solid #dce5dd; color: #4d625a; font-size: 0.8rem; }
+
+@media (max-width: 600px) {
+  .header-inner { padding: 1rem 1.25rem; }
+  .main-content { padding: 3rem 1.25rem; }
+  .setup-notice { padding: 1.5rem 1.25rem; }
+  .app-footer { padding: 1.5rem 1.25rem; }
+}
