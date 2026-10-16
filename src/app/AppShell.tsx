@@ -1,7 +1,11 @@
 import type { ReactNode } from 'react'
 import { SkipLink } from '../shared/components/SkipLink'
+import { NavLink } from 'react-router'
+import { useSession } from './session/useSession'
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const session = useSession()
+  const ready = session.status === 'readyUser' || session.status === 'readyAdmin'
   return (
     <>
       <SkipLink />
@@ -9,7 +13,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="header-inner">
           <span className="brand">Lilica<span>Financy</span></span>
           <nav aria-label="Navegação principal">
-            <a className="nav-link" href="/" aria-current="page">Início</a>
+            <NavLink className="nav-link" to="/">Início</NavLink>
+            {ready ? <NavLink className="nav-link" to="/app">Minha área</NavLink> : <NavLink className="nav-link" to="/login">Entrar</NavLink>}
+            {session.status === 'readyAdmin' && <NavLink className="nav-link" to="/admin/solicitacoes">Solicitações</NavLink>}
+            {session.user && <button onClick={() => { void session.exit().catch(() => {}) }}>Sair</button>}
           </nav>
         </div>
       </header>

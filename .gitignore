@@ -40,3 +40,11 @@ Thumbs.db
 
 # Local validation artifacts
 .playwright-mcp/
+
+# Trusted service and dedicated integration credentials/artifacts
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.wrangler/
+.integration/
+*.integration.credentials.json

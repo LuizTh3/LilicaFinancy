@@ -7,7 +7,19 @@
 O setup identifica a feature como 002-autenticacao-cadastros-admin; não foi criada branch.
 Este plano encerra o desenho. Nenhum SDK, conta, endpoint ou regra foi implantado.
 
+**Atualização de implementação (2026-10-16)**: código local gerado; constituição revisada
+para 1.1.0. Após verificar engines, o mínimo Node passou a >=24.12.0. Firebase 13.0.0,
+Router 7.18.4, jose 6.2.12 e Wrangler 4.151.1 fixados no lockfile, com override de segurança
+grpc-js 1.13.6. Gates de infraestrutura/publicação/testes reais continuam pendentes por
+orientação do responsável. O restante deste plano registra o desenho original;
+[validation.md](validation.md) e [tasks.md](tasks.md) registram o estado efetivo.
+
 ## Summary
+
+Complemento autorizado após implementação: encaminhar o solicitante ao WhatsApp
++55 (68) 99973-9841 com mensagem genérica, somente após commit, preservando recibo e
+email/outbox. Mudança restrita ao frontend; constituição 1.2.0, FR-035 e contrato UI
+atualizados. Não há alteração de schema, Rules, índices ou serviços externos.
 
 Evoluir a SPA existente para Firebase Authentication/Firestore reais, com sessão resolvida
 antes de conteúdo protegido, perfil privado por UID e administração restrita por papel manual.

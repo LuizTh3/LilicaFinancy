@@ -17,12 +17,12 @@ Escrever os testes de cada história antes da implementação correspondente. Ex
 
 **Objetivo**: preparar a base existente e incorporar as exceções já autorizadas, sem ativar serviços.
 
-- [ ] T001 Revisar `.specify/memory/constitution.md`, atualizar versão/data e resumo de impacto para cadastro público, administração informativa, notificação e serviço externo restrito de primeiro acesso; registrar fixtures públicas por manifesto/runId/UID responsável, preservando isolamento, ausência de Blaze e proibição de backend genérico.
-- [ ] T002 Inspecionar runtime, scripts e dependências em `package.json` e `package-lock.json`; usar Context7 e documentação oficial para confirmar versões estáveis/engines/peers de Firebase modular, React Router 7, jose e Wrangler, registrando decisões em `specs/002-autenticacao-cadastros-admin/validation.md` sem atualizar dependências existentes indiscriminadamente.
-- [ ] T003 Configurar workspace privado `services/trusted-api/package.json`, `services/trusted-api/tsconfig.json`, `services/trusted-api/wrangler.jsonc` e `package.json`, instalar dependências compatíveis em um único `package-lock.json`, separar tipos navegador/Worker e criar scripts typecheck:trusted-api e build:trusted-api com bundle dry-run sem deploy.
-- [ ] T004 Preservar `.env` e `.gitignore`, acrescentar somente padrões privados necessários para `.dev.vars`, credenciais e manifestos locais; manter `.env.example` e `services/trusted-api/.dev.vars.example` sem dados reais, verificar rastreamento e documentar eventual remoção do índice separadamente sem apagar arquivo local.
-- [ ] T005 Configurar `vitest.config.ts`, `vitest.integration.config.ts` e `package.json` para unitários locais separados de test:integration explícito, incluir testes do Worker e excluir integração do npm test, sem instalar/configurar emuladores.
-- [ ] T006 [P] Criar `docs/firebase-operations.md` com preparação do Auth email/senha, projeto esperado, contas dedicadas, papel admin manual, IAM mínimo, secrets, remetente no-reply verificável, limites gratuitos e registro de gates; indicar VITE_ como conteúdo público do bundle, sem cofre de segredos.
+- [X] T001 Revisar `.specify/memory/constitution.md`, atualizar versão/data e resumo de impacto para cadastro público, administração informativa, notificação e serviço externo restrito de primeiro acesso; registrar fixtures públicas por manifesto/runId/UID responsável, preservando isolamento, ausência de Blaze e proibição de backend genérico.
+- [X] T002 Inspecionar runtime, scripts e dependências em `package.json` e `package-lock.json`; usar Context7 e documentação oficial para confirmar versões estáveis/engines/peers de Firebase modular, React Router 7, jose e Wrangler, registrando decisões em `specs/002-autenticacao-cadastros-admin/validation.md` sem atualizar dependências existentes indiscriminadamente.
+- [X] T003 Configurar workspace privado `services/trusted-api/package.json`, `services/trusted-api/tsconfig.json`, `services/trusted-api/wrangler.jsonc` e `package.json`, instalar dependências compatíveis em um único `package-lock.json`, separar tipos navegador/Worker e criar scripts typecheck:trusted-api e build:trusted-api com bundle dry-run sem deploy.
+- [X] T004 Preservar `.env` e `.gitignore`, acrescentar somente padrões privados necessários para `.dev.vars`, credenciais e manifestos locais; manter `.env.example` e `services/trusted-api/.dev.vars.example` sem dados reais, verificar rastreamento e documentar eventual remoção do índice separadamente sem apagar arquivo local.
+- [X] T005 Configurar `vitest.config.ts`, `vitest.integration.config.ts` e `package.json` para unitários locais separados de test:integration explícito, incluir testes do Worker e excluir integração do npm test, sem instalar/configurar emuladores.
+- [X] T006 [P] Criar `docs/firebase-operations.md` com preparação do Auth email/senha, projeto esperado, contas dedicadas, papel admin manual, IAM mínimo, secrets, remetente no-reply verificável, limites gratuitos e registro de gates; indicar VITE_ como conteúdo público do bundle, sem cofre de segredos.
 
 **Checkpoint**: revisão constitucional registrada e tooling local preparado. Nenhum serviço considerado provisionado por existir configuração textual.
 
@@ -30,15 +30,15 @@ Escrever os testes de cada história antes da implementação correspondente. Ex
 
 **Objetivo**: estabelecer contratos, infraestrutura e proteção que bloqueiam todas as histórias.
 
-- [ ] T007 [P] Definir DTOs discriminados e erros sanitizados em `src/infrastructure/trusted-api/contracts.ts` e `services/trusted-api/src/contracts.ts`, alinhados a `contracts/api.md`, sem senha/token em respostas, sem aceitar UID/projectId/path/remetente arbitrários.
-- [ ] T008 [P] Implementar validação da configuração e singleton em `src/infrastructure/firebase/client.ts`, com Auth browserSessionPersistence e Firestore memoryLocalCache; configuração incompleta deve indicar somente nomes ausentes e impedir inicialização parcial, sem habilitar cache persistente.
-- [ ] T009 [P] Implementar entrada restrita e configuração em `services/trusted-api/src/index.ts` e `services/trusted-api/src/environment.ts`: rotas permitidas, CORS por allowlist, JSON até 8 KiB, chaves exatas, no-store, timeouts de 10 s e logging sem corpo/Authorization/PII.
-- [ ] T010 Implementar validação de ID token Google com jose em `services/trusted-api/src/googleAuth.ts`, verificando RS256/kid, assinatura, aud/iss fixos, sub, exp/iat/auth_time e conta Auth ativa/revogação pertinente; implementar OAuth de conta de serviço com cache limitado sem expor credenciais.
-- [ ] T011 Implementar adaptador REST Firestore de caminhos fixos em `services/trusted-api/src/firestoreRest.ts`, com serialização tipada, timestamps confirmados, transações/precondições e falhas sanitizadas; não disponibilizar endpoint genérico e registrar que OAuth de serviço ignora Security Rules.
-- [ ] T012 Gerar `firestore.rules` completo conforme `contracts/security.md`, com perfis próprios mínimos, ready/cutoff, admin manual, oito coleções explícitas e todas as demais/subcoleções negadas; validar campos/datas/versões/referências e nunca aceitar primeiro_login=false ou cutoff fornecido por cliente.
-- [ ] T013 Entregar `firestore.indexes.json` completo com compostos de outbox e exclusões de índices pessoais não consultados, e `docs/firestore-rules-changes.md` com matriz, incompatibilidades, snapshot da versão ativa, publicação e rollback seguro; preservar regras/índices existentes necessários após inventário, distinguindo arquivos locais de versões publicadas.
-- [ ] T014 [P] Implementar cliente HTTPS em `src/infrastructure/trusted-api/client.ts` com contratos, token somente no header, timeout, operationId estável e erros recuperáveis; nenhuma senha/token/PII em URL, logs ou armazenamento persistente.
-- [ ] T015 Criar harness opt-in em `tests/integration/support/environment.ts`, `tests/integration/support/clients.ts` e `tests/integration/support/manifest.ts`, exigindo projectId esperado independente, runId e UIDs dedicados antes de fixtures; isolar A/B/visitante em SDKs clientes com memória e registrar apenas IDs exatos em manifesto local ignorado.
+- [X] T007 [P] Definir DTOs discriminados e erros sanitizados em `src/infrastructure/trusted-api/contracts.ts` e `services/trusted-api/src/contracts.ts`, alinhados a `contracts/api.md`, sem senha/token em respostas, sem aceitar UID/projectId/path/remetente arbitrários.
+- [X] T008 [P] Implementar validação da configuração e singleton em `src/infrastructure/firebase/client.ts`, com Auth browserSessionPersistence e Firestore memoryLocalCache; configuração incompleta deve indicar somente nomes ausentes e impedir inicialização parcial, sem habilitar cache persistente.
+- [X] T009 [P] Implementar entrada restrita e configuração em `services/trusted-api/src/index.ts` e `services/trusted-api/src/environment.ts`: rotas permitidas, CORS por allowlist, JSON até 8 KiB, chaves exatas, no-store, timeouts de 10 s e logging sem corpo/Authorization/PII.
+- [X] T010 Implementar validação de ID token Google com jose em `services/trusted-api/src/googleAuth.ts`, verificando RS256/kid, assinatura, aud/iss fixos, sub, exp/iat/auth_time e conta Auth ativa/revogação pertinente; implementar OAuth de conta de serviço com cache limitado sem expor credenciais.
+- [X] T011 Implementar adaptador REST Firestore de caminhos fixos em `services/trusted-api/src/firestoreRest.ts`, com serialização tipada, timestamps confirmados, transações/precondições e falhas sanitizadas; não disponibilizar endpoint genérico e registrar que OAuth de serviço ignora Security Rules.
+- [X] T012 Gerar `firestore.rules` completo conforme `contracts/security.md`, com perfis próprios mínimos, ready/cutoff, admin manual, oito coleções explícitas e todas as demais/subcoleções negadas; validar campos/datas/versões/referências e nunca aceitar primeiro_login=false ou cutoff fornecido por cliente.
+- [X] T013 Entregar `firestore.indexes.json` completo com compostos de outbox e exclusões de índices pessoais não consultados, e `docs/firestore-rules-changes.md` com matriz, incompatibilidades, snapshot da versão ativa, publicação e rollback seguro; preservar regras/índices existentes necessários após inventário, distinguindo arquivos locais de versões publicadas.
+- [X] T014 [P] Implementar cliente HTTPS em `src/infrastructure/trusted-api/client.ts` com contratos, token somente no header, timeout, operationId estável e erros recuperáveis; nenhuma senha/token/PII em URL, logs ou armazenamento persistente.
+- [X] T015 Criar harness opt-in em `tests/integration/support/environment.ts`, `tests/integration/support/clients.ts` e `tests/integration/support/manifest.ts`, exigindo projectId esperado independente, runId e UIDs dedicados antes de fixtures; isolar A/B/visitante em SDKs clientes com memória e registrar apenas IDs exatos em manifesto local ignorado.
 
 **Checkpoint**: fundação disponível para código das histórias; Rules ainda precisam de inventário/publicação autorizada e testes reais. Não habilitar rotas privadas por antecipação.
 
@@ -49,17 +49,17 @@ Escrever os testes de cada história antes da implementação correspondente. Ex
 
 ### Testes
 
-- [ ] T016 [P] [US1] Escrever testes comportamentais em `src/domain/session.test.ts` para resolving/guest/pendente/ready, perfil inválido, geração antiga e limpeza antes de signOut; nenhuma flag isolada deve liberar acesso.
-- [ ] T017 [P] [US1] Preparar `tests/integration/session.integration.test.ts` com perfil ausente e criação concorrente, preservação de createdAt/false, restauração A/B e falhas; usar harness T015 e contas reais dedicadas, sem reset automático de contas preexistentes.
+- [X] T016 [P] [US1] Escrever testes comportamentais em `src/domain/session.test.ts` para resolving/guest/pendente/ready, perfil inválido, geração antiga e limpeza antes de signOut; nenhuma flag isolada deve liberar acesso.
+- [X] T017 [P] [US1] Preparar `tests/integration/session.integration.test.ts` com perfil ausente e criação concorrente, preservação de createdAt/false, restauração A/B e falhas; usar harness T015 e contas reais dedicadas, sem reset automático de contas preexistentes.
 
 ### Implementação
 
-- [ ] T018 [US1] Implementar tipos e transições puras em `src/domain/session.ts`, incluindo schema suportado, pendência por flag ausente e reloginRequired por cutoff inválido/token antigo, sem React ou SDK no domínio.
-- [ ] T019 [US1] Implementar login/logout/observer em `src/infrastructure/firebase/auth.ts` e perfil em `src/infrastructure/firebase/profileRepository.ts`, com get confirmado pelo servidor, criação transacional de campos exatos/true e preservação de perfil existente; normalização legada usa endpoint confiável, nunca update livre.
-- [ ] T020 [US1] Implementar `src/app/session/SessionProvider.tsx` com resolução Auth → perfil → primeiro acesso → papel, generationId, descarte de respostas tardias e teardown de listeners; nenhuma consulta administrativa antes de sessão pronta.
-- [ ] T021 [US1] Implementar `src/app/guards/SessionGate.tsx` e `src/app/router.tsx` com rotas do contrato, estado inicial neutro, destinos internos seguros e página não encontrada; /app permanece bloqueada para pendência ou cutoff não satisfeito.
-- [ ] T022 [US1] Criar `src/features/auth/LoginPage.tsx` e adaptar `src/app/App.tsx`, `src/app/AppShell.tsx` e `src/features/home/HomePage.tsx` com mensagens acessíveis, retry e navegação pública/privada; /app exibe apenas shell sem finanças ainda implementadas.
-- [ ] T023 [US1] Concluir saída e troca de identidade em `src/app/session/SessionProvider.tsx`: limpar estado/listeners imediatamente, aguardar signOut, fazer location.replace('/login') para descartar cache SDK; falha mantém bloqueio e permite repetir, mudança de UID reinicia página antes de renderizar B.
+- [X] T018 [US1] Implementar tipos e transições puras em `src/domain/session.ts`, incluindo schema suportado, pendência por flag ausente e reloginRequired por cutoff inválido/token antigo, sem React ou SDK no domínio.
+- [X] T019 [US1] Implementar login/logout/observer em `src/infrastructure/firebase/auth.ts` e perfil em `src/infrastructure/firebase/profileRepository.ts`, com get confirmado pelo servidor, criação transacional de campos exatos/true e preservação de perfil existente; normalização legada usa endpoint confiável, nunca update livre.
+- [X] T020 [US1] Implementar `src/app/session/SessionProvider.tsx` com resolução Auth → perfil → primeiro acesso → papel, generationId, descarte de respostas tardias e teardown de listeners; nenhuma consulta administrativa antes de sessão pronta.
+- [X] T021 [US1] Implementar `src/app/guards/SessionGate.tsx` e `src/app/router.tsx` com rotas do contrato, estado inicial neutro, destinos internos seguros e página não encontrada; /app permanece bloqueada para pendência ou cutoff não satisfeito.
+- [X] T022 [US1] Criar `src/features/auth/LoginPage.tsx` e adaptar `src/app/App.tsx`, `src/app/AppShell.tsx` e `src/features/home/HomePage.tsx` com mensagens acessíveis, retry e navegação pública/privada; /app exibe apenas shell sem finanças ainda implementadas.
+- [X] T023 [US1] Concluir saída e troca de identidade em `src/app/session/SessionProvider.tsx`: limpar estado/listeners imediatamente, aguardar signOut, fazer location.replace('/login') para descartar cache SDK; falha mantém bloqueio e permite repetir, mudança de UID reinicia página antes de renderizar B.
 - [ ] T024 [US1] Validar estados de configuração, login, refresh e logout pelo roteiro de `specs/002-autenticacao-cadastros-admin/quickstart.md`, registrar evidências em `specs/002-autenticacao-cadastros-admin/validation.md`; adiar aprovação do acesso pronto até T035.
 
 **Checkpoint**: US1 funciona até a barreira de primeiro acesso. Entrega privada completa é US1 + US6 + subconjunto de isolamento US5.
@@ -71,19 +71,19 @@ Escrever os testes de cada história antes da implementação correspondente. Ex
 
 ### Testes
 
-- [ ] T025 [P] [US6] Escrever testes de contrato e transições em `services/trusted-api/src/firstLogin.test.ts`, cobrindo campo extra/token inválido, senha atual, erro Auth diferente de INVALID_LOGIN_CREDENTIALS, lease perdido, recibo idempotente, cutoff e falha parcial, usando limites HTTP controlados sem emular Firebase.
-- [ ] T026 [P] [US6] Preparar `tests/integration/firstLogin.integration.test.ts` para senha provisória/nova, gravação false negada pelo SDK, URL direta, token de outra aba, relogin no segundo correto e recuperação incerta; usar somente secrets de contas dedicadas sem imprimir senhas.
+- [X] T025 [P] [US6] Escrever testes de contrato e transições em `services/trusted-api/src/firstLogin.test.ts`, cobrindo campo extra/token inválido, senha atual, erro Auth diferente de INVALID_LOGIN_CREDENTIALS, lease perdido, recibo idempotente, cutoff e falha parcial, usando limites HTTP controlados sem emular Firebase.
+- [X] T026 [P] [US6] Preparar `tests/integration/firstLogin.integration.test.ts` para senha provisória/nova, gravação false negada pelo SDK, URL direta, token de outra aba, relogin no segundo correto e recuperação incerta; usar somente secrets de contas dedicadas sem imprimir senhas.
 
 ### Implementação
 
-- [ ] T027 [US6] Implementar operação/lease versionada de 30 s por UID e orçamento de 5 novas tentativas/15 min em `services/trusted-api/src/firstLogin.ts`, persistindo apenas metadados permitidos de firstLoginOperations/operationBudgets e impedindo trabalho após perda de lease.
-- [ ] T028 [US6] Implementar prova controlada em `services/trusted-api/src/firstLogin.ts`: token recente ≤5 min, conta password ativa e email real; comparar candidata por signInWithPassword e rejeitar sucesso como SAME_PASSWORD; somente INVALID_LOGIN_CREDENTIALS da conta coerente permite accounts:update; descartar tokens retornados.
-- [ ] T029 [US6] Concluir em `services/trusted-api/src/firstLogin.ts` a transação de recibo completed + primeiro_login=false + timestamps/cutoff após sucesso Auth para UID esperado; retry concluído não altera senha e resposta fornece loginAvailableAt, sem confiar em avanço isolado de passwordUpdatedAt.
-- [ ] T030 [US6] Implementar recuperação PASSWORD_CHANGE_UNCERTAIN e normalização legada em `services/trusted-api/src/firstLogin.ts`: manter pendência sem recibo, permitir nova operação após lease e novo login com senha efetiva, preservar false confirmado/criação e rejeitar schema desconhecido.
-- [ ] T031 [US6] Conectar exclusivamente POST /v1/first-login/change-password e /normalize-profile em `services/trusted-api/src/index.ts`, com DTOs/erros do contrato, sem rota de alteração de terceiros e sem captura de senha, body ou tokens.
-- [ ] T032 [US6] Criar `src/features/auth/FirstLoginPage.tsx` com apenas Nova senha e Confirmar nova senha, validação de igualdade/política, operação estável, limpeza de campos, mensagens de recuperação e ação sair; não armazenar senha nem efetuar login automático.
-- [ ] T033 [US6] Integrar conclusão/cutoff em `src/app/session/SessionProvider.tsx` e `src/app/router.tsx`, exigindo logout confirmado e nova autenticação após loginAvailableAt; refresh do token, Voltar, papel admin e aba antiga não podem contornar a barreira.
-- [ ] T034 [US6] Documentar em `docs/firebase-operations.md` criação manual da conta/credencial provisória, atualização de credenciais dedicadas fora de logs, normalização conhecida e recuperação com outra nova senha se Auth mudou sem recibo; nunca enviar senha no email automático.
+- [X] T027 [US6] Implementar operação/lease versionada de 30 s por UID e orçamento de 5 novas tentativas/15 min em `services/trusted-api/src/firstLogin.ts`, persistindo apenas metadados permitidos de firstLoginOperations/operationBudgets e impedindo trabalho após perda de lease.
+- [X] T028 [US6] Implementar prova controlada em `services/trusted-api/src/firstLogin.ts`: token recente ≤5 min, conta password ativa e email real; comparar candidata por signInWithPassword e rejeitar sucesso como SAME_PASSWORD; somente INVALID_LOGIN_CREDENTIALS da conta coerente permite accounts:update; descartar tokens retornados.
+- [X] T029 [US6] Concluir em `services/trusted-api/src/firstLogin.ts` a transação de recibo completed + primeiro_login=false + timestamps/cutoff após sucesso Auth para UID esperado; retry concluído não altera senha e resposta fornece loginAvailableAt, sem confiar em avanço isolado de passwordUpdatedAt.
+- [X] T030 [US6] Implementar recuperação PASSWORD_CHANGE_UNCERTAIN e normalização legada em `services/trusted-api/src/firstLogin.ts`: manter pendência sem recibo, permitir nova operação após lease e novo login com senha efetiva, preservar false confirmado/criação e rejeitar schema desconhecido.
+- [X] T031 [US6] Conectar exclusivamente POST /v1/first-login/change-password e /normalize-profile em `services/trusted-api/src/index.ts`, com DTOs/erros do contrato, sem rota de alteração de terceiros e sem captura de senha, body ou tokens.
+- [X] T032 [US6] Criar `src/features/auth/FirstLoginPage.tsx` com apenas Nova senha e Confirmar nova senha, validação de igualdade/política, operação estável, limpeza de campos, mensagens de recuperação e ação sair; não armazenar senha nem efetuar login automático.
+- [X] T033 [US6] Integrar conclusão/cutoff em `src/app/session/SessionProvider.tsx` e `src/app/router.tsx`, exigindo logout confirmado e nova autenticação após loginAvailableAt; refresh do token, Voltar, papel admin e aba antiga não podem contornar a barreira.
+- [X] T034 [US6] Documentar em `docs/firebase-operations.md` criação manual da conta/credencial provisória, atualização de credenciais dedicadas fora de logs, normalização conhecida e recuperação com outra nova senha se Auth mudou sem recibo; nunca enviar senha no email automático.
 - [ ] T035 [US6] Executar unitários US1/US6 e, com gates reais satisfeitos, ciclo e tentativas de bypass de T026; registrar SC-002/SC-011–SC-013 e conclusão conjunta US1/US6 em `specs/002-autenticacao-cadastros-admin/validation.md`, marcando cenários sem ambiente como bloqueados.
 
 **Checkpoint**: nenhum acesso normal sem troca confirmada e autenticação posterior. Não afirmar atomicidade entre Auth e Firestore.
@@ -95,18 +95,18 @@ Escrever os testes de cada história antes da implementação correspondente. Ex
 
 ### Testes
 
-- [ ] T036 [P] [US2] Escrever `src/domain/registration.test.ts` cobrindo CPF com dígitos verificadores e sequências repetidas, WhatsApp brasileiro, nome/email/limites e rejeição de campos extras, sem sugerir verificação de titularidade.
-- [ ] T037 [P] [US2] Escrever `services/trusted-api/src/registration.test.ts` e preparar `tests/integration/registration.integration.test.ts` para Siteverify inválido/expirado, orçamento concorrente, payload divergente, persistência perdida/replay e impossibilidade de get/list público; testes reais não burlam CAPTCHA.
+- [X] T036 [P] [US2] Escrever `src/domain/registration.test.ts` cobrindo CPF com dígitos verificadores e sequências repetidas, WhatsApp brasileiro, nome/email/limites e rejeição de campos extras, sem sugerir verificação de titularidade.
+- [X] T037 [P] [US2] Escrever `services/trusted-api/src/registration.test.ts` e preparar `tests/integration/registration.integration.test.ts` para Siteverify inválido/expirado, orçamento concorrente, payload divergente, persistência perdida/replay e impossibilidade de get/list público; testes reais não burlam CAPTCHA.
 
 ### Implementação
 
-- [ ] T038 [US2] Implementar validações puras compartilháveis em `src/domain/registration.ts`: CPF normalizado, WhatsApp E.164 +55/DDD2/local9, email trim/normalizado ≤254 e nome trim de 1–150 caracteres, com DTO de quatro dados conforme contratos.
-- [ ] T039 [US2] Implementar Siteverify e limites em `services/trusted-api/src/registration.ts`, validando hostname/action registration, HMAC de rede sem IP bruto e contadores transacionais de 20 novas operações/rede/hora e 100 globais/dia UTC; retry existente não consome novo cadastro.
-- [ ] T040 [US2] Implementar transação idempotente em `services/trusted-api/src/registration.ts` para registrationRequests, submissionOperations e notificationOutbox, com digest de operationId de 32 bytes, HMAC canônico, timestamps e UUID de entrega estável; mesmo payload retorna recibo, diferente retorna 409 sem PII.
-- [ ] T041 [US2] Expor POST /v1/registration-requests em `services/trusted-api/src/index.ts`, confirmando 201/200 somente após commit; rejeitar destinatário/UID/path/campos extras e não criar identidade Auth, vincular por email alegado ou oferecer consulta pública.
-- [ ] T042 [US2] Criar `src/features/registration/RegistrationPage.tsx` e `src/features/registration/TurnstileWidget.tsx` com quatro campos obrigatórios, labels/erros, máscara +55 (xx) xxxxx-xxxx, desafio legítimo e operationId preservado em memória para retry; impedir duplo clique sem persistir PII em localStorage.
-- [ ] T043 [US2] Criar `src/features/registration/ReceiptPage.tsx` e ligar rotas em `src/app/router.tsx`, exibindo recebimento e criação manual posterior da conta, sem confundir persistência/email/acesso; refresh sem recibo não consulta dados pessoais publicamente.
-- [ ] T044 [US2] Acrescentar somente os consumidores implementados VITE_TRUSTED_API_BASE_URL e VITE_TURNSTILE_SITE_KEY em `src/vite-env.d.ts`, `.env.example` e documentação `README.md`, preservando valores existentes de `.env` e apontando configuração ausente sem inventar dados.
+- [X] T038 [US2] Implementar validações puras compartilháveis em `src/domain/registration.ts`: CPF normalizado, WhatsApp E.164 +55/DDD2/local9, email trim/normalizado ≤254 e nome trim de 1–150 caracteres, com DTO de quatro dados conforme contratos.
+- [X] T039 [US2] Implementar Siteverify e limites em `services/trusted-api/src/registration.ts`, validando hostname/action registration, HMAC de rede sem IP bruto e contadores transacionais de 20 novas operações/rede/hora e 100 globais/dia UTC; retry existente não consome novo cadastro.
+- [X] T040 [US2] Implementar transação idempotente em `services/trusted-api/src/registration.ts` para registrationRequests, submissionOperations e notificationOutbox, com digest de operationId de 32 bytes, HMAC canônico, timestamps e UUID de entrega estável; mesmo payload retorna recibo, diferente retorna 409 sem PII.
+- [X] T041 [US2] Expor POST /v1/registration-requests em `services/trusted-api/src/index.ts`, confirmando 201/200 somente após commit; rejeitar destinatário/UID/path/campos extras e não criar identidade Auth, vincular por email alegado ou oferecer consulta pública.
+- [X] T042 [US2] Criar `src/features/registration/RegistrationPage.tsx` e `src/features/registration/TurnstileWidget.tsx` com quatro campos obrigatórios, labels/erros, máscara +55 (xx) xxxxx-xxxx, desafio legítimo e operationId preservado em memória para retry; impedir duplo clique sem persistir PII em localStorage.
+- [X] T043 [US2] Criar `src/features/registration/ReceiptPage.tsx` e ligar rotas em `src/app/router.tsx`, exibindo recebimento e criação manual posterior da conta, sem confundir persistência/email/acesso; refresh sem recibo não consulta dados pessoais publicamente.
+- [X] T044 [US2] Acrescentar somente os consumidores implementados VITE_TRUSTED_API_BASE_URL e VITE_TURNSTILE_SITE_KEY em `src/vite-env.d.ts`, `.env.example` e documentação `README.md`, preservando valores existentes de `.env` e apontando configuração ausente sem inventar dados.
 - [ ] T045 [US2] Executar unitários/contratos e, quando autorizado e configurado, envio fictício e replay legítimo pelo roteiro em `specs/002-autenticacao-cadastros-admin/quickstart.md`; registrar SC-003/SC-010 em `specs/002-autenticacao-cadastros-admin/validation.md` sem declarar email validado nesta história.
 
 **Checkpoint**: solicitação existe com outbox pending; ausência de remetente não perde o pedido e não equivale a conta criada.
@@ -118,12 +118,12 @@ Escrever os testes de cada história antes da implementação correspondente. Ex
 
 ### Testes e implementação da suíte
 
-- [ ] T046 [P] [US5] Escrever testes locais de alvo/manifesto em `tests/integration/support/environment.test.ts` e `tests/integration/support/manifest.test.ts`, verificando abort antes de escrita, UIDs allowlist, IDs exatos e recusa de escopo não pertencente à execução, sem conexão Firebase.
-- [ ] T047 [P] [US5] Implementar `tests/integration/access.integration.test.ts` com SDK cliente real para get/list/create/update/delete de perfis próprios/alheios, admin manual, flags/cutoff/schema/createdAt e oito coleções/subcoleções financeiras futuras; comparar operações permitidas com todas as negações esperadas.
-- [ ] T048 [P] [US5] Preparar `tests/integration/admin.integration.test.ts` para A manualmente admin pronto, B comum e visitante, paginação/limite, assinatura válida/inválida/concorrente, vínculo confiável e remoção de papel; nunca promover A pelo cliente testado.
-- [ ] T049 [P] [US5] Preparar `tests/integration/trusted-api.integration.test.ts` para projeto/token incorretos, expiração/conta desabilitada, campos/UID injetados, relay arbitrário, quotas e replay; separar evidência do serviço privilegiado da prova de Rules pelo SDK.
-- [ ] T050 [US5] Implementar `scripts/cleanup-integration.mts` com projectId/runId/UIDs/manifesto explícitos, dry-run inicial e listagem de IDs/quantidades, credencial operacional separada e remoção somente de fixtures/dependências selecionadas; não apagar contadores globais, papéis preexistentes ou contas Authentication, nem presumir cascata de subcoleções.
-- [ ] T051 [US5] Concluir execução opt-in e procedimento em `vitest.integration.config.ts`, `package.json` e `docs/firebase-operations.md`, incluindo secrets locais ignorados, ausência de credenciais como bloqueio e restauração manual do papel de teste ao estado anterior.
+- [X] T046 [P] [US5] Escrever testes locais de alvo/manifesto em `tests/integration/support/environment.test.ts` e `tests/integration/support/manifest.test.ts`, verificando abort antes de escrita, UIDs allowlist, IDs exatos e recusa de escopo não pertencente à execução, sem conexão Firebase.
+- [X] T047 [P] [US5] Implementar `tests/integration/access.integration.test.ts` com SDK cliente real para get/list/create/update/delete de perfis próprios/alheios, admin manual, flags/cutoff/schema/createdAt e oito coleções/subcoleções financeiras futuras; comparar operações permitidas com todas as negações esperadas.
+- [X] T048 [P] [US5] Preparar `tests/integration/admin.integration.test.ts` para A manualmente admin pronto, B comum e visitante, paginação/limite, assinatura válida/inválida/concorrente, vínculo confiável e remoção de papel; nunca promover A pelo cliente testado.
+- [X] T049 [P] [US5] Preparar `tests/integration/trusted-api.integration.test.ts` para projeto/token incorretos, expiração/conta desabilitada, campos/UID injetados, relay arbitrário, quotas e replay; separar evidência do serviço privilegiado da prova de Rules pelo SDK.
+- [X] T050 [US5] Implementar `scripts/cleanup-integration.mts` com projectId/runId/UIDs/manifesto explícitos, dry-run inicial e listagem de IDs/quantidades, credencial operacional separada e remoção somente de fixtures/dependências selecionadas; não apagar contadores globais, papéis preexistentes ou contas Authentication, nem presumir cascata de subcoleções.
+- [X] T051 [US5] Concluir execução opt-in e procedimento em `vitest.integration.config.ts`, `package.json` e `docs/firebase-operations.md`, incluindo secrets locais ignorados, ausência de credenciais como bloqueio e restauração manual do papel de teste ao estado anterior.
 - [ ] T052 [US5] Inventariar e salvar Rules/índices ativos conforme `docs/firestore-rules-changes.md`, revisar IAM dedicado sem Owner/Editor e compatibilidade com o código; publicar somente com autorização vigente e confirmar alvo/versão em `specs/002-autenticacao-cadastros-admin/validation.md`, ou registrar bloqueio sem substituir regras remotas desconhecidas.
 - [ ] T053 [US5] Executar subconjunto real US1/US6/US2 de T047/T049 após T035/T045/T052 e registrar resultados por operação em `specs/002-autenticacao-cadastros-admin/validation.md`; manter explicitamente pendentes os casos US3/US4 até T074, sem anunciar a suíte inteira aprovada.
 
@@ -136,17 +136,17 @@ Escrever os testes de cada história antes da implementação correspondente. Ex
 
 ### Testes
 
-- [ ] T054 [P] [US3] Escrever `src/domain/subscription.test.ts` para datas reais/bissextos, ambas obrigatórias, fim ≥ início, versão +1 e invariância das permissões perante datas ausentes/futuras/vencidas.
-- [ ] T055 [P] [US3] Escrever testes comportamentais de edição em `src/features/admin/subscriptionEditor.test.ts`, cobrindo confirmação pendente, resposta tardia, conflito de versão e remoção de permissão sem manter dados privados na tela; complementar cenários reais preparados em `tests/integration/admin.integration.test.ts`.
+- [X] T054 [P] [US3] Escrever `src/domain/subscription.test.ts` para datas reais/bissextos, ambas obrigatórias, fim ≥ início, versão +1 e invariância das permissões perante datas ausentes/futuras/vencidas.
+- [X] T055 [P] [US3] Escrever testes comportamentais de edição em `src/features/admin/subscriptionEditor.test.ts`, cobrindo confirmação pendente, resposta tardia, conflito de versão e remoção de permissão sem manter dados privados na tela; complementar cenários reais preparados em `tests/integration/admin.integration.test.ts`.
 
 ### Implementação
 
-- [ ] T056 [US3] Implementar tipos/validação de calendário e período em `src/domain/subscription.ts`, sem UTC, SDK ou regra de expiração de acesso; manter requestId/criação imutáveis e versão inteira.
-- [ ] T057 [US3] Implementar `src/infrastructure/firebase/adminRepository.ts` com get do papel próprio, pedidos em páginas de 25 ordenadas por createdAt/documentId com cursor, detalhe/outbox por ID e assinatura transacional com versão observada; preservar dados originais e detectar conflito antes de sobrescrever.
-- [ ] T058 [US3] Criar `src/app/guards/AdminGate.tsx` e integrar `src/app/session/SessionProvider.tsx`, observando papel próprio atual somente após ready; remover/desativar papel ou receber permission-denied limpa dados administrativos e bloqueia próxima operação.
-- [ ] T059 [US3] Criar `src/features/admin/RequestsPage.tsx` com navegação por cursor, estados carregando/vazio/erro, identificação da solicitação e acesso ao detalhe, sem listener sobre todo histórico ou consulta financeira.
-- [ ] T060 [US3] Criar `src/features/admin/RequestDetailPage.tsx` e `src/features/admin/subscriptionEditor.ts` para quatro dados somente leitura, estado da notificação e início/fim editáveis; salvar com pending, confirmação de servidor e conflito que pede recarga, sem edição de papel ou criação de conta.
-- [ ] T061 [US3] Integrar URLs administrativas e links condicionais em `src/app/router.tsx` e `src/app/AppShell.tsx`, sem expor conteúdo antes de perfil/primeiro acesso/papel resolvidos e sem associar datas de assinatura a autorização.
+- [X] T056 [US3] Implementar tipos/validação de calendário e período em `src/domain/subscription.ts`, sem UTC, SDK ou regra de expiração de acesso; manter requestId/criação imutáveis e versão inteira.
+- [X] T057 [US3] Implementar `src/infrastructure/firebase/adminRepository.ts` com get do papel próprio, pedidos em páginas de 25 ordenadas por createdAt/documentId com cursor, detalhe/outbox por ID e assinatura transacional com versão observada; preservar dados originais e detectar conflito antes de sobrescrever.
+- [X] T058 [US3] Criar `src/app/guards/AdminGate.tsx` e integrar `src/app/session/SessionProvider.tsx`, observando papel próprio atual somente após ready; remover/desativar papel ou receber permission-denied limpa dados administrativos e bloqueia próxima operação.
+- [X] T059 [US3] Criar `src/features/admin/RequestsPage.tsx` com navegação por cursor, estados carregando/vazio/erro, identificação da solicitação e acesso ao detalhe, sem listener sobre todo histórico ou consulta financeira.
+- [X] T060 [US3] Criar `src/features/admin/RequestDetailPage.tsx` e `src/features/admin/subscriptionEditor.ts` para quatro dados somente leitura, estado da notificação e início/fim editáveis; salvar com pending, confirmação de servidor e conflito que pede recarga, sem edição de papel ou criação de conta.
+- [X] T061 [US3] Integrar URLs administrativas e links condicionais em `src/app/router.tsx` e `src/app/AppShell.tsx`, sem expor conteúdo antes de perfil/primeiro acesso/papel resolvidos e sem associar datas de assinatura a autorização.
 - [ ] T062 [US3] Executar testes locais e casos reais T048 com A/B/visitante quando gates permitirem; registrar consulta, concorrência, perda de papel e SC-004/SC-010 em `specs/002-autenticacao-cadastros-admin/validation.md`, sem conceder acesso financeiro ao admin.
 
 **Checkpoint**: administração limitada ao cadastro e período; conta e papel continuam provisionados manualmente fora do aplicativo.
@@ -158,16 +158,16 @@ Escrever os testes de cada história antes da implementação correspondente. Ex
 
 ### Testes
 
-- [ ] T063 [P] [US4] Escrever `services/trusted-api/src/notifications.test.ts` para payload fixo sem PII, lease concorrente, limite de tentativas, sucesso/deduplicação, cota e timeout dentro/fora da janela, verificando que accepted não significa inbox.
-- [ ] T064 [P] [US4] Preparar `tests/integration/notifications.integration.test.ts` com runId/manifesto e habilitação explícita do envio, no máximo duas notificações reais, mesma operação para testar dedupe e resultado registrado sem expor secrets nem reenviar após incerteza fora da janela.
+- [X] T063 [P] [US4] Escrever `services/trusted-api/src/notifications.test.ts` para payload fixo sem PII, lease concorrente, limite de tentativas, sucesso/deduplicação, cota e timeout dentro/fora da janela, verificando que accepted não significa inbox.
+- [X] T064 [P] [US4] Preparar `tests/integration/notifications.integration.test.ts` com runId/manifesto e habilitação explícita do envio, no máximo duas notificações reais, mesma operação para testar dedupe e resultado registrado sem expor secrets nem reenviar após incerteza fora da janela.
 
 ### Implementação
 
-- [ ] T065 [US4] Implementar adaptador Brevo HTTPS em `services/trusted-api/src/notifications.ts` com remetente configurado/verificado, destinatário servidor fixo luizgustavo.dev01@gmail.com e template de referência/data/URL admin; proibir conteúdo arbitrário e CPF/WhatsApp/senhas no aviso.
-- [ ] T066 [US4] Implementar máquina de outbox em `services/trusted-api/src/notifications.ts`, com lease transacional, payload/template e UUID estáveis em headers.idempotencyKey do payload Brevo; persistir accepted/providerMessageId ou accepted_deduplicated sem fabricar ID.
-- [ ] T067 [US4] Implementar retry/recuperação em `services/trusted-api/src/notifications.ts`: máximo 5 tentativas, timeout incerto reaproveita chave só até 25 min do primeiro dispatch, depois uncertain e reconciliação manual; erro/cota gera pendência/falha sanitizada sem apagar pedido ou ativar plano pago.
-- [ ] T068 [US4] Ligar scheduled handler em `services/trusted-api/src/index.ts` e um cron de 5 min em `services/trusted-api/wrangler.jsonc`, consultando no máximo 5 itens por invocação com índices/leases, incluindo recuperação de lease expirado; não depender de waitUntil ou expor cron/reenvio privilegiado publicamente.
-- [ ] T069 [US4] Conectar estado real de notificação em `src/features/admin/RequestDetailPage.tsx` e recibo em `src/features/registration/ReceiptPage.tsx`, distinguindo recebido/pending/accepted/failed/uncertain sem alegar entrega na caixa de entrada.
+- [X] T065 [US4] Implementar adaptador Brevo HTTPS em `services/trusted-api/src/notifications.ts` com remetente configurado/verificado, destinatário servidor fixo luizgustavo.dev01@gmail.com e template de referência/data/URL admin; proibir conteúdo arbitrário e CPF/WhatsApp/senhas no aviso.
+- [X] T066 [US4] Implementar máquina de outbox em `services/trusted-api/src/notifications.ts`, com lease transacional, payload/template e UUID estáveis em headers.idempotencyKey do payload Brevo; persistir accepted/providerMessageId ou accepted_deduplicated sem fabricar ID.
+- [X] T067 [US4] Implementar retry/recuperação em `services/trusted-api/src/notifications.ts`: máximo 5 tentativas, timeout incerto reaproveita chave só até 25 min do primeiro dispatch, depois uncertain e reconciliação manual; erro/cota gera pendência/falha sanitizada sem apagar pedido ou ativar plano pago.
+- [X] T068 [US4] Ligar scheduled handler em `services/trusted-api/src/index.ts` e um cron de 5 min em `services/trusted-api/wrangler.jsonc`, consultando no máximo 5 itens por invocação com índices/leases, incluindo recuperação de lease expirado; não depender de waitUntil ou expor cron/reenvio privilegiado publicamente.
+- [X] T069 [US4] Conectar estado real de notificação em `src/features/admin/RequestDetailPage.tsx` e recibo em `src/features/registration/ReceiptPage.tsx`, distinguindo recebido/pending/accepted/failed/uncertain sem alegar entrega na caixa de entrada.
 - [ ] T070 [US4] Revalidar cotas oficiais e documentar evidência de remetente/conta Brevo, IAM/secrets e medição real de CPU/cold start/subrequests do Worker em `docs/firebase-operations.md` e `specs/002-autenticacao-cadastros-admin/validation.md`; interromper ativação se plano gratuito não comportar, sem contratar ou inventar domínio/remetente.
 - [ ] T071 [US4] Executar testes locais e, com configuração/autorização vigentes, T064 e abandono do navegador/retomada por cron; registrar SC-005, aceite e inbox separadamente em `specs/002-autenticacao-cadastros-admin/validation.md`, ou bloquear explicitamente o canal sem perder o pedido.
 
@@ -175,13 +175,13 @@ Escrever os testes de cada história antes da implementação correspondente. Ex
 
 ## Fase 9: Acabamento e validação transversal
 
-- [ ] T072 [P] Atualizar `README.md`, `docs/firebase-operations.md` e `specs/002-autenticacao-cadastros-admin/quickstart.md` com instalação/comandos finais, ambiente público/privado, criação manual/admin, política de senha/recuperação, fallback SPA para URLs e limites/bloqueios conhecidos, sem valores reais.
+- [X] T072 [P] Atualizar `README.md`, `docs/firebase-operations.md` e `specs/002-autenticacao-cadastros-admin/quickstart.md` com instalação/comandos finais, ambiente público/privado, criação manual/admin, política de senha/recuperação, fallback SPA para URLs e limites/bloqueios conhecidos, sem valores reais.
 - [ ] T073 Verificar navegação e formulários a 360/1280 pixels e por teclado em `src/shared/styles/global.css`, `src/app/AppShell.tsx` e páginas das quatro funcionalidades, corrigindo labels/foco/erro/loading sem ornamentação ou novas bibliotecas visuais; registrar evidência em `specs/002-autenticacao-cadastros-admin/validation.md`.
 - [ ] T074 Concluir US5 executando matriz SDK real e endpoints após US3/US4 e Rules confirmadas, incluindo admin revogado, perfil alheio, finanças/subcoleções negadas e token provisório de outra aba; registrar cada caso aprovado/falhou/bloqueado em `specs/002-autenticacao-cadastros-admin/validation.md` sem confundir OAuth privilegiado com teste de Rules.
-- [ ] T075 Executar npm ci, typecheck, typecheck:trusted-api, lint, npm test, build e build:trusted-api conforme `package.json`; corrigir falhas e registrar versões/comandos/resultados em `specs/002-autenticacao-cadastros-admin/validation.md`, sem deploy no build.
-- [ ] T076 Auditar `.gitignore`, `.env.example`, `services/trusted-api/.dev.vars.example`, código e artefatos `dist/` quanto a secrets/senhas/PII e rastreamento de arquivos privados; registrar SC-008 em `specs/002-autenticacao-cadastros-admin/validation.md` sem imprimir valores sensíveis ou remover `.env` local.
+- [X] T075 Executar npm ci, typecheck, typecheck:trusted-api, lint, npm test, build e build:trusted-api conforme `package.json`; corrigir falhas e registrar versões/comandos/resultados em `specs/002-autenticacao-cadastros-admin/validation.md`, sem deploy no build.
+- [X] T076 Auditar `.gitignore`, `.env.example`, `services/trusted-api/.dev.vars.example`, código e artefatos `dist/` quanto a secrets/senhas/PII e rastreamento de arquivos privados; registrar SC-008 em `specs/002-autenticacao-cadastros-admin/validation.md` sem imprimir valores sensíveis ou remover `.env` local.
 - [ ] T077 Executar dry-run de `scripts/cleanup-integration.mts` com manifesto da execução, revisar IDs/quantidades e limpar somente esse escopo quando autorizado; registrar resultado/restos e restauração manual do papel em `specs/002-autenticacao-cadastros-admin/validation.md`, sem exclusão global ou de dados preexistentes.
-- [ ] T078 Consolidar SC-001–SC-013 e cobertura FR-001–FR-034 em `specs/002-autenticacao-cadastros-admin/validation.md`, distinguindo código gerado, Rules/índices publicados, serviço ativo, testes executados e bloqueios; reconciliar `specs/002-autenticacao-cadastros-admin/tasks.md` somente com evidências, sem marcar tarefa real bloqueada como concluída.
+- [X] T078 Consolidar SC-001–SC-013 e cobertura FR-001–FR-034 em `specs/002-autenticacao-cadastros-admin/validation.md`, distinguindo código gerado, Rules/índices publicados, serviço ativo, testes executados e bloqueios; reconciliar `specs/002-autenticacao-cadastros-admin/tasks.md` somente com evidências, sem marcar tarefa real bloqueada como concluída.
 
 ## Dependências e ordem de execução
 
@@ -248,3 +248,14 @@ Os pares abaixo são oportunidades de arquivos separados, com pré-requisitos da
 | **Total** | **T001–T078** | **78** | **34 FR e 13 SC** |
 
 Critérios de teste independente constam de cada fase. Publicação e execução não realizadas durante a geração destas tarefas; todos os checkboxes começam abertos.
+
+
+## Estado de execução em 2026-10-16
+
+67 tarefas originais concluídas localmente; 11 permanecem abertas por execução real/telas autenticadas.
+O responsável confirmou que a infraestrutura ainda não está preparada e pediu concluir código e verificações locais. Consulte validation.md para evidência e bloqueios; não houve publicação nem envio real.
+
+## Complemento solicitado: encaminhamento ao WhatsApp (FR-035)
+
+- [X] T079 Encaminhar após persistência em `src/features/registration/RegistrationPage.tsx`, com URL/mensagem genéricas em `src/features/registration/whatsapp.ts` e link de fallback em `src/features/registration/ReceiptPage.tsx`, mantendo email/outbox e sem enviar dados pessoais ou mensagem automaticamente.
+- [X] T080 Verificar tipos/lint/build e registrar o resultado do complemento em `specs/002-autenticacao-cadastros-admin/validation.md`, preservando as pendências reais existentes.

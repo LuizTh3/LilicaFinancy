@@ -82,6 +82,37 @@ reservas, score financeiro, Open Finance, IA, WhatsApp, notificações externas,
 aplicativo nativo e compartilhamento familiar. Categorias são classificações; não implicam
 orçamento. A projeção de compromissos continua no escopo por fazer parte do processo original.
 
+### 2.4 Exceção autorizada: acesso e solicitações (feature 002)
+
+Decisão explícita do responsável em 2026-10-16: cadastro público coleta nome, CPF,
+WhatsApp e email, sem criar conta; o responsável cria contas no Authentication manualmente.
+Administração por UID manual consulta solicitações e registra datas informativas de assinatura,
+sem cobrança, expiração ou acesso financeiro de terceiros. Notificação externa é permitida
+somente para aviso de solicitação ao destinatário fixado na especificação.
+
+Autoriza-se serviço externo restrito em cota gratuita para recepção protegida, email/outbox
+e conclusão confiável da troca obrigatória de senha no primeiro acesso. Não é autorização
+para backend genérico, Cloud Functions, Blaze, contratação paga ou domínio comprado.
+Senhas transitam somente por HTTPS e memória da operação, nunca em documentos, logs ou disco.
+primeiro_login e cutoff são protegidos; conclusão exige prova Auth, persistência e novo login.
+Credenciais de serviço ignoram Rules e exigem IAM mínimo, caminhos fixos e testes próprios.
+
+Fixtures públicas anteriores à autenticação podem existir fora de users/{uid}, identificadas
+por manifesto local com runId, IDs exatos e UID de teste responsável, sem inventar propriedade.
+Limpeza permanece delimitada e explícita. Publicação e envio real seguem autorização vigente.
+
+Impacto: feature 001 preservada; spec/plan/tasks 002 devem aplicar esta exceção sem ampliar
+o restante do produto. Revogação desta exceção exige rever os fluxos protegidos correspondentes.
+
+### 2.5 Complemento autorizado: conversa após solicitação
+
+Em 2026-10-16, o responsável autorizou encaminhar o solicitante, somente após confirmação
+da persistência, ao WhatsApp +55 (68) 99973-9841 por link clique para conversa com mensagem
+genérica sobre cadastro e organização financeira. O aviso por email permanece independente.
+Não incluir dados do formulário no link, enviar mensagem automaticamente ou integrar API
+WhatsApp. O recibo oferece alternativa manual se o encaminhamento não abrir. Impacto
+restrito ao fluxo público da feature 002; nenhuma mudança nas permissões ou regras financeiras.
+
 ## 3. Princípios fundamentais
 
 ### I. Lógica financeira independente da interface
@@ -404,4 +435,4 @@ atualizada a cada revisão. Datas devem usar o formato ISO `YYYY-MM-DD`.
 
 As referências orientam o projeto; as decisões específicas acima pertencem a esta constituição.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-16 | **Last Amended**: 2026-10-16
+**Version**: 1.2.0 | **Ratified**: 2026-10-16 | **Last Amended**: 2026-10-16

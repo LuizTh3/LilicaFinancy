@@ -58,6 +58,15 @@ quatro dados em localStorage para implementar idempotência.
 Recibo diz: solicitação recebida; responsável criará a conta posteriormente. Não dizer
 conta criada, acesso aprovado ou email entregue sem os respectivos fatos.
 
+## Complemento do cadastro: WhatsApp
+
+Depois do commit confirmado, o formulário salva o recibo na navegação interna e encaminha
+ao link wa.me/5568999739841 com mensagem genérica codificada. Em falha de persistência,
+permanece no formulário sem encaminhar. O recibo mantém link manual para reabrir a conversa
+se o navegador não abrir ou o usuário voltar. Não preencher CPF, email ou outros dados
+do formulário na conversa. O cliente confirma o envio no WhatsApp; email/outbox continuam
+processados independentemente. Não existe API WhatsApp nem envio automático de mensagem.
+
 ## Primeiro acesso
 
 Admin cria conta manualmente e entrega credencial provisória por canal apropriado fora do

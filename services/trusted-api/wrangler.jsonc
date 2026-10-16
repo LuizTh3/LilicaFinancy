@@ -1,0 +1,9 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "lilica-trusted-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-16",
+  "send_metrics": false,
+  "observability": { "enabled": false },
+  "triggers": { "crons": ["*/5 * * * *"] }
+}

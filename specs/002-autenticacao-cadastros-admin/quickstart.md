@@ -1,8 +1,9 @@
 # Quickstart: validação da autenticação e do cadastro real
 
-Guia para a implementação futura. Os comandos adicionais e endpoints descritos ainda não
-existem nesta fase de planejamento; nenhum resultado abaixo deve ser marcado como aprovado
-antes da execução. Verificar [contrato de ambiente](contracts/environment.md) primeiro.
+Guia de validação da implementação local. Comandos e endpoints foram criados; infraestrutura
+real ainda não preparada pelo responsável. Nenhum cenário remoto está aprovado por existir
+código. Verificar [contrato de ambiente](contracts/environment.md) e
+[operações](../../docs/firebase-operations.md) antes de executar.
 
 ## 1. Preparação e gates
 

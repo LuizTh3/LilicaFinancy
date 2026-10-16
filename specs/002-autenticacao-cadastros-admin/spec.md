@@ -6,7 +6,7 @@
 
 **Created**: 2026-10-16
 
-**Status**: Draft — esclarecimentos concluídos; pronta para planejamento
+**Status**: Implementação local entregue; ativação e validação no ambiente real pendentes conforme validation.md
 
 **Input**: User description: "Conectar Firebase Authentication e Cloud Firestore reais com
 configuração existente no .env; login, logout, cadastro, restauração de sessão, perfil por
@@ -285,6 +285,12 @@ recarga, concluir troca com dois campos, verificar a flag persistida e autentica
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
+
+- **FR-035** (complemento autorizado): após confirmação da persistência do pedido público,
+  encaminhar ao WhatsApp +55 (68) 99973-9841 com texto genérico solicitando cadastro na
+  plataforma para organizar finanças. Manter email/outbox independentes e recibo com link
+  manual de fallback. Falha de persistência não redireciona. Não incluir dados pessoais do
+  formulário na URL nem enviar mensagem automaticamente; o cliente confirma no WhatsApp.
 
 - **FR-001**: Utilizar configuração Firebase real já existente no `.env`, sem reproduzir
   valores no chat/documentação/logs; preservar `.gitignore` e `.env.example` sem dados reais.
