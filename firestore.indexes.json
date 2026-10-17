@@ -1,12 +1,115 @@
 {
   "indexes": [
-    { "collectionGroup": "notificationOutbox", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "nextAttemptAt", "order": "ASCENDING" }] },
-    { "collectionGroup": "notificationOutbox", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "leaseUntil", "order": "ASCENDING" }] }
+    {
+      "collectionGroup": "notificationOutbox",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "nextAttemptAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "notificationOutbox",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "leaseUntil",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "titulares",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "estado",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "nome",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "categorias",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "estado",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "nome",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "contas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "estado",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "nome",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "etiquetas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "estado",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "nome",
+          "order": "ASCENDING"
+        }
+      ]
+    }
   ],
   "fieldOverrides": [
-    { "collectionGroup": "registrationRequests", "fieldPath": "cpf", "indexes": [] },
-    { "collectionGroup": "registrationRequests", "fieldPath": "whatsapp", "indexes": [] },
-    { "collectionGroup": "registrationRequests", "fieldPath": "email", "indexes": [] },
-    { "collectionGroup": "registrationRequests", "fieldPath": "fullName", "indexes": [] }
+    {
+      "collectionGroup": "registrationRequests",
+      "fieldPath": "cpf",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "registrationRequests",
+      "fieldPath": "whatsapp",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "registrationRequests",
+      "fieldPath": "email",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "registrationRequests",
+      "fieldPath": "fullName",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "operacoesCadastros",
+      "fieldPath": "dados",
+      "indexes": []
+    }
   ]
 }

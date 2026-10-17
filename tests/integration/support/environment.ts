@@ -7,3 +7,12 @@ export function integrationEnvironment(values: Record<string, string | undefined
   if ([values.TEST_USER_A_UID, values.TEST_USER_B_UID].some(uid => !/^[A-Za-z0-9_-]{1,128}$/.test(uid!))) throw new Error('INVALID_TEST_SCOPE')
   return { projectId: values.TEST_EXPECTED_PROJECT_ID!, runId: values.TEST_RUN_ID!, uids: [values.TEST_USER_A_UID!, values.TEST_USER_B_UID!] }
 }
+export function cadastrosEnvironment(values: Record<string, string | undefined>) {
+  const base = integrationEnvironment(values)
+  for (const label of ['ADMIN', 'PENDING']) for (const key of ['UID', 'EMAIL', 'PASSWORD']) {
+    if (!values[`TEST_USER_${label}_${key}`]) throw new Error(`Configuração ausente: TEST_USER_${label}_${key}`)
+  }
+  const uids = [...base.uids, values.TEST_USER_ADMIN_UID!, values.TEST_USER_PENDING_UID!]
+  if (new Set(uids).size !== 4 || uids.some(uid => !/^[A-Za-z0-9_-]{1,128}$/.test(uid))) throw new Error('INVALID_TEST_SCOPE')
+  return { ...base, uids }
+}

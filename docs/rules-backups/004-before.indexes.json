@@ -1,0 +1,12 @@
+{
+  "indexes": [
+    { "collectionGroup": "notificationOutbox", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "nextAttemptAt", "order": "ASCENDING" }] },
+    { "collectionGroup": "notificationOutbox", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "leaseUntil", "order": "ASCENDING" }] }
+  ],
+  "fieldOverrides": [
+    { "collectionGroup": "registrationRequests", "fieldPath": "cpf", "indexes": [] },
+    { "collectionGroup": "registrationRequests", "fieldPath": "whatsapp", "indexes": [] },
+    { "collectionGroup": "registrationRequests", "fieldPath": "email", "indexes": [] },
+    { "collectionGroup": "registrationRequests", "fieldPath": "fullName", "indexes": [] }
+  ]
+}

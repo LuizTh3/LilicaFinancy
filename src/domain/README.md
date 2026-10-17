@@ -29,3 +29,9 @@ Vitest não substitui `npm run typecheck`; complete com lint/build e a suíte ge
 O gate `architecture.test.ts` inspeciona imports transitivos, inclusive tipos/reexports.
 Exemplos e evidência: [guia](../../specs/003-nucleo-financeiro-compartilhado/quickstart.md)
 e [validação](../../specs/003-nucleo-financeiro-compartilhado/validation.md).
+
+## Cadastros privados — feature 004
+
+finance/cadastros valida conteúdo fechado, nomes livres, base inicial completa e transições antes/depois do primeiro uso. contracts/cadastros define quatro entidades, comandos versionados, descritores e consultas discriminadas comandoCompleto/descritor. Não há Firebase, relógio global ou geração de IDs nesses módulos.
+
+Base devedora usa magnitude/posição próprias da conta; não altera os valores de lançamentos da 003. Preservar versão, ID e natureza compatível. Saldo informado não é confirmação bancária. Consumidores financeiros remotos permanecem negados; conta efetiva ativa e primeiro uso atômico são gates das features futuras.

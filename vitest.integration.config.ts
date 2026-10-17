@@ -3,7 +3,7 @@ import { loadEnv } from 'vite'
 
 Object.assign(process.env, loadEnv('integration', process.cwd(), ''))
 const group = process.env.TEST_INTEGRATION_GROUP ?? 'access'
-const groups = ['access', 'session', 'firstLogin', 'registration', 'admin', 'trusted-api', 'notifications']
+const groups = ['access', 'session', 'firstLogin', 'registration', 'admin', 'trusted-api', 'notifications', 'cadastros']
 if (!groups.includes(group)) throw new Error('TEST_INTEGRATION_GROUP inválido')
 
 export default defineConfig({ test: {

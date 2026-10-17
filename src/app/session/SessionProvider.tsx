@@ -8,6 +8,7 @@ import { accessState, endSession, SessionGeneration } from '../../domain/session
 
 import { SessionContext } from './useSession'
 import type { SessionState } from './useSession'
+function clearCadastroIntent(){try{sessionStorage.removeItem('lilica-cadastro-pendente')}catch{/* Unavailable storage must not prevent logout or session invalidation. */}}
 export function SessionProvider({ children }: { children: ReactNode }) {
   const initialError = configurationError(import.meta.env)
   const [state, setState] = useState<SessionState>({ status: initialError ? 'error' : 'resolvingAuth', user: null, message: initialError })
@@ -19,6 +20,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const clear = useCallback(() => { generation.current.next(); listeners.current.splice(0).forEach(stop => stop()) }, [])
   const invalidate = useCallback(() => { clear(); setState({ status: 'error', user: null, message: 'Acesso indisponível. Resolva a sessão novamente.' }) }, [clear])
   const exit = useCallback(async () => {
+    clearCadastroIntent()
     leaving.current = true
     try { await endSession(() => { clear(); setState({ status: 'logoutPending', user: null }) }, logout, () => location.replace('/login')) }
     catch { setState({ status: 'error', user: null, message: 'Não foi possível encerrar a sessão. Tente sair novamente.' }); throw new Error('LOGOUT_FAILED') }
@@ -36,6 +38,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         const previous = lastUid.current
         clear()
         if (previous && user?.uid !== previous) {
+          clearCadastroIntent()
           setState({ status: 'resolvingAuth', user: null })
           location.replace(user ? '/app' : '/login')
           return
