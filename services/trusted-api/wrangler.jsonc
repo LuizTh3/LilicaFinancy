@@ -4,6 +4,7 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-10-16",
   "send_metrics": false,
+  "keep_vars": true,
   "observability": { "enabled": false },
   "triggers": { "crons": ["*/5 * * * *"] }
 }

@@ -26,6 +26,29 @@ somente nomes e valores vazios. Não imprimir variáveis nem incluir corpos em l
 
 ## Serviço restrito
 
+Variáveis do `.env` do frontend não configuram automaticamente o Worker. Cadastre suas
+variáveis e secrets de execução em Workers & Pages → lilica-trusted-api → Settings →
+Variables and Secrets (não somente nas variáveis de build). A configuração Wrangler mantém
+keep_vars=true para preservar as variáveis do painel nas próximas publicações.
+
+Diagnóstico: CONFIG_INCOMPLETE/503 inclui missingConfiguration com somente os nomes
+ausentes, nunca valores. Corrigir as entradas indicadas no painel e aplicar a configuração.
+DEPENDENCY_UNAVAILABLE indica falha posterior/dependência indisponível; NETWORK_UNAVAILABLE
+indica falha de conexão do navegador. A interface exibe referência técnica quando recebida.
+Para falhas classificadas no cadastro, a resposta inclui `dependency` (`TURNSTILE`,
+`GOOGLE_PRIVATE_KEY`, `GOOGLE_OAUTH` ou `FIRESTORE`) e, quando houve resposta HTTP,
+`upstreamStatus`. Não retorna corpo externo, tokens, credenciais ou dados pessoais.
+`FIRESTORE`/403 indica rejeição de acesso; 404 ao iniciar transação exige conferir
+projeto e banco `(default)`. `GOOGLE_PRIVATE_KEY` indica falha ao importar a chave PEM.
+Esses campos exigem a publicação da versão atualizada do Worker.
+O campo missingConfiguration deve ser consultado em Network/Response, sem copiar payload
+do cadastro ou credenciais. Chaves privadas permanecem exclusivamente em Secrets.
+
+Uma atualização local desse diagnóstico exige publicar a nova versão do código para que a
+API remota passe a retorná-lo: `npx wrangler deploy --config services/trusted-api/wrangler.jsonc --keep-vars`.
+Executar somente conforme autorização vigente e após revisar o código; build:trusted-api
+continua dry-run, sem publicação automática.
+
 O workspace services/trusted-api usa APIs Auth/Firestore REST, sem Admin SDK no navegador.
 Configure bindings/secrets conforme services/trusted-api/.dev.vars.example. ALLOWED_ORIGINS
 é lista separada por vírgula de origens exatas; APP_BASE_URL é HTTPS; TURNSTILE_HOSTNAME

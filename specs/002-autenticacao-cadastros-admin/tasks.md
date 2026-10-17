@@ -259,3 +259,8 @@ O responsável confirmou que a infraestrutura ainda não está preparada e pediu
 
 - [X] T079 Encaminhar após persistência em `src/features/registration/RegistrationPage.tsx`, com URL/mensagem genéricas em `src/features/registration/whatsapp.ts` e link de fallback em `src/features/registration/ReceiptPage.tsx`, mantendo email/outbox e sem enviar dados pessoais ou mensagem automaticamente.
 - [X] T080 Verificar tipos/lint/build e registrar o resultado do complemento em `specs/002-autenticacao-cadastros-admin/validation.md`, preservando as pendências reais existentes.
+
+## Diagnóstico de configuração do serviço
+
+- [X] T081 Diferenciar configuração ausente, rede e resposta inválida em `services/trusted-api/src/environment.ts`, `services/trusted-api/src/index.ts`, `src/infrastructure/trusted-api/client.ts` e `src/shared/components/errorMessage.ts`, retornando somente nomes ausentes e referência sanitizada; preservar vars do painel em `services/trusted-api/wrangler.jsonc`.
+- [X] T082 Reproduzir erros com testes locais em `services/trusted-api/src/index.test.ts` e `src/shared/components/errorMessage.test.ts`, validar tipos/lint/builds e registrar diagnóstico sem dados pessoais em `specs/002-autenticacao-cadastros-admin/validation.md`; publicação remota permanece separada.

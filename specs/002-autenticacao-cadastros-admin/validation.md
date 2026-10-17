@@ -139,3 +139,26 @@ Typecheck, lint e build passaram após a mudança; aviso de tamanho do chunk per
 Sem teste ponta a ponta do redirecionamento após cadastro real, pois a infraestrutura
 continua pendente conforme orientação do responsável. Não foi publicado serviço ou regra.
 T079/T080 concluídos: 69 de 80 tarefas no total; as 11 pendências remotas originais mantidas.
+
+## Diagnóstico de envio após publicação pelo responsável
+
+O responsável informou a URL pública lilica-trusted-api.luizgustavo-dev01.workers.dev.
+Consultas OPTIONS sem cadastro confirmaram inicialmente 403 e posteriormente 204 com
+Access-Control-Allow-Origin para http://127.0.0.1:4173. Um POST diagnóstico com corpo vazio
+inválido (sem CPF, email ou token de desafio) retornou 503 DEPENDENCY_UNAVAILABLE antes
+da validação dos campos; nenhuma solicitação válida ou email foi gerado nesse diagnóstico.
+Isso indica configuração pendente na revisão publicada, cujo erro genérico não discriminava
+nomes ausentes. O responsável também confirmou 503 na tentativa pelo aplicativo.
+
+O código local agora retorna CONFIG_INCOMPLETE + missingConfiguration contendo somente
+nomes ausentes. O frontend distingue configuração, dependência, rede e resposta inválida,
+com referência de operação sanitizada. Dois testes reproduziram as mensagens inadequadas
+antes da correção. Após correção: 41 testes em 16 arquivos, tipos app/Worker, lint e builds
+locais passaram. Erro EPERM do cache Vitest foi tratado como restrição de execução, não
+como falha comportamental da aplicação; a execução fora dessa restrição confirmou os testes.
+
+keep_vars=true no Wrangler preserva entradas configuradas pelo painel nos próximos deploys.
+Sem isso, variáveis de texto não declaradas na configuração local podem ser substituídas
+pela publicação. Nenhum secret foi lido ou exibido. Esta atualização local ainda precisa de
+publicação pelo responsável; ela não configura credenciais remotas nem comprova integração
+real. O frontend/preview foi recompilado. Pendências reais de Firebase/remetente continuam.

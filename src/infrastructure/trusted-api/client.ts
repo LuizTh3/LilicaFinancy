@@ -8,11 +8,15 @@ export async function trustedApi<T>(path: 'registration-requests' | 'first-login
       method: 'POST', cache: 'no-store', signal: AbortSignal.timeout(10000),
       headers: { 'Content-Type': 'application/json', ...(key ? { 'Idempotency-Key': key } : {}), ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(body),
     })
-    const result = await response.json()
-    if (!response.ok) throw new ApiError(typeof result.code === 'string' ? result.code : 'DEPENDENCY_UNAVAILABLE', response.status)
+    const result = await response.json().catch(() => null)
+    if (!result || typeof result !== 'object') throw new ApiError('INVALID_SERVICE_RESPONSE', response.status)
+    if (!response.ok) {
+      const requestId = typeof result.requestId === 'string' && /^[A-Za-z0-9_-]{1,80}$/.test(result.requestId) ? result.requestId : undefined
+      throw new ApiError(typeof result.code === 'string' ? result.code : 'DEPENDENCY_UNAVAILABLE', response.status, requestId)
+    }
     return result as T
   } catch (error) {
     if (error instanceof ApiError) throw error
-    throw new ApiError('DEPENDENCY_UNAVAILABLE')
+    throw new ApiError('NETWORK_UNAVAILABLE')
   }
 }

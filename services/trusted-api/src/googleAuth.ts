@@ -1,20 +1,20 @@
 import { createRemoteJWKSet, importPKCS8, jwtVerify, SignJWT } from 'jose'
 import type { Env } from './environment'
 import { googleKeys, requireEnv } from './environment'
-import { external, HttpError } from './contracts'
+import { DependencyError, external, HttpError } from './contracts'
 
 const keys = createRemoteJWKSet(new URL('https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'))
 let oauth: { identity: string; token: string; until: number } | undefined
 export async function serviceToken(env: Env) {
   requireEnv(env, googleKeys)
   if (oauth?.identity === env.GOOGLE_SERVICE_ACCOUNT_EMAIL && oauth.until > Date.now()) return oauth.token
-  const privateKey = await importPKCS8(env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY.replace(/\\n/g, '\n'), 'RS256')
+  const privateKey = await importPKCS8(env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY.replace(/\\n/g, '\n'), 'RS256').catch(() => { throw new DependencyError('GOOGLE_PRIVATE_KEY') })
   const assertion = await new SignJWT({ scope: 'https://www.googleapis.com/auth/datastore https://www.googleapis.com/auth/identitytoolkit' })
     .setProtectedHeader({ alg: 'RS256' }).setIssuer(env.GOOGLE_SERVICE_ACCOUNT_EMAIL)
     .setAudience('https://oauth2.googleapis.com/token').setIssuedAt().setExpirationTime('1h').sign(privateKey)
-  const response = await external('https://oauth2.googleapis.com/token', { method: 'POST', body: new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion }) })
-  const data = await response.json() as { access_token?: string; expires_in?: number }
-  if (!response.ok || !data.access_token) throw new HttpError('DEPENDENCY_UNAVAILABLE', 503)
+  const response = await external('https://oauth2.googleapis.com/token', { method: 'POST', body: new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion }) }, 'GOOGLE_OAUTH')
+  const data = await response.json().catch(() => { throw new DependencyError('GOOGLE_OAUTH', response.status) }) as { access_token?: string; expires_in?: number }
+  if (!response.ok || !data.access_token) throw new DependencyError('GOOGLE_OAUTH', response.status)
   oauth = { identity: env.GOOGLE_SERVICE_ACCOUNT_EMAIL, token: data.access_token, until: Date.now() + Math.max(0, (data.expires_in ?? 3600) - 60) * 1000 }
   return oauth.token
 }

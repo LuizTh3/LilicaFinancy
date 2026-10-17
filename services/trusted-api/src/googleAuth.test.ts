@@ -1,7 +1,13 @@
 import { afterEach, expect, it, vi } from 'vitest'
-import { authCall, identify } from './googleAuth'
+import { authCall, identify, serviceToken } from './googleAuth'
 import type { Env } from './environment'
 afterEach(() => vi.unstubAllGlobals())
+it('identifies an invalid private key without contacting Google or exposing its value', async () => {
+  const fetch = vi.fn(); vi.stubGlobal('fetch', fetch)
+  await expect(serviceToken({ EXPECTED_PROJECT_ID: 'example', GOOGLE_SERVICE_ACCOUNT_EMAIL: 'invalid-key@example.com', GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY: 'private-fixture-value', FIREBASE_AUTH_API_KEY: 'fixture' } as Env))
+    .rejects.toMatchObject({ dependency: 'GOOGLE_PRIVATE_KEY', code: 'DEPENDENCY_UNAVAILABLE' })
+  expect(fetch).not.toHaveBeenCalled()
+})
 it('rejects malformed identity before any privileged lookup', async () => {
   const fetch = vi.fn(); vi.stubGlobal('fetch', fetch)
   await expect(identify(new Request('https://example.com', { headers: { Authorization: 'Bearer forged.invalid.token' } }), { EXPECTED_PROJECT_ID: 'example' } as Env)).rejects.toMatchObject({ code: 'AUTH_REQUIRED' })

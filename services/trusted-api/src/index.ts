@@ -1,6 +1,6 @@
 import type { Env } from './environment'
-import { requireEnv, googleKeys } from './environment'
-import { HttpError, jsonBody, operationKey } from './contracts'
+import { requireEnv, googleKeys, MissingConfigurationError } from './environment'
+import { DependencyError, HttpError, jsonBody, operationKey } from './contracts'
 import { identify } from './googleAuth'
 import { Store } from './firestoreRest'
 import { changePassword, normalizeProfile } from './firstLogin'
@@ -36,7 +36,11 @@ export default {
       }
       return reply(await changePassword(env, store, identity, operationKey(request), body))
     } catch (error) {
-      return reply({ code: error instanceof HttpError ? error.code : 'DEPENDENCY_UNAVAILABLE', requestId }, error instanceof HttpError ? error.status : 503)
+      return reply({ code: error instanceof HttpError ? error.code : 'DEPENDENCY_UNAVAILABLE', requestId,
+        ...(error instanceof MissingConfigurationError ? { missingConfiguration: error.missingConfiguration } : {}),
+        ...(error instanceof DependencyError ? { dependency: error.dependency, ...(error.upstreamStatus === undefined ? {} : { upstreamStatus: error.upstreamStatus }) } : {}),
+        ...(error instanceof DependencyError && error.upstreamCodes?.length ? { upstreamCodes: error.upstreamCodes } : {}),
+      }, error instanceof HttpError ? error.status : 503)
     }
   },
   async scheduled(_controller: ScheduledController, env: Env) { await notificationCron(env) },

@@ -21,6 +21,10 @@ destinatário, remetente ou template arbitrários do navegador.
   503 DEPENDENCY_UNAVAILABLE. Resposta traz code e requestId não sensível, sem stack remoto.
 - Timeout externo de 10 segundos é política inicial do app, sem afirmar SLA do provedor.
 - Sem captura de corpos/Authorization em logs, tracing, analytics ou ferramentas de erro.
+- Configuração de execução ausente retorna 503 CONFIG_INCOMPLETE e missingConfiguration
+  com somente nomes das entradas ausentes, além de requestId. Não incluir valores de
+  configuração, credenciais ou dados pessoais. O frontend distingue esse caso de falha de
+  rede e resposta inválida, preservando uma referência técnica sanitizada.
 
 ## POST /v1/registration-requests
 

@@ -1,6 +1,6 @@
 import type { Env } from './environment'
 import { serviceToken } from './googleAuth'
-import { external, HttpError } from './contracts'
+import { DependencyError, external, HttpError } from './contracts'
 
 export type Data = Record<string, unknown>
 type Value = { nullValue?: null; stringValue?: string; booleanValue?: boolean; integerValue?: string; doubleValue?: number; timestampValue?: string; mapValue?: { fields: Record<string, Value> } }
@@ -37,11 +37,11 @@ export class Store {
     return this.base.slice('https://firestore.googleapis.com/v1/'.length) + '/' + path
   }
   async call(suffix: string, body?: unknown) {
-    const response = await external(this.base + suffix, { method: body === undefined ? 'GET' : 'POST', headers: { Authorization: `Bearer ${await serviceToken(this.env)}`, 'Content-Type': 'application/json' }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) })
-    if (response.status === 404) return null
+    const response = await external(this.base + suffix, { method: body === undefined ? 'GET' : 'POST', headers: { Authorization: `Bearer ${await serviceToken(this.env)}`, 'Content-Type': 'application/json' }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) }, 'FIRESTORE')
+    if (response.status === 404 && body === undefined) return null
     if (response.status === 409) throw new HttpError('TRANSACTION_RETRY', 409)
-    if (!response.ok) throw new HttpError('DEPENDENCY_UNAVAILABLE', 503)
-    return await response.json() as Record<string, unknown>
+    if (!response.ok) throw new DependencyError('FIRESTORE', response.status)
+    return await response.json().catch(() => { throw new DependencyError('FIRESTORE', response.status) }) as Record<string, unknown>
   }
   async get(path: string, transaction?: string): Promise<Data | null> {
     const name = this.name(path)
@@ -52,7 +52,7 @@ export class Store {
     for (let attempt = 0; attempt < 3; attempt++) {
       const start = await this.call(':beginTransaction', { options: { readWrite: {} } })
       const transaction = start?.transaction as string
-      if (!transaction) throw new HttpError('DEPENDENCY_UNAVAILABLE', 503)
+      if (!transaction) throw new DependencyError('FIRESTORE')
       const tx = new Transaction(this, transaction)
       try {
         const value = await work(tx)

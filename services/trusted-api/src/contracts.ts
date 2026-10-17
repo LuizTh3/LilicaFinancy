@@ -1,14 +1,18 @@
 export class HttpError extends Error {
   constructor(public readonly code: string, public readonly status: number = 400) { super(code) }
 }
+export type DependencyStage = 'TURNSTILE' | 'GOOGLE_PRIVATE_KEY' | 'GOOGLE_OAUTH' | 'FIRESTORE'
+export class DependencyError extends HttpError {
+  constructor(public readonly dependency: DependencyStage, public readonly upstreamStatus?: number, public readonly upstreamCodes?: string[]) { super('DEPENDENCY_UNAVAILABLE', 503) }
+}
 export function operationKey(request: Request) {
   const key = request.headers.get('Idempotency-Key') ?? ''
   if (!/^[A-Za-z0-9_-]{43}$/.test(key)) throw new HttpError('INVALID_INPUT')
   return key
 }
-export async function external(url: string, init?: RequestInit) {
+export async function external(url: string, init?: RequestInit, dependency?: DependencyStage) {
   try { return await fetch(url, { ...init, signal: AbortSignal.timeout(10000) }) }
-  catch { throw new HttpError('DEPENDENCY_UNAVAILABLE', 503) }
+  catch { throw dependency ? new DependencyError(dependency) : new HttpError('DEPENDENCY_UNAVAILABLE', 503) }
 }
 export async function jsonBody(request: Request) {
   if (!request.headers.get('Content-Type')?.startsWith('application/json')) throw new HttpError('INVALID_INPUT')

@@ -12,6 +12,29 @@ function transport(responses: Response[]) {
   return fetch
 }
 const challenge = () => Response.json({ success: true, hostname: 'app.example.com', action: 'registration' })
+it('reports only documented Turnstile error codes and sends an explicit JSON request', async () => {
+  const fetch = transport([Response.json({ success: false, 'error-codes': ['invalid-input-secret', 'private-upstream-value'] }, { status: 400 })])
+  await expect(register(env, new Store(env), 'a'.repeat(43), { ...data, turnstileToken: 'placeholder' }, 'unit-network'))
+    .rejects.toMatchObject({ dependency: 'TURNSTILE', upstreamStatus: 400, upstreamCodes: ['invalid-input-secret'] })
+  const call = fetch.mock.calls[0] as unknown as [string, RequestInit]
+  expect(call[1].headers).toEqual({ 'Content-Type': 'application/json' })
+  expect(JSON.parse(String(call[1].body))).toEqual({ secret: env.TURNSTILE_SECRET_KEY, response: 'placeholder' })
+})
+it('identifies Turnstile failure without exposing its response body', async () => {
+  transport([new Response('sensitive-upstream-body', { status: 502 })])
+  await expect(register(env, new Store(env), 'a'.repeat(43), { ...data, turnstileToken: 'placeholder' }, 'unit-network'))
+    .rejects.toMatchObject({ code: 'DEPENDENCY_UNAVAILABLE', dependency: 'TURNSTILE', upstreamStatus: 502 })
+})
+it('identifies Firestore permission denial after a successful challenge', async () => {
+  transport([challenge(), new Response('sensitive-upstream-body', { status: 403 })])
+  await expect(register(env, new Store(env), 'a'.repeat(43), { ...data, turnstileToken: 'placeholder' }, 'unit-network'))
+    .rejects.toMatchObject({ dependency: 'FIRESTORE', upstreamStatus: 403 })
+})
+it('preserves Firestore 404 on transaction start rather than treating it as a missing document', async () => {
+  transport([challenge(), new Response('', { status: 404 })])
+  await expect(register(env, new Store(env), 'a'.repeat(43), { ...data, turnstileToken: 'placeholder' }, 'unit-network'))
+    .rejects.toMatchObject({ dependency: 'FIRESTORE', upstreamStatus: 404 })
+})
 it('returns the same receipt for a canonical replay without creating another outbox', async () => {
   const fingerprint = await hmac(env.SUBMISSION_HMAC_SECRET, JSON.stringify(data))
   const responses = [challenge(), Response.json({ transaction: 'one' }), Response.json({ fields: { payloadFingerprint: { stringValue: fingerprint } } }), Response.json({})]
