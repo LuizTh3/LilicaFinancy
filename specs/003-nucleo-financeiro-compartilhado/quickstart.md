@@ -1,6 +1,6 @@
 # Guia de validação do núcleo financeiro
 
-Este guia será executado após implementar as tarefas derivadas do [plano](plan.md). Hoje os artefatos de planejamento existem; os módulos/testes financeiros abaixo ainda não. Não registrar comandos planejados como testes aprovados.
+O núcleo e seus testes locais estão implementados conforme [tasks.md](tasks.md). Este guia permite repetir os cenários; resultados efetivamente executados estão em [validation.md](validation.md). Não confundir comandos documentados com execução em um novo ambiente ou prova de persistência remota.
 
 ## Pré-requisitos
 
@@ -15,9 +15,18 @@ node --version
 npm --version
 ```
 
+No sandbox Windows desta execução, o cache temporário do Vitest encontrou EPERM fora do workspace. Em processo PowerShell dedicado para os checks, foi usado o diretório já ignorado abaixo; as variáveis são apenas do processo, sem configuração global da máquina:
+
+```powershell
+$financeTemp = 'C:/Projetos/LilicaFinancy/node_modules/.tmp/finance'
+New-Item -ItemType Directory -Path $financeTemp -Force | Out-Null
+$env:TEMP = $financeTemp
+$env:TMP = $financeTemp
+```
+
 ## 1. Executar a suíte do núcleo
 
-Após implementação, os testes ficam em `src/domain/finance/*.test.ts` e `src/domain/finance/contracts/*.test.ts`:
+Os testes ficam em `src/domain/finance/*.test.ts` e `src/domain/finance/contracts/*.test.ts`. Helpers/doubles estão em `.testSupport.ts`, sem imports pelo código de produção:
 
 ```powershell
 npm test -- src/domain/finance --reporter=verbose
@@ -92,4 +101,4 @@ Nenhum teste deste guia exige `test:integration`, Admin SDK, conta real, credenc
 
 Adaptador financeiro só poderá ser implementado/habilitado após os gates em [contracts/repositories.md](contracts/repositories.md#4-budget-remoto-e-gate-de-habilitação), com projeto real autorizado, contas A/B/visitante dedicadas, preflight do projectId, fixtures por execução, Rules completas, índices necessários e revisão de publicação/reversão. Se o orçamento ou integridade falhar, registrar bloqueio e rejeitar comando; não declarar integração comprovada por teste em memória.
 
-Relatório de implementação deve separar: cenários locais executados/aprovados, falhas, limitações, adaptadores não habilitados e qualquer integração realmente autorizada/testada. Não criar tasks.md nem executar implementação a partir deste guia durante `$speckit-plan`.
+Relatório de implementação separa cenários locais executados/aprovados, falhas, limitações e adaptadores não habilitados. Não executar integração real como continuação implícita deste guia.

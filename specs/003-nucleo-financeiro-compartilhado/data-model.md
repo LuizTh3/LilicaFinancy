@@ -122,6 +122,8 @@ Ocorrência é uma receita ou obrigação externa avulsa com ID natural `["ocorr
 
 Competência de ocorrência é imutável e distingue identidade do mês de planejamento editável. Materializada, inclusive cancelada, substitui a virtual. Alteração do molde só afeta virtuais/futuras não confirmadas; edição em lote de ocorrências exige prévia e versões. Encerrar não exclui ocorrências confirmadas. Comando até 12 competências; consulta é pura e não grava automaticamente.
 
+No contrato executável, molde encerrado exige fim explícito, pois o domínio não consulta relógio implícito para decidir o corte. Ocorrências confirmadas continuam prevalecendo mesmo fora do intervalo atual do molde. A prévia virtual usa version=1 como versão proposta para criação, sem afirmar persistência; materializar já com valor definitivo mantém essa versão inicial. Confirmação de ocorrência existente exige snapshot do alvo e avança sua versão uma vez.
+
 Receitas e obrigações avulsas de ocorrência guardam seu próprio estimado booleano, junto do valor e recorrenciaVersion. Virtual herda do molde informado; ao materializar, esses dados são capturados e não dependem da versão atual do molde para serem lidos. Confirmar valor de ocorrência é ação explícita: informa valor definitivo positivo e versão esperada, preserva ID/competenciaOcorrencia e altera somente o valor dessa ocorrência e estimado para false, incrementando sua versão uma vez. Se virtual, pode ser materializada já confirmada; se existente, aplicar os bloqueios de liquidação/edição vigentes. Não mudar datas, molde, outras ocorrências ou fatos de caixa. Exemplo: novembro15000→16327/false deixa dezembro15000/true e molde15000/true intactos.
 
 ## 7. Operações e coordenação

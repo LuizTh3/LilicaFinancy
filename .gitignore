@@ -48,3 +48,7 @@ Thumbs.db
 .wrangler/
 .integration/
 *.integration.credentials.json
+
+# Temporary editor/system files
+*.tmp
+*.swp

@@ -139,6 +139,8 @@ Observabilidade do núcleo é retorno de erro discriminado e rastreabilidade por
 
 Sem violações justificadas ou frameworks novos. BigInt fica interno e não altera modelo de persistência. Guards são metadados de edição em alvos existentes, não totais duplicados. Doubles finitos existem somente para validar contratos; não são implementação de persistência genérica.
 
-## Estado desta execução
+## Estado da execução de planejamento
 
 Fases0 e1 concluídas em documentação. Artefatos gerados e verificados quanto a links locais, consistência e marcadores; nenhum código financeiro, teste novo, migração, Rule, índice ou deploy foi executado. Nenhum pre/post-hook: `.specify/extensions.yml` ausente. Próximo comando: `$speckit-tasks`.
+
+Execução posterior de implementação: módulos locais e testes da feature003 entregues conforme [tasks.md](tasks.md), com registro de comandos e resultados em [validation.md](validation.md). Essa evolução não habilita persistência financeira. Arquivos `.testSupport.ts` e testes de crédito/modelo/leitura complementam o layout acima apenas como suporte de teste; nenhuma camada de banco foi acrescentada ao runtime.

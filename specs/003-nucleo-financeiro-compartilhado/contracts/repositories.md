@@ -104,3 +104,7 @@ Somente no código de teste: stores finitos de séries e recibos para testar cri
 Evidências: repetir mesma chave duas vezes, chave reutilizada com payload distinto, duas versões esperadas concorrentes, dois pagamentos sobre mesmo saldo, duas inversões do mesmo original, falha antes do commit, resposta perdida depois, série faltando último ordinal, orçamento excedido e materialização já existente/cancelada. Estado após falha é ausência ou conjunto completo; nunca cópia parcial.
 
 Estes testes comprovam comportamento do contrato local. Não comprovam publicação, cota, isolamento ou validade das Rules do Firestore.
+
+## 6. Superfície executável da feature003
+
+`src/domain/finance/contracts/commands.ts` expõe as portas consumidas: PortaCriarSerie, PortaLiquidacao (registrar e correção por reversão/crédito), PortaConsultarPeriodo e PortaRecorrencia (materializar, confirmar valor e consultar ocorrências). Envelopes/resultados são dados comuns e os tipos de correção têm discriminante. Correções agrupadas de estorno/reembolso e prévia de série são funções puras testadas; portas remotas de correção agrupada/CRUD/fechamento continuam somente documentais até caso de uso próprio. Nenhuma interface implica adaptador habilitado. Doubles de série, liquidação, leitura e recorrência existem somente em arquivos `.testSupport.ts` consumidos pelos testes.
