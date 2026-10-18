@@ -64,7 +64,7 @@ export function createCadastrosRepository(db: Firestore,ctx: ContextoCadastros,a
      const previous=snapshot.exists()?decodeCadastro(ctx.uid,c.colecao,c.cadastroId,snapshot.data()):undefined
      if((previous?.version??0)!==c.expectedVersion) abortar('conflitoVersao','O cadastro mudou. Releia antes de salvar.')
      const sensitive=c.colecao==='contas'||c.colecao==='categorias'
-     const locked=sensitive?(await tx.get(controlRef(c.colecao,c.cadastroId))).exists():false
+     const locked=sensitive?!!previous?.usoFinanceiro||(await tx.get(controlRef(c.colecao,c.cadastroId))).exists():false
      const planned=planejarCadastro(c.colecao,previous?.dados,c.dados,c.tipo,locked)
      if(!planned.ok) abortar(planned.erro.codigo,planned.erro.mensagem)
      // Archival uses the stored content; it cannot smuggle an unrelated edit.
@@ -77,7 +77,7 @@ export function createCadastrosRepository(db: Firestore,ctx: ContextoCadastros,a
      check()
      if(previous&&conteudoIgual(previous.dados,planned.valor)) return {estado:'semAlteracao',cadastroId:previous.id,version:previous.version} as ResultadoMutacao
      const v=c.expectedVersion+1
-     tx.set(target,{...planned.valor,schemaVersion:1,version:v,createdAt:previous?snapshot.data()!.createdAt:serverTimestamp(),updatedAt:serverTimestamp(),...(planned.valor.estado==='arquivado'?{archivedAt:serverTimestamp()}:{})})
+     tx.set(target,{...planned.valor,schemaVersion:previous?.schemaVersion??(sensitive?2:1),version:v,createdAt:previous?snapshot.data()!.createdAt:serverTimestamp(),updatedAt:serverTimestamp(),...(planned.valor.estado==='arquivado'?{archivedAt:serverTimestamp()}:{}),...(previous?.usoFinanceiro?{usoFinanceiro:snapshot.data()!.usoFinanceiro}:{})})
      tx.set(rRef,{schemaVersion:1,operationKey:c.operationKey,colecao:c.colecao,cadastroId:c.cadastroId,expectedVersion:c.expectedVersion,version:v,tipo:c.tipo,dados:planned.valor,createdAt:serverTimestamp()})
      return {estado:'confirmado',cadastroId:c.cadastroId,version:v,reciboId:d.reciboId} as ResultadoMutacao
     })
@@ -95,7 +95,7 @@ export function createCadastrosRepository(db: Firestore,ctx: ContextoCadastros,a
    }
   },
   async obter(c,id) {try{const s=await getDocFromServer(ref(c,id));check();return s.exists()?sucesso(decodeCadastro(ctx.uid,c,id,s.data())):falha('naoEncontrado','Cadastro não encontrado.')}catch(e){return erro(e)}},
-  async bloqueado(c,id){try{ref(c,id);if(c!=='contas'&&c!=='categorias')return sucesso(false);const s=await getDocFromServer(controlRef(c,id));check();return sucesso(s.exists())}catch(e){return erro(e)}},
+  async bloqueado(c,id){try{const target=ref(c,id);if(c!=='contas'&&c!=='categorias')return sucesso(false);const s=await getDocFromServer(target);check();if(s.exists()&&decodeCadastro(ctx.uid,c,id,s.data()).usoFinanceiro)return sucesso(true);const control=await getDocFromServer(controlRef(c,id));check();return sucesso(control.exists())}catch(e){return erro(e)}},
   async listar(c: Colecao,filtro:FiltroCadastro,pageSize=50,cursor?:CursorCadastro) {
    try {
     check();if(!colecaoValida(c)||!['ativo','arquivado','todos'].includes(filtro)||!Number.isInteger(pageSize)||pageSize<1||pageSize>50) abortar('valorInvalido','Consulta inválida.')

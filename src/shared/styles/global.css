@@ -92,6 +92,8 @@ h2 { margin: 0.4rem 0 0.6rem; font-size: 1.3rem; line-height: 1.35; }
 .cadastro-form input, .cadastro-form select, .cadastro-actions select { padding:.6rem; max-width:100%; border:1px solid #71867a; border-radius:.3rem; font:inherit; }
 .cadastro-form fieldset { display:grid; gap:.7rem; border:1px solid #cbd8d0; }
 .cadastro-form .check-label { display:flex; align-items:center; gap:.5rem; }
+.cadastro-form .check-label input { width:auto; }
+.cadastro-form textarea { min-height:6rem; padding:.6rem; font:inherit; max-width:100%; }
 .cadastro-list { list-style:none; padding:0; }
 .cadastro-list li { padding:1rem 0; border-bottom:1px solid #cbd8d0; overflow-wrap:anywhere; }
 .cadastro-list p { margin:.4rem 0; }

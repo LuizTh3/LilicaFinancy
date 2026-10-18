@@ -21,5 +21,5 @@ export async function loadProfile(user: User) {
     data = (await getDocFromServer(ref)).data()
   }
   if (!data) throw new Error('PROFILE_INTEGRITY')
-  return { ...data, schemaVersion: data.schemaVersion, primeiro_login: data.primeiro_login, completedAt: data.passwordChangeCompletedAt?.toMillis?.() as number | undefined }
+  return { ...data, timezone: data.timezone as unknown, schemaVersion: data.schemaVersion, primeiro_login: data.primeiro_login, completedAt: data.passwordChangeCompletedAt?.toMillis?.() as number | undefined }
 }

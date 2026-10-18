@@ -29,6 +29,7 @@ build/
 .env
 .env.*
 !.env.example
+!.env.integration.example
 
 # Local credentials
 .credentials/

@@ -1,4 +1,4 @@
-export type CodigoErro = 'valorInvalido' | 'limiteMonetario' | 'dataInvalida' | 'referenciaInvalida' | 'naoEncontrado' | 'conflitoVersao' | 'conflitoIdempotencia' | 'limiteOperacional' | 'semPermissao' | 'indisponivel' | 'cotaExcedida' | 'esquemaIncompativel' | 'confirmacaoIndeterminada' | 'configuracaoPendente'
+export type CodigoErro = 'valorInvalido' | 'limiteMonetario' | 'dataInvalida' | 'referenciaInvalida' | 'naoEncontrado' | 'conflitoVersao' | 'conflitoIdempotencia' | 'limiteOperacional' | 'semPermissao' | 'indisponivel' | 'cotaExcedida' | 'esquemaIncompativel' | 'confirmacaoIndeterminada' | 'configuracaoPendente' | 'excessoPendente' | 'integridadeIndeterminada'
 export type ContextoErro = Readonly<{ campo?: string; limite?: number; versaoAtual?: number; recuperacao?: 'corrigir' | 'reler' | 'repetirMesmaChave' | 'verificarAcesso' }>
 export type ErroDominio = ContextoErro & Readonly<{ codigo: CodigoErro; mensagem: string }>
 export type Resultado<T> = Readonly<{ ok: true; valor: T }> | Readonly<{ ok: false; erro: ErroDominio }>

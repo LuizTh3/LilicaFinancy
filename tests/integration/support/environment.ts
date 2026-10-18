@@ -16,3 +16,8 @@ export function cadastrosEnvironment(values: Record<string, string | undefined>)
   if (new Set(uids).size !== 4 || uids.some(uid => !/^[A-Za-z0-9_-]{1,128}$/.test(uid))) throw new Error('INVALID_TEST_SCOPE')
   return { ...base, uids }
 }
+// Financial integration has the same four-role isolation gate as catalog tests.
+export const externosEnvironment = cadastrosEnvironment
+export function environmentForGroup(values: Record<string, string | undefined>) {
+  return ['cadastros', 'externos'].includes(values.TEST_INTEGRATION_GROUP ?? '') ? cadastrosEnvironment(values) : integrationEnvironment(values)
+}

@@ -16,6 +16,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <NavLink className="nav-link" to="/">Início</NavLink>
             {ready ? <NavLink className="nav-link" to="/app">Minha área</NavLink> : <NavLink className="nav-link" to="/login">Entrar</NavLink>}
             {ready && <NavLink className="nav-link" to="/app/cadastros">Cadastros</NavLink>}
+            {ready && <NavLink className="nav-link" to="/app/lancamentos">Receitas e despesas</NavLink>}
             {session.status === 'readyAdmin' && <NavLink className="nav-link" to="/admin/solicitacoes">Solicitações</NavLink>}
             {session.user && <button onClick={() => { void session.exit().catch(() => {}) }}>Sair</button>}
           </nav>

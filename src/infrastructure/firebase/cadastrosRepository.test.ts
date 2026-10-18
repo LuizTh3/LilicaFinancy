@@ -102,6 +102,23 @@ it('controle de primeiro uso impede alterar base, mas permite renomear',async()=
  expect(!change.ok&&change.erro.codigo).toBe('valorInvalido')
  expect((await r.executar({...c,operationKey:'op-3',tipo:'editar',expectedVersion:1,dados:{...c.dados,nome:'Novo nome'}})).ok).toBe(true)
 })
+it('usoFinanceiro embutido congela base e sobrevive ao CRUD sem reescrita',async()=>{
+ const r=createCadastrosRepository(db,ctx)
+ const c:ComandoCadastro={...command,colecao:'contas',dados:{nome:'Conta',estado:'ativo',tipo:'banco'}}
+ await r.executar(c)
+ const {Timestamp}=await import('firebase/firestore')
+ const use={eventoId:'pagar__use-1',origemId:'origin-1',papel:'movimentacao',createdAt:Timestamp.fromMillis(1000)}
+ const stored=memory.docs.get('users/A/contas/id-1')!
+ expect(stored.schemaVersion).toBe(2)
+ memory.docs.set('users/A/contas/id-1',{...stored,usoFinanceiro:use})
+ expect(await r.bloqueado('contas','id-1')).toEqual({ok:true,valor:true})
+ const changed=await r.executar({...c,operationKey:'change',tipo:'editar',expectedVersion:1,dados:{nome:'Conta',estado:'ativo',tipo:'carteira'}})
+ expect(changed).toMatchObject({ok:false,erro:{codigo:'valorInvalido'}})
+ expect((await r.executar({...c,operationKey:'rename',tipo:'editar',expectedVersion:1,dados:{...c.dados,nome:'Renomeada'}})).ok).toBe(true)
+ expect(memory.docs.get('users/A/contas/id-1')).toMatchObject({schemaVersion:2,usoFinanceiro:use,version:2})
+ expect((await r.executar({...c,operationKey:'archive',tipo:'arquivar',expectedVersion:2,dados:{...c.dados,nome:'Renomeada',estado:'arquivado'}})).ok).toBe(true)
+ expect(memory.docs.get('users/A/contas/id-1')).toMatchObject({estado:'arquivado',usoFinanceiro:use})
+})
 it('arquivamento mantém vínculo histórico e repetição nova não cria versão',async()=>{
  const r=createCadastrosRepository(db,ctx);await r.executar(command)
  const c:ComandoCadastro={...command,colecao:'contas',cadastroId:'conta',operationKey:'conta-op',dados:{nome:'Conta',estado:'ativo',tipo:'carteira',titularId:'id-1'}}

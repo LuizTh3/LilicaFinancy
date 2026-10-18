@@ -12,6 +12,13 @@ export function validateManifest(manifest: Manifest, projectId: string, runId: s
       if (root !== 'users' || uid !== doc.owner || !uids.includes(uid) || seen.has(doc.path) || !doc.createdByRun || !Number.isFinite(Date.parse(doc.registeredAt))) throw new Error('MANIFEST_SCOPE')
       if (['titulares','categorias','contas','etiquetas'].includes(group)) {
         if (!/^[A-Za-z0-9-]{1,64}$/.test(child)) throw new Error('MANIFEST_SCOPE')
+      } else if (group === 'lancamentosExternos') {
+        if (!/^[A-Za-z0-9-]{1,64}$/.test(child)) throw new Error('MANIFEST_SCOPE')
+      } else if (group === 'operacoesExternas') {
+        if (!/^(criarReceita|criarDespesa|gastoImediato|editarOrigem|cancelarOrigem|receber|pagar|reverterRecebimento|reverterPagamento)__[A-Za-z0-9-]{1,64}$/.test(child)) throw new Error('MANIFEST_SCOPE')
+      } else if (group === 'reversoesExternas') {
+        if (!/^(receber|pagar|gastoImediato)__[A-Za-z0-9-]{1,64}$/.test(child)
+          || !manifest.documents.some(item => item.path === 'users/' + uid + '/operacoesExternas/' + child && item.owner === uid)) throw new Error('MANIFEST_SCOPE')
       } else {
         const pattern = group === 'operacoesCadastros' ? /^(titulares|categorias|contas|etiquetas)__([A-Za-z0-9-]{1,64})__([1-9][0-9]{0,15})$/ : group === 'usoCadastros' ? /^(categorias|contas)__([A-Za-z0-9-]{1,64})$/ : undefined
         const match = pattern?.exec(child)

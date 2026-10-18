@@ -1,0 +1,20 @@
+import { useEffect, useRef, useState } from 'react'
+import { Link, useParams } from 'react-router'
+import { useSession } from '../../app/session/useSession'
+import type { DetalheExterno } from '../../domain/finance/contracts/externos'
+import { useExternoRepository } from './useExternoRepository'
+import { brl } from './format'
+export function ExternoDetailPage(){const session=useSession(),{origemId}=useParams();return session.user&&session.generation&&session.timezone&&origemId?<Detalhe key={`${session.user.uid}:${session.generation}:${origemId}`} uid={session.user.uid} generation={session.generation} timezone={session.timezone} id={origemId}/>:null}
+function Detalhe({uid,generation,timezone,id}:{uid:string;generation:number;timezone:string;id:string}) {
+ const repo=useExternoRepository(uid,generation,timezone),alive=useRef(false)
+ const [detail,setDetail]=useState<DetalheExterno>(),[error,setError]=useState(''),[loading,setLoading]=useState(true),[revision,setRevision]=useState(0)
+ const ticket=useRef(0)
+ function refresh(){ticket.current++;setDetail(undefined);setError('');setLoading(true);setRevision(v=>v+1)}
+ useEffect(()=>{alive.current=true;const dispose=()=>{ticket.current++};window.addEventListener('focus',refresh);return()=>{alive.current=false;dispose();window.removeEventListener('focus',refresh)}},[])
+ useEffect(()=>{let active=true;const current=++ticket.current;void repo.detalhe(id).then(r=>{if(!active||!alive.current||current!==ticket.current)return;setLoading(false);if(r.ok)setDetail(r.valor);else setError(r.erro.mensagem)});return()=>{active=false}},[repo,id,revision])
+ const expiresAt=detail?.snapshot.expiresAt
+ useEffect(()=>{if(expiresAt===undefined)return;const timer=setTimeout(refresh,Math.max(0,expiresAt-Date.now()));return()=>clearTimeout(timer)},[expiresAt])
+ async function more(){if(!detail?.proximaVersao||loading)return;const current=ticket.current;setLoading(true);const r=await repo.detalhe(id,50,detail.snapshot,detail.proximaVersao);if(!alive.current||current!==ticket.current)return;setLoading(false);if(r.ok)setDetail({...r.valor,eventos:[...detail.eventos,...r.valor.eventos]});else setError(r.erro.mensagem)}
+ const o=detail?.origem
+ return <section aria-busy={loading}><Link to="/app/lancamentos">Voltar aos lançamentos</Link><h1>{o?.descricao??'Detalhe do lançamento'}</h1><button disabled={loading} onClick={refresh}>Atualizar</button>{error&&<p role="alert">{error}</p>}{loading&&<output aria-live="polite">Carregando detalhe…</output>}{o&&<><dl><dt>Natureza e estado</dt><dd>{o.natureza} · {o.estadoObrigacao}</dd><dt>Valor</dt><dd>{brl(o.valorCentavos)}{o.estimado?' (estimado)':''}</dd><dt>Competência</dt><dd>{o.competenciaPlanejamento}</dd><dt>{o.natureza==='receita'?'Data prevista':'Vencimento'}</dt><dd>{o.natureza==='receita'?o.dataPrevista:o.vencimento}</dd>{o.natureza==='despesa'&&<><dt>Ocorrência do gasto</dt><dd>{o.dataConsumo}</dd></>}<dt>{o.natureza==='receita'?'Recebido':'Pago'}</dt><dd>{brl(o.liquidadoLiquidoCentavos)}</dd><dt>Pendente</dt><dd>{brl(o.estadoObrigacao==='cancelada'?0:o.valorCentavos-o.liquidadoLiquidoCentavos)}</dd><dt>Categoria</dt><dd>{detail.referencias['categorias/'+o.categoriaId]}</dd>{o.titularId&&<><dt>Titular</dt><dd>{detail.referencias['titulares/'+o.titularId]}</dd></>}{o.contaPrevistaId&&<><dt>Conta prevista</dt><dd>{detail.referencias['contas/'+o.contaPrevistaId]}</dd></>}{o.observacao&&<><dt>Observação</dt><dd>{o.observacao}</dd></>}{o.etiquetaIds&&<><dt>Etiquetas</dt><dd>{o.etiquetaIds.map(id=>detail.referencias['etiquetas/'+id]).join(', ')}</dd></>}</dl><p>Posição consultada em {new Date(detail.snapshot.readTime).toLocaleString('pt-BR',{timeZone:timezone})}.</p><h2>Histórico {detail.completo?'completo':'parcial'}</h2><ol>{detail.eventos.map(e=><li key={e.id}>{e.tipo} · versão {e.resultVersion} · {new Date(e.createdAt).toLocaleString('pt-BR',{timeZone:timezone})}</li>)}</ol>{!detail.completo&&<button disabled={loading} onClick={()=>{void more()}}>Carregar mais histórico</button>}</>}</section>
+}

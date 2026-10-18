@@ -1,4 +1,6 @@
 import { CadastrosPage } from '../features/cadastros/CadastrosPage'
+import { ExternosPage } from '../features/externos/ExternosPage'
+import { ExternoDetailPage } from '../features/externos/ExternoDetailPage'
 import { Link, Route, Routes } from 'react-router'
 import { HomePage } from '../features/home/HomePage'
 import { LoginPage } from '../features/auth/LoginPage'
@@ -17,6 +19,8 @@ export function AppRoutes() {
     <Route path="/cadastro/recebido" element={<ReceiptPage />} />
     <Route path="/primeiro-acesso" element={<FirstLoginPage />} />
     <Route element={<SessionGate />}>
+      <Route path="/app/lancamentos" element={<ExternosPage />} />
+      <Route path="/app/lancamentos/:origemId" element={<ExternoDetailPage />} />
       <Route path="/app/cadastros" element={<CadastrosPage />} />
       <Route path="/app/cadastros/:colecao" element={<CadastrosPage />} />
       <Route path="/app" element={<section><h1>Minha área</h1><p>Sessão confirmada. Organize seus titulares, categorias, contas e etiquetas na área de cadastros.</p></section>} />

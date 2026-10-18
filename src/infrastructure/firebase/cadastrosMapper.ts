@@ -1,14 +1,17 @@
 import { Timestamp } from 'firebase/firestore'
 import { camposPermitidos, registro } from '../../domain/finance/errors'
-import { validarDadosCadastro, conteudoIgual, idCadastroValido, descritorValido, reciboId, colecaoValida } from '../../domain/finance/cadastros'
+import { validarDadosCadastro, conteudoIgual, idCadastroValido, descritorValido, reciboId, colecaoValida, usoFinanceiroValido } from '../../domain/finance/cadastros'
 import type { Cadastro, Colecao, DadosCadastro, ReciboCadastro } from '../../domain/finance/contracts/cadastros'
-const metadados=['schemaVersion','version','createdAt','updatedAt','archivedAt']
+const metadados=['schemaVersion','version','createdAt','updatedAt','archivedAt','usoFinanceiro']
 export const conteudoDocumento = (d: Record<string,unknown>) => Object.fromEntries(Object.entries(d).filter(([k])=>!metadados.includes(k)))
 export function decodeCadastro(uid: string,c: Colecao,id: string,value: unknown): Cadastro {
- if(!idCadastroValido(id)||!registro(value)||value.schemaVersion!==1||!Number.isSafeInteger(value.version)||Number(value.version)<1||!(value.createdAt instanceof Timestamp)||!(value.updatedAt instanceof Timestamp)) throw Object.assign(new Error('Cadastro incompatível.'),{code:'schema'})
+ if(!idCadastroValido(id)||!registro(value)||(value.schemaVersion!==1&&!(value.schemaVersion===2&&(c==='categorias'||c==='contas')))||!Number.isSafeInteger(value.version)||Number(value.version)<1||!(value.createdAt instanceof Timestamp)||!(value.updatedAt instanceof Timestamp)) throw Object.assign(new Error('Cadastro incompatível.'),{code:'schema'})
+ const use=value.usoFinanceiro
+ const uso=registro(use)&&use.createdAt instanceof Timestamp?{...use,createdAt:use.createdAt.toMillis()}:undefined
+ if('usoFinanceiro'in value&&(value.schemaVersion!==2||!usoFinanceiroValido(c,uso))) throw Object.assign(new Error('Uso financeiro incompatível.'),{code:'schema'})
  const raw=conteudoDocumento(value), data=validarDadosCadastro(c,raw,'9999-12-31')
  if(!data.ok||!conteudoIgual(data.valor,raw as DadosCadastro)||value.updatedAt.toMillis()<value.createdAt.toMillis()||(data.valor.estado==='arquivado'?!(value.archivedAt instanceof Timestamp)||value.archivedAt.toMillis()!==value.updatedAt.toMillis():'archivedAt'in value)) throw Object.assign(new Error('Cadastro incompatível.'),{code:'schema'})
- return {id,uid,colecao:c,dados:data.valor,schemaVersion:1,version:Number(value.version),createdAt:value.createdAt.toMillis(),updatedAt:value.updatedAt.toMillis(),...(value.archivedAt instanceof Timestamp?{archivedAt:value.archivedAt.toMillis()}:{})}
+ return {id,uid,colecao:c,dados:data.valor,schemaVersion:value.schemaVersion as 1|2,version:Number(value.version),createdAt:value.createdAt.toMillis(),updatedAt:value.updatedAt.toMillis(),...(value.archivedAt instanceof Timestamp?{archivedAt:value.archivedAt.toMillis()}:{}),...(uso&&usoFinanceiroValido(c,uso)?{usoFinanceiro:uso}:{})}
 }
 export function decodeRecibo(value: unknown): ReciboCadastro {
  if(!registro(value)||!camposPermitidos(value,['schemaVersion','operationKey','colecao','cadastroId','expectedVersion','version','tipo','dados','createdAt'])||value.schemaVersion!==1||!(value.createdAt instanceof Timestamp)) throw Object.assign(new Error('Recibo incompatível.'),{code:'schema'})

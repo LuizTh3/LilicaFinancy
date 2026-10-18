@@ -1,6 +1,14 @@
 import { expect, it } from 'vitest'
-import { validarDadosCadastro, validarComandoCadastro, planejarCadastro } from './cadastros'
+import { validarDadosCadastro, validarComandoCadastro, planejarCadastro, usoFinanceiroValido } from './cadastros'
 const hoje='2026-10-17'
+it('primeiro uso tem papel, evento e origem tipados sem campo editável de desbloqueio',()=>{
+ const use={eventoId:'criarDespesa__op-1',origemId:'origin-1',papel:'classificacao',createdAt:1000}
+ expect(usoFinanceiroValido('categorias',use)).toBe(true)
+ expect(usoFinanceiroValido('contas',use)).toBe(false)
+ expect(usoFinanceiroValido('etiquetas',use)).toBe(false)
+ expect(usoFinanceiroValido('categorias',{...use,desbloqueado:true})).toBe(false)
+ expect(validarDadosCadastro('categorias',{nome:'Casa',estado:'ativo',natureza:'despesa',usoFinanceiro:use},hoje).ok).toBe(false)
+})
 it('normaliza nomes livres sem usar nome como chave',()=>{
  expect(validarDadosCadastro('titulares',{nome:'  Nome livre  ',estado:'ativo'},hoje)).toEqual({ok:true,valor:{nome:'Nome livre',estado:'ativo'}})
  for(const nome of ['', '   ', 'x'.repeat(121), 42]) expect(validarDadosCadastro('etiquetas',{nome,estado:'ativo'},hoje).ok).toBe(false)

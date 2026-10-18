@@ -3,10 +3,15 @@ import type { Resultado } from './errors'
 import { dataCalendario } from './calendar'
 import { centavos } from './money'
 import { colecoes } from './contracts/cadastros'
-import type { Colecao, ComandoCadastro, DadosCadastro, DescritorCadastro, TipoOperacaoCadastro } from './contracts/cadastros'
+import type { Colecao, ComandoCadastro, DadosCadastro, DescritorCadastro, TipoOperacaoCadastro, UsoFinanceiro } from './contracts/cadastros'
 export const idCadastroValido = (id: unknown): id is string => typeof id === 'string' && /^[A-Za-z0-9-]{1,64}$/.test(id)
 export const colecaoValida = (value: unknown): value is Colecao => typeof value === 'string' && (colecoes as readonly string[]).includes(value)
 export const camposBaseConta = ['saldoInicialCentavos','saldoInicialPosicao','saldoInicialDataBase'] as const
+export function usoFinanceiroValido(c: Colecao, value: unknown): value is UsoFinanceiro {
+ if(!registro(value)||!camposPermitidos(value,['eventoId','origemId','papel','createdAt'])||!idCadastroValido(value.origemId)||typeof value.createdAt!=='number'||!Number.isFinite(value.createdAt)||value.createdAt<0) return false
+ const pattern=c==='categorias'?/^(criarReceita|criarDespesa|gastoImediato|editarOrigem)__[A-Za-z0-9-]{1,64}$/:c==='contas'?/^(receber|pagar|gastoImediato)__[A-Za-z0-9-]{1,64}$/:undefined
+ return !!pattern&&typeof value.eventoId==='string'&&pattern.test(value.eventoId)&&value.papel===(c==='categorias'?'classificacao':'movimentacao')
+}
 export const camposConteudo = (c: Colecao) => ['nome','estado', ...(c==='categorias'?['natureza']:c==='contas'?['tipo','titularId',...camposBaseConta]:[])]
 export const conteudoIgual = (a: DadosCadastro,b: DadosCadastro) => JSON.stringify(Object.entries(a).sort())===JSON.stringify(Object.entries(b).sort())
 export function validarDadosCadastro(c: unknown, input: unknown, hoje: string): Resultado<DadosCadastro> {

@@ -10,6 +10,8 @@ const project = argument('--project'), runId = argument('--run'), uids = argumen
 if (process.env.TEST_EXPECTED_PROJECT_ID !== project || process.env.TEST_RUN_ID !== runId) throw new Error('Alvo/execução não confirmados independentemente')
 if (!/^[a-z0-9-]+$/.test(project) || !/^[A-Za-z0-9_-]{8,80}$/.test(runId)) throw new Error('Escopo inválido')
 const manifest = JSON.parse(readFileSync(file, 'utf8')) as Manifest
+// Financial paths are admitted only by the explicit manifest allowlist. Markers
+// and events precede their origins; no collection discovery creates delete targets.
 const documents = cleanupOrder(validateManifest(manifest, project, runId, uids))
 console.log(JSON.stringify({ mode: args.includes('--execute') ? 'execute' : 'dry-run', count: documents.length, paths: documents.map(doc => doc.path) }))
 const token = process.env.CLEANUP_GOOGLE_ACCESS_TOKEN

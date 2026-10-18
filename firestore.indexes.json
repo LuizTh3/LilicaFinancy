@@ -83,6 +83,56 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "lancamentosExternos",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "natureza",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "competenciaPlanejamento",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dataPrevista",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "lancamentosExternos",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "natureza",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "competenciaPlanejamento",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "vencimento",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "operacoesExternas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "origemId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "resultVersion",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [
@@ -109,6 +159,21 @@
     {
       "collectionGroup": "operacoesCadastros",
       "fieldPath": "dados",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "operacoesExternas",
+      "fieldPath": "comando",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "operacoesExternas",
+      "fieldPath": "antes",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "operacoesExternas",
+      "fieldPath": "depois",
       "indexes": []
     }
   ]

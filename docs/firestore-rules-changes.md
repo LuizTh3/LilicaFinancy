@@ -1,3 +1,47 @@
+# Feature 005 — fundação (2026-10-18)
+
+**Estado atual: incremento US1 publicado e validado; nove índices READY, oito isenções concluídas, quatro testes reais e fluxo manual aprovados.**
+
+Após o achado abaixo, usuário autorizou explicitamente a substituição da base aberta. A primeira revisão exigiu correção do limite de expressões revelado pelos testes reais. A fonte ativa foi relida e corresponde ao arquivo corrigido (77133633eb823fd97322c7d06382a34eec5aed8e4dcc1c77fd382fd747050cee). Cinco índices criados e prontos, quatro preservados e oito isenções concluídas; nenhuma exclusão de índice ou deploy de hosting/API. Relato cronológico e evidências em ../specs/005-receitas-despesas-externas/deployment-review.md e validation.md. Os checkpoints anteriores abaixo descrevem o estado antes dessa autorização/publicação.
+
+Atualização da comparação autorizada em 2026-10-18: o release remoto ainda é o padrão de teste com leitura/escrita gerais até11/11/2026, sem proteções002/004. Publicação interrompida conforme condição da autorização. Backup fiel preservado, mas sua reativação reabriria o acesso geral; alternativa protegida preparada em firestore-rules-005-safe-rollback.rules. Comparação completa e proposta concreta em ../specs/005-receitas-despesas-externas/deployment-review.md. Nenhum dado ou índice remoto alterado.
+
+- Corrigidos blocos duplicados dentro de safeId/calendarDate. A cópia anterior está em docs/firestore-rules-before-005.rules e é evidência da corrupção, não rollback compilável.
+- A compilação oficial projects.test foi autorizada explicitamente pelo responsável e retornou ok=true, issues=[] tanto para a restauração quanto para os helpers de schema2. A API test não criou release nem alterou documentos.
+- Categorias/contas novas usam schema2. Legado1 permanece explicitamente legível; patch de primeiro uso conserva conteúdo/version/instantes, acrescentando somente schema2/usoFinanceiro, sem migração no login. Titulares/etiquetas/perfil/recibos anteriores preservam esquema.
+- UsoFinanceiro é imutável; CRUD preserva o mapa e bloqueia natureza/tipo/base no antes/depois. Controles legados usoCadastros também continuam protegidos.
+- Neste checkpoint, a gravação do evento financeiro ainda está negada: o patch de primeiro uso exige evento ausente antes/presente depois, mas nenhuma operação financeira está liberada. Portanto o helper não abre um caminho isolado para marcar/desmarcar cadastros.
+- Antes de qualquer publicação, comparar a revisão remota efetivamente ativa e preservar uma cópia válida para rollback; a cópia corrompida não atende a essa finalidade. Coordenar o cliente schema2 e os novos ramos financeiros, com teste de A/B/ADMIN/PENDING e visitante em ambiente autorizado.
+- Nenhum dado de teste real foi criado, excluído ou alterado até este checkpoint; contas/TEST_EXPECTED_PROJECT_ID ainda ausentes. Prova de compilação não equivale a prova de autorização ou publicação.
+
+## Progresso local de US1
+
+Após o checkpoint da fundação, o arquivo local passou a permitir somente criação de previsões de receita/despesa, com origem e recibo recíprocos e primeiro uso da categoria no mesmo commit. Outros comandos financeiros, alterações e exclusões continuam negados. O helper de primeiro uso exige o evento financeiro relacionado; uma escrita auxiliar isolada não é suficiente.
+
+A versão atual, incluindo verificações explícitas de inteiros/booleanos e presença idêntica dos campos opcionais em origem/recibo, foi compilada novamente via projects.test: ok=true, issues=[]. Não houve publicação. Criação, retomada, listagem paginada e detalhe têm testes locais; formulários e rotas estão integrados. Validação remota/manual e demais comandos continuam pendentes. Esse arquivo não constitui entrega remota validada.
+
+### Grafo da criação simples (sem pressupor cache)
+
+| Escrita | Leituras de Rules | Máximo |
+| --- | --- | --- |
+| Origem | perfil, categoria após commit, titular opcional, conta prevista opcional, recibo após commit | 5 |
+| Recibo | origem após commit, até cinco etiquetas | 6 |
+| Primeiro uso da categoria | recibo antes e depois | 2 |
+| Leitura transacional do recibo | perfil para autorização do get | 1 |
+
+Total máximo desenhado:14, três escritas; máximo por escrita6. O callback não lê origem/cadastros. Após a prova real de T024, o perfil expõe validadoNoProjeto apenas para criação sem substituição; não habilita pagamentos, substituição ou séries genéricas. Limites de strings/listas fecham o tamanho dos documentos, além do teto de16 KiB do comando normalizado. O ramo máximo passou na avaliação oficial da fonte integral e em commit real sob as Rules publicadas; a compilação isolada não demonstrava essa viabilidade. A contagem14 decorre do grafo conservador, sem atribuir métricas de cache ao serviço.
+
+### Índices e preparação de implantação
+
+firestore.indexes.json mantém os seis índices e cinco isenções anteriores, acrescenta dois índices de lancamentosExternos (natureza, competenciaPlanejamento, dataPrevista/vencimento) e um de operacoesExternas (origemId, resultVersion), todos COLLECTION/ASCENDING. __name__ recebe a mesma direção automaticamente. Os mapas comando/antes/depois são isentos de indexação, inclusive subcampos; fato não é isento, pois servirá ao caixa mensal. Não há índice de caixa entregue neste checkpoint.
+
+Antes de publicar: obter e preservar a revisão efetivamente ativa das Rules e o inventário de índices; comparar diferenças remotas e interromper se aparecerem permissões/coleções não contempladas; aguardar índices prontos; coordenar o cliente atualizado, pois clientes antigos que criam categorias/contas schema1 deixam de criar esses cadastros. Publicar somente os arquivos revisados neste checkpoint sob autorização explícita. Não implantar hosting ou trusted-api por inferência.
+
+Rollback de Rules usa a revisão remota válida preservada, nunca docs/firestore-rules-before-005.rules. Após primeiros usos schema2, qualquer rollback também precisa conservar leitura desses documentos e a imutabilidade das travas; a revisão antiga só é suficiente se essa compatibilidade estiver comprovada. Não remover campos de uso financeiro como tentativa de rollback. Índices novos podem permanecer durante a reversão; sua remoção requer verificar consultas ainda em uso e escopo autorizado.
+
+Referências técnicas: [índices e isenções](https://firebase.google.com/docs/firestore/query-data/index-overview), [operadores de strings das Rules](https://firebase.google.com/docs/reference/rules/rules.String). Nenhuma dessas referências substitui os testes remotos do ramo máximo.
+
+---
 # Rules e índices — feature 002
 
 **Estado: gerados localmente; não publicados, compilados remotamente nem verificados no projeto real.**

@@ -15,3 +15,9 @@ it('rejeita todo limite excedido e não assume cache para26 escritas', () => {
   expect(avaliarOrcamento({ ...custo, mutacoes: 26, bytesDocumentos: Array(26).fill(100), acessosPorOperacao: Array(26).fill(1) }, perfil).ok).toBe(false)
   expect(avaliarOrcamento({ ...custo, mutacoes: 32, bytesDocumentos: Array(32).fill(100), acessosPorOperacao: Array(32).fill(0) }, perfil).ok).toBe(true)
 })
+
+it('registra a validação remota da criação simples e mantém outros ramos fechados',()=>{
+ for(const tipo of ['criarReceita','criarDespesa'])expect(perfilFinanceiroRemoto(tipo)).toMatchObject({status:'validadoNoProjeto',contractVersion:1,acessosPorEscrita:[5,6,2],leiturasTransacionais:1,acessosMaximos:14,mutacoesMaximas:3,substituicao:false})
+ for(const tipo of ['gastoImediato','pagar','receber','editarOrigem','cancelarOrigem','reverterPagamento','criarCompra'])expect(perfilFinanceiroRemoto(tipo).status).toBe('naoHabilitado')
+ expect(avaliarOrcamento(custo,perfilFinanceiroRemoto('criarDespesa')).ok).toBe(false)
+})

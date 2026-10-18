@@ -40,46 +40,7 @@ service cloud.firestore {
         && request.auth.token.auth_time * 1000 > p.passwordChangeCompletedAt.toMillis();
     }
     function catalog(c) { return c in ['titulares','categorias','contas','etiquetas']; }
-    function safeId(id) { return id is string && id.matches('^[A-Za-z0-9-]{1,64}
-      allow get: if own(uid);
-      allow create: if own(uid)
-        && request.resource.data.keys().hasAll(['uid','timezone','schemaVersion','primeiro_login','createdAt','updatedAt'])
-        && request.resource.data.keys().hasOnly(['uid','timezone','schemaVersion','primeiro_login','createdAt','updatedAt'])
-        && request.resource.data.uid == uid && request.resource.data.timezone == 'America/Rio_Branco'
-        && request.resource.data.schemaVersion is int && request.resource.data.schemaVersion == 1
-        && request.resource.data.primeiro_login == true
-        && request.resource.data.createdAt == request.time && request.resource.data.updatedAt == request.time;
-      allow list, update, delete: if false;
-    }
-    match /admins/{uid} {
-      allow get: if own(uid) && ready();
-      allow list, create, update, delete: if false;
-    }
-    match /registrationRequests/{id} {
-      allow get: if admin() || (ready() && resource.data.applicantUid == request.auth.uid);
-      allow list: if admin() && request.query.limit != null && request.query.limit <= 25;
-      allow create, update, delete: if false;
-    }
-    match /subscriptions/{id} {
-      allow get: if admin();
-      allow create: if admin() && subscription(id) && request.resource.data.version == 1
-        && request.resource.data.createdAt == request.time;
-      allow update: if admin() && subscription(id)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['startDate','endDate','version','updatedAt','updatedBy'])
-        && request.resource.data.version == resource.data.version + 1;
-      allow list, delete: if false;
-    }
-    match /notificationOutbox/{id} {
-      allow get: if admin();
-      allow list, create, update, delete: if false;
-    }
-    match /firstLoginOperations/{id} { allow read, write: if false; }
-    match /submissionOperations/{id} { allow read, write: if false; }
-    match /operationBudgets/{id} { allow read, write: if false; }
-    match /{document=**} { allow read, write: if false; }
-  }
-}
-); }
+    function safeId(id) { return id is string && id.matches('^[A-Za-z0-9-]{1,64}$'); }
     function safeVersion(v) { return v is int && v >= 1 && v <= 9007199254740991; }
     function contentKeys(c) {
       return c == 'categorias' ? ['nome','estado','natureza'] : c == 'contas'
@@ -92,46 +53,7 @@ service cloud.firestore {
       return y >= 1900 && y <= 9999 && m >= 1 && m <= 12 && d >= 1 && d <= max;
     }
     function calendarDate(s) {
-      return s is string && s.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}
-      allow get: if own(uid);
-      allow create: if own(uid)
-        && request.resource.data.keys().hasAll(['uid','timezone','schemaVersion','primeiro_login','createdAt','updatedAt'])
-        && request.resource.data.keys().hasOnly(['uid','timezone','schemaVersion','primeiro_login','createdAt','updatedAt'])
-        && request.resource.data.uid == uid && request.resource.data.timezone == 'America/Rio_Branco'
-        && request.resource.data.schemaVersion is int && request.resource.data.schemaVersion == 1
-        && request.resource.data.primeiro_login == true
-        && request.resource.data.createdAt == request.time && request.resource.data.updatedAt == request.time;
-      allow list, update, delete: if false;
-    }
-    match /admins/{uid} {
-      allow get: if own(uid) && ready();
-      allow list, create, update, delete: if false;
-    }
-    match /registrationRequests/{id} {
-      allow get: if admin() || (ready() && resource.data.applicantUid == request.auth.uid);
-      allow list: if admin() && request.query.limit != null && request.query.limit <= 25;
-      allow create, update, delete: if false;
-    }
-    match /subscriptions/{id} {
-      allow get: if admin();
-      allow create: if admin() && subscription(id) && request.resource.data.version == 1
-        && request.resource.data.createdAt == request.time;
-      allow update: if admin() && subscription(id)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['startDate','endDate','version','updatedAt','updatedBy'])
-        && request.resource.data.version == resource.data.version + 1;
-      allow list, delete: if false;
-    }
-    match /notificationOutbox/{id} {
-      allow get: if admin();
-      allow list, create, update, delete: if false;
-    }
-    match /firstLoginOperations/{id} { allow read, write: if false; }
-    match /submissionOperations/{id} { allow read, write: if false; }
-    match /operationBudgets/{id} { allow read, write: if false; }
-    match /{document=**} { allow read, write: if false; }
-  }
-}
-) && calendarParts(s);
+      return s is string && s.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$') && calendarParts(s);
     }
     function notFuture(s) {
       let local = request.time - duration.value(5, 'h');
@@ -151,10 +73,19 @@ service cloud.firestore {
         && (c != 'contas' || (d.tipo in ['banco','carteira','contaPagamento']
           && (!('titularId' in d) || safeId(d.titularId)) && accountBase(d)));
     }
+    function validUse(c,u) {
+      return u is map && u.keys().hasAll(['eventoId','origemId','papel','createdAt'])
+        && u.keys().hasOnly(['eventoId','origemId','papel','createdAt']) && safeId(u.origemId) && u.createdAt is timestamp
+        && u.eventoId is string && (c == 'categorias'
+          ? u.papel == 'classificacao' && u.eventoId.matches('^(criarReceita|criarDespesa|gastoImediato|editarOrigem)__[A-Za-z0-9-]{1,64}$')
+          : c == 'contas' && u.papel == 'movimentacao' && u.eventoId.matches('^(pagar|receber|gastoImediato)__[A-Za-z0-9-]{1,64}$'));
+    }
     function validCatalogDoc(c,d) {
       return d.keys().hasAll(['nome','estado','schemaVersion','version','createdAt','updatedAt'])
-        && d.keys().hasOnly(contentKeys(c).concat(['schemaVersion','version','createdAt','updatedAt','archivedAt']))
-        && validContent(c,d) && d.schemaVersion is int && d.schemaVersion == 1 && safeVersion(d.version)
+        && d.keys().hasOnly(contentKeys(c).concat(['schemaVersion','version','createdAt','updatedAt','archivedAt','usoFinanceiro']))
+        && validContent(c,d) && d.schemaVersion is int
+        && (d.schemaVersion == 1 || (d.schemaVersion == 2 && c in ['categorias','contas'])) && safeVersion(d.version)
+        && (!('usoFinanceiro' in d) || (d.schemaVersion == 2 && validUse(c,d.usoFinanceiro)))
         && d.createdAt is timestamp && d.updatedAt is timestamp && d.updatedAt >= d.createdAt
         && (d.estado == 'ativo' ? !('archivedAt' in d) : ('archivedAt' in d && d.archivedAt is timestamp && d.archivedAt == d.updatedAt));
     }
@@ -180,7 +111,8 @@ service cloud.firestore {
         ? d.tipo != before.tipo || d.get('saldoInicialCentavos',null) != before.get('saldoInicialCentavos',null)
           || d.get('saldoInicialPosicao',null) != before.get('saldoInicialPosicao',null)
           || d.get('saldoInicialDataBase',null) != before.get('saldoInicialDataBase',null) : false;
-      return !changed || !existsAfter(/databases/$(database)/documents/users/$(uid)/usoCadastros/$(c + '__' + id));
+      return !changed || (!('usoFinanceiro' in before) && !('usoFinanceiro' in d)
+        && !existsAfter(/databases/$(database)/documents/users/$(uid)/usoCadastros/$(c + '__' + id)));
     }
     function receiptPath(uid,c,id,v) {
       return /databases/$(database)/documents/users/$(uid)/operacoesCadastros/$(c + '__' + id + '__' + string(v));
@@ -191,13 +123,33 @@ service cloud.firestore {
       return safeId(id) && validCatalogDoc(c,d) && d.updatedAt == request.time
         && r.colecao == c && r.cadastroId == id && r.version == d.version && r.createdAt == request.time
         && sameContent(d,r.dados)
-        && (creating ? d.version == 1 && d.estado == 'ativo' && d.createdAt == request.time && r.expectedVersion == 0 && r.tipo == 'criar' && validHolder(uid,c,d,{})
+        && (creating ? d.version == 1 && d.estado == 'ativo' && d.createdAt == request.time && r.expectedVersion == 0 && r.tipo == 'criar'
+            && d.schemaVersion == (c in ['categorias','contas'] ? 2 : 1) && !('usoFinanceiro' in d) && validHolder(uid,c,d,{})
           : validCatalogDoc(c,resource.data) && resource.data.estado == 'ativo' && d.createdAt == resource.data.createdAt && d.schemaVersion == resource.data.schemaVersion
             && d.version == resource.data.version + 1 && r.expectedVersion == resource.data.version
+            && d.get('usoFinanceiro',null) == resource.data.get('usoFinanceiro',null)
             && validHolder(uid,c,d,resource.data)
             && (r.tipo == 'arquivar' ? d.estado == 'arquivado' && d.archivedAt == request.time
                 && d.nome == resource.data.nome && sameFields(d,resource.data)
               : r.tipo == 'editar' && d.estado == 'ativo' && !sameContent(d,resource.data) && sensitiveAllowed(uid,c,id,d,resource.data)));
+    }
+
+    function usePatch() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasAny(['usoFinanceiro']);
+    }
+    function financialUsePatch(uid,c,id) {
+      let d = request.resource.data;
+      let u = d.usoFinanceiro;
+      let before = get(/databases/$(database)/documents/users/$(uid)/operacoesExternas/$(u.eventoId));
+      let after = getAfter(/databases/$(database)/documents/users/$(uid)/operacoesExternas/$(u.eventoId));
+      return c in ['categorias','contas'] && safeId(id) && validCatalogDoc(c,resource.data) && validCatalogDoc(c,d)
+        && resource.data.estado == 'ativo' && d.schemaVersion == 2 && !('usoFinanceiro' in resource.data)
+        && d.diff(resource.data).affectedKeys().hasOnly(['schemaVersion','usoFinanceiro'])
+        && validUse(c,u) && u.createdAt == request.time && before == null && after != null
+        && after.data.origemId == u.origemId && after.data.createdAt == request.time
+        && (c == 'categorias'
+          ? after.data.tipo in ['criarReceita','criarDespesa','gastoImediato','editarOrigem'] && after.data.depois.categoriaId == id
+          : after.data.tipo in ['pagar','receber','gastoImediato'] && after.data.fato.contaId == id);
     }
     function receiptCreate(uid,id) {
       let r = request.resource.data;
@@ -218,6 +170,120 @@ service cloud.firestore {
                 && after.data.nome == before.data.nome && sameFields(after.data,before.data)));
     }
 
+    // Feature 005: only prediction creation is enabled at this checkpoint.
+    function externalBusinessKeys() {
+      return ['natureza','descricao','categoriaId','valorCentavos','estimado','competenciaPlanejamento',
+        'dataPrevista','vencimento','dataConsumo','titularId','contaPrevistaId','etiquetaIds','observacao'];
+    }
+    function externalText(s,max) { return s is string && s == s.trim() && s.size() >= 1 && s.size() <= max; }
+    function validMonth(s) { return s is string && s.matches('^[0-9]{4}-(0[1-9]|1[0-2])$') && int(s[0:4]) >= 1900 && int(s[0:4]) <= 9999; }
+    function labelShape(labels) {
+      return labels is list && labels.size() <= 5 && labels.size() >= 1 && labels.toSet().size() == labels.size()
+        && (labels.size() < 2 || labels[0] < labels[1]) && (labels.size() < 3 || labels[1] < labels[2])
+        && (labels.size() < 4 || labels[2] < labels[3]) && (labels.size() < 5 || labels[3] < labels[4]);
+    }
+    function validExternalBusiness(d) {
+      return d is map && d.keys().hasAll(['natureza','descricao','categoriaId','valorCentavos','estimado','competenciaPlanejamento'])
+        && d.keys().hasOnly(externalBusinessKeys()) && externalText(d.descricao,120) && safeId(d.categoriaId)
+        && d.valorCentavos is int && d.valorCentavos > 0 && d.valorCentavos <= 9007199254740991
+        && d.estimado is bool && validMonth(d.competenciaPlanejamento)
+        // Calendar semantics are checked by the mandatory origin write, bound
+        // to this exact map. Keep shape here to balance expression budgets.
+        && (d.natureza == 'receita' ? d.keys().hasAll(['dataPrevista']) && !d.keys().hasAny(['vencimento','dataConsumo'])
+          : d.natureza == 'despesa' && d.keys().hasAll(['vencimento','dataConsumo']) && !('dataPrevista' in d))
+        && (!('titularId' in d) || safeId(d.titularId)) && (!('contaPrevistaId' in d) || safeId(d.contaPrevistaId))
+        && (!('observacao' in d) || externalText(d.observacao,1000)) && (!('etiquetaIds' in d) || labelShape(d.etiquetaIds));
+    }
+    function sameExternalBusiness(a,b) {
+      // The closed business map must match exactly, including absent vs null.
+      // Only protected origin metadata may differ. MapDiff avoids repeatedly
+      // evaluating every field/presence and stays within the expression budget.
+      return a.diff(b).affectedKeys().hasOnly(['schemaVersion','version','createdAt','updatedAt',
+        'estadoObrigacao','liquidadoLiquidoCentavos','jaLiquidada','ultimoEventoId']);
+    }
+    function externalCategory(uid,d) {
+      let c = getAfter(/databases/$(database)/documents/users/$(uid)/categorias/$(d.categoriaId));
+      return c != null && c.data.schemaVersion is int && c.data.schemaVersion == 2 && c.data.estado == 'ativo'
+        && c.data.natureza == d.natureza && validUse('categorias',c.data.usoFinanceiro);
+    }
+    function activeSimpleReference(d) {
+      // Financial authorization depends on the owner-scoped path, supported
+      // schema and active state. Catalog mutations independently enforce the
+      // closed full schema; labels do not need to revalidate unrelated metadata.
+      return d.schemaVersion is int && d.schemaVersion == 1 && d.estado == 'ativo';
+    }
+    function externalHolder(uid,id) {
+      let h = getAfter(/databases/$(database)/documents/users/$(uid)/titulares/$(id));
+      return safeId(id) && h != null && activeSimpleReference(h.data);
+    }
+    function externalPlannedAccount(uid,id) {
+      let a = getAfter(/databases/$(database)/documents/users/$(uid)/contas/$(id));
+      return safeId(id) && a != null && a.data.schemaVersion is int && a.data.schemaVersion in [1,2]
+        && a.data.estado == 'ativo' && a.data.tipo in ['banco','carteira','contaPagamento'];
+    }
+    function externalLabel(uid,id) {
+      let e = getAfter(/databases/$(database)/documents/users/$(uid)/etiquetas/$(id));
+      return safeId(id) && e != null && activeSimpleReference(e.data);
+    }
+    function externalLabels(uid,d) {
+      let ids = d.get('etiquetaIds',[]);
+      return (ids.size() < 1 || externalLabel(uid,ids[0])) && (ids.size() < 2 || externalLabel(uid,ids[1]))
+        && (ids.size() < 3 || externalLabel(uid,ids[2])) && (ids.size() < 4 || externalLabel(uid,ids[3]))
+        && (ids.size() < 5 || externalLabel(uid,ids[4]));
+    }
+    function externalOriginCreate(uid,id) {
+      let d = request.resource.data;
+      let r = getAfter(/databases/$(database)/documents/users/$(uid)/operacoesExternas/$(d.ultimoEventoId)).data;
+      return safeId(id) && d.keys().hasAll(['schemaVersion','version','createdAt','updatedAt','estadoObrigacao','liquidadoLiquidoCentavos','jaLiquidada','ultimoEventoId'])
+        && d.keys().hasOnly(externalBusinessKeys().concat(['schemaVersion','version','createdAt','updatedAt','estadoObrigacao','liquidadoLiquidoCentavos','jaLiquidada','ultimoEventoId']))
+        && d.schemaVersion is int && d.schemaVersion == 1 && d.version is int && d.version == 1
+        && d.createdAt == request.time && d.updatedAt == request.time && d.estadoObrigacao == 'ativa'
+        && d.valorCentavos is int && d.valorCentavos > 0 && d.valorCentavos <= 9007199254740991 && d.estimado is bool
+        && d.liquidadoLiquidoCentavos is int && d.liquidadoLiquidoCentavos == 0 && d.jaLiquidada is bool && d.jaLiquidada == false
+        && r.origemId == id && r.expectedVersion == 0 && r.resultVersion == 1 && r.createdAt == request.time
+        && r.tipo == (d.natureza == 'receita' ? 'criarReceita' : 'criarDespesa') && sameExternalBusiness(d,r.depois)
+        && (d.natureza == 'receita' ? calendarDate(d.dataPrevista) : calendarDate(d.vencimento) && calendarDate(d.dataConsumo))
+        // The mandatory new receipt validates the closed business map. The
+        // exact MapDiff above binds it to this origin without a duplicate pass.
+        && externalCategory(uid,d)
+        && (!('titularId' in d) || externalHolder(uid,d.titularId))
+        && (!('contaPrevistaId' in d) || externalPlannedAccount(uid,d.contaPrevistaId));
+    }
+    function externalReceiptCreate(uid,id) {
+      let r = request.resource.data;
+      let c = r.comando;
+      let o = getAfter(/databases/$(database)/documents/users/$(uid)/lancamentosExternos/$(r.origemId)).data;
+      return r.keys().hasAll(['schemaVersion','contractVersion','tipo','operationKey','origemId','natureza','expectedVersion','resultVersion','comando','depois','createdAt'])
+        && r.keys().hasOnly(['schemaVersion','contractVersion','tipo','operationKey','origemId','natureza','expectedVersion','resultVersion','comando','depois','createdAt'])
+        && r.schemaVersion is int && r.schemaVersion == 1 && r.contractVersion is int && r.contractVersion == 1
+        && safeId(r.operationKey) && safeId(r.origemId) && id == r.tipo + '__' + r.operationKey
+        && r.tipo in ['criarReceita','criarDespesa'] && r.expectedVersion is int && r.expectedVersion == 0
+        && r.resultVersion is int && r.resultVersion == 1 && r.createdAt == request.time
+        && c is map && c.keys().hasAll(['contractVersion','tipo','operationKey','origemId','expectedVersion','dados'])
+        && c.keys().hasOnly(['contractVersion','tipo','operationKey','origemId','expectedVersion','dados'])
+        && c.contractVersion is int && c.contractVersion == 1 && c.tipo == r.tipo && c.operationKey == r.operationKey
+        && c.origemId == r.origemId && c.expectedVersion is int && c.expectedVersion == 0 && c.dados == r.depois
+        && validExternalBusiness(r.depois) && r.natureza == r.depois.natureza
+        && o.version == r.resultVersion && o.ultimoEventoId == id && sameExternalBusiness(o,r.depois)
+        && externalLabels(uid,r.depois);
+    }
+    match /users/{uid}/lancamentosExternos/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit != null && request.query.limit >= 1 && request.query.limit <= 50;
+      allow create: if own(uid) && catalogReady(uid) && externalOriginCreate(uid,id);
+      allow update, delete: if false;
+    }
+    match /users/{uid}/operacoesExternas/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit != null && request.query.limit >= 1 && request.query.limit <= 50;
+      allow create: if own(uid) && externalReceiptCreate(uid,id);
+      allow update, delete: if false;
+    }
+    match /users/{uid}/reversoesExternas/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list, write: if false;
+    }
+
     match /users/{uid}/titulares/{id} {
       allow get: if own(uid) && catalogReady(uid);
       allow list: if own(uid) && catalogReady(uid) && request.query.limit != null && request.query.limit >= 1 && request.query.limit <= 50;
@@ -229,14 +295,14 @@ service cloud.firestore {
       allow get: if own(uid) && catalogReady(uid);
       allow list: if own(uid) && catalogReady(uid) && request.query.limit != null && request.query.limit >= 1 && request.query.limit <= 50;
       allow create: if own(uid) && catalogReady(uid) && catalogMutation(uid,'categorias',id,true);
-      allow update: if own(uid) && catalogReady(uid) && catalogMutation(uid,'categorias',id,false);
+      allow update: if own(uid) && (usePatch() ? financialUsePatch(uid,'categorias',id) : catalogReady(uid) && catalogMutation(uid,'categorias',id,false));
       allow delete: if false;
     }
     match /users/{uid}/contas/{id} {
       allow get: if own(uid) && catalogReady(uid);
       allow list: if own(uid) && catalogReady(uid) && request.query.limit != null && request.query.limit >= 1 && request.query.limit <= 50;
       allow create: if own(uid) && catalogReady(uid) && catalogMutation(uid,'contas',id,true);
-      allow update: if own(uid) && catalogReady(uid) && catalogMutation(uid,'contas',id,false);
+      allow update: if own(uid) && (usePatch() ? financialUsePatch(uid,'contas',id) : catalogReady(uid) && catalogMutation(uid,'contas',id,false));
       allow delete: if false;
     }
     match /users/{uid}/etiquetas/{id} {
