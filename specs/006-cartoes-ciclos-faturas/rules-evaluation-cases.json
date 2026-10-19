@@ -1,0 +1,4670 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Official test-only invoice Rules fixtures. Fixed synthetic data; no credentials, deploy or writes.",
+  "cases": [
+    {
+      "name": "invoiceEmpty",
+      "test": {
+        "expectation": "ALLOW",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/faturas/card__2026-10",
+          "method": "create",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "cartaoId": "card",
+              "competencia": "2026-10",
+              "inicio": "2026-09-10",
+              "fechamento": "2026-10-10",
+              "vencimento": "2026-10-17",
+              "calendarioOrigem": {
+                "calendarVersion": 2,
+                "cartaoVersion": 1,
+                "diaFechamento": 10,
+                "diaVencimento": 17,
+                "vencimentoOriginal": "2026-10-17",
+                "origemInicio": "padrao",
+                "origemFechamento": "padrao"
+              },
+              "schemaVersion": 1,
+              "versaoConteudo": 1,
+              "version": 1,
+              "ultimoEventoId": "confirmarFatura__invoiceEmpty",
+              "createdAt": "2026-10-18T21:00:00Z",
+              "updatedAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/cartoes/card"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "banco": "Fixture",
+                  "nome": "Fixture",
+                  "titularId": "holder",
+                  "diaFechamento": 10,
+                  "diaVencimento": 17,
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "ultimoEventoId": "criarCartao__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-10"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-10",
+                  "inicio": "2026-09-10",
+                  "fechamento": "2026-10-10",
+                  "vencimento": "2026-10-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-10-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__invoiceEmpty",
+                  "createdAt": "2026-10-18T21:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/confirmarFatura__invoiceEmpty"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "confirmarFatura",
+                  "operationKey": "invoiceEmpty",
+                  "alvoId": "card__2026-10",
+                  "expectedVersion": 0,
+                  "resultVersion": 1,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "confirmarFatura",
+                    "operationKey": "invoiceEmpty",
+                    "alvoId": "card__2026-10",
+                    "expectedVersion": 0,
+                    "payload": {
+                      "cartaoId": "card",
+                      "competencia": "2026-10",
+                      "inicio": "2026-09-10",
+                      "fechamento": "2026-10-10",
+                      "vencimento": "2026-10-17",
+                      "calendarioOrigem": {
+                        "calendarVersion": 2,
+                        "cartaoVersion": 1,
+                        "diaFechamento": 10,
+                        "diaVencimento": 17,
+                        "vencimentoOriginal": "2026-10-17",
+                        "origemInicio": "padrao",
+                        "origemFechamento": "padrao"
+                      },
+                      "cartaoVersion": 1
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2026-10",
+                    "inicio": "2026-09-10",
+                    "fechamento": "2026-10-10",
+                    "vencimento": "2026-10-17",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 1,
+                      "diaFechamento": 10,
+                      "diaVencimento": 17,
+                      "vencimentoOriginal": "2026-10-17",
+                      "origemInicio": "padrao",
+                      "origemFechamento": "padrao"
+                    }
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-08"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-09"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-11"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-12"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    },
+    {
+      "name": "invoiceEmptyReceipt",
+      "test": {
+        "expectation": "ALLOW",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/operacoesFaturas/confirmarFatura__invoiceEmpty",
+          "method": "create",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "schemaVersion": 1,
+              "contractVersion": 1,
+              "tipo": "confirmarFatura",
+              "operationKey": "invoiceEmpty",
+              "alvoId": "card__2026-10",
+              "expectedVersion": 0,
+              "resultVersion": 1,
+              "comando": {
+                "contractVersion": 1,
+                "tipo": "confirmarFatura",
+                "operationKey": "invoiceEmpty",
+                "alvoId": "card__2026-10",
+                "expectedVersion": 0,
+                "payload": {
+                  "cartaoId": "card",
+                  "competencia": "2026-10",
+                  "inicio": "2026-09-10",
+                  "fechamento": "2026-10-10",
+                  "vencimento": "2026-10-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-10-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "cartaoVersion": 1
+                }
+              },
+              "resultado": {
+                "cartaoId": "card",
+                "competencia": "2026-10",
+                "inicio": "2026-09-10",
+                "fechamento": "2026-10-10",
+                "vencimento": "2026-10-17",
+                "calendarioOrigem": {
+                  "calendarVersion": 2,
+                  "cartaoVersion": 1,
+                  "diaFechamento": 10,
+                  "diaVencimento": 17,
+                  "vencimentoOriginal": "2026-10-17",
+                  "origemInicio": "padrao",
+                  "origemFechamento": "padrao"
+                }
+              },
+              "createdAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/cartoes/card"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "banco": "Fixture",
+                  "nome": "Fixture",
+                  "titularId": "holder",
+                  "diaFechamento": 10,
+                  "diaVencimento": 17,
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "ultimoEventoId": "criarCartao__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-10"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-10",
+                  "inicio": "2026-09-10",
+                  "fechamento": "2026-10-10",
+                  "vencimento": "2026-10-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-10-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__invoiceEmpty",
+                  "createdAt": "2026-10-18T21:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/confirmarFatura__invoiceEmpty"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "confirmarFatura",
+                  "operationKey": "invoiceEmpty",
+                  "alvoId": "card__2026-10",
+                  "expectedVersion": 0,
+                  "resultVersion": 1,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "confirmarFatura",
+                    "operationKey": "invoiceEmpty",
+                    "alvoId": "card__2026-10",
+                    "expectedVersion": 0,
+                    "payload": {
+                      "cartaoId": "card",
+                      "competencia": "2026-10",
+                      "inicio": "2026-09-10",
+                      "fechamento": "2026-10-10",
+                      "vencimento": "2026-10-17",
+                      "calendarioOrigem": {
+                        "calendarVersion": 2,
+                        "cartaoVersion": 1,
+                        "diaFechamento": 10,
+                        "diaVencimento": 17,
+                        "vencimentoOriginal": "2026-10-17",
+                        "origemInicio": "padrao",
+                        "origemFechamento": "padrao"
+                      },
+                      "cartaoVersion": 1
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2026-10",
+                    "inicio": "2026-09-10",
+                    "fechamento": "2026-10-10",
+                    "vencimento": "2026-10-17",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 1,
+                      "diaFechamento": 10,
+                      "diaVencimento": 17,
+                      "vencimentoOriginal": "2026-10-17",
+                      "origemInicio": "padrao",
+                      "origemFechamento": "padrao"
+                    }
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-08"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-09"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-11"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-12"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    },
+    {
+      "name": "invoiceMaximum",
+      "test": {
+        "expectation": "ALLOW",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/faturas/card__2026-10",
+          "method": "create",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "cartaoId": "card",
+              "competencia": "2026-10",
+              "inicio": "2026-09-10",
+              "fechamento": "2026-10-10",
+              "vencimento": "2026-10-17",
+              "calendarioOrigem": {
+                "calendarVersion": 2,
+                "cartaoVersion": 1,
+                "diaFechamento": 10,
+                "diaVencimento": 17,
+                "vencimentoOriginal": "2026-10-17",
+                "origemInicio": "vizinhoConfirmado",
+                "origemFechamento": "vizinhoConfirmado"
+              },
+              "schemaVersion": 1,
+              "versaoConteudo": 1,
+              "version": 1,
+              "ultimoEventoId": "confirmarFatura__invoiceMaximum",
+              "createdAt": "2026-10-18T21:00:00Z",
+              "updatedAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/cartoes/card"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "banco": "Fixture",
+                  "nome": "Fixture",
+                  "titularId": "holder",
+                  "diaFechamento": 10,
+                  "diaVencimento": 17,
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "ultimoEventoId": "criarCartao__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-10"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-10",
+                  "inicio": "2026-09-10",
+                  "fechamento": "2026-10-10",
+                  "vencimento": "2026-10-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-10-17",
+                    "origemInicio": "vizinhoConfirmado",
+                    "origemFechamento": "vizinhoConfirmado"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__invoiceMaximum",
+                  "createdAt": "2026-10-18T21:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/confirmarFatura__invoiceMaximum"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "confirmarFatura",
+                  "operationKey": "invoiceMaximum",
+                  "alvoId": "card__2026-10",
+                  "expectedVersion": 0,
+                  "resultVersion": 1,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "confirmarFatura",
+                    "operationKey": "invoiceMaximum",
+                    "alvoId": "card__2026-10",
+                    "expectedVersion": 0,
+                    "payload": {
+                      "cartaoId": "card",
+                      "competencia": "2026-10",
+                      "inicio": "2026-09-10",
+                      "fechamento": "2026-10-10",
+                      "vencimento": "2026-10-17",
+                      "calendarioOrigem": {
+                        "calendarVersion": 2,
+                        "cartaoVersion": 1,
+                        "diaFechamento": 10,
+                        "diaVencimento": 17,
+                        "vencimentoOriginal": "2026-10-17",
+                        "origemInicio": "vizinhoConfirmado",
+                        "origemFechamento": "vizinhoConfirmado"
+                      },
+                      "cartaoVersion": 1
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2026-10",
+                    "inicio": "2026-09-10",
+                    "fechamento": "2026-10-10",
+                    "vencimento": "2026-10-17",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 1,
+                      "diaFechamento": 10,
+                      "diaVencimento": 17,
+                      "vencimentoOriginal": "2026-10-17",
+                      "origemInicio": "vizinhoConfirmado",
+                      "origemFechamento": "vizinhoConfirmado"
+                    }
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-08"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-08",
+                  "inicio": "2026-07-10",
+                  "fechamento": "2026-08-10",
+                  "vencimento": "2026-08-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-08-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-09"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-09",
+                  "inicio": "2026-08-10",
+                  "fechamento": "2026-09-10",
+                  "vencimento": "2026-09-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-09-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-11"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-11",
+                  "inicio": "2026-10-10",
+                  "fechamento": "2026-11-10",
+                  "vencimento": "2026-11-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-11-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-12"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-12",
+                  "inicio": "2026-11-10",
+                  "fechamento": "2026-12-10",
+                  "vencimento": "2026-12-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-12-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    },
+    {
+      "name": "invoiceMaximumReceipt",
+      "test": {
+        "expectation": "ALLOW",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/operacoesFaturas/confirmarFatura__invoiceMaximum",
+          "method": "create",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "schemaVersion": 1,
+              "contractVersion": 1,
+              "tipo": "confirmarFatura",
+              "operationKey": "invoiceMaximum",
+              "alvoId": "card__2026-10",
+              "expectedVersion": 0,
+              "resultVersion": 1,
+              "comando": {
+                "contractVersion": 1,
+                "tipo": "confirmarFatura",
+                "operationKey": "invoiceMaximum",
+                "alvoId": "card__2026-10",
+                "expectedVersion": 0,
+                "payload": {
+                  "cartaoId": "card",
+                  "competencia": "2026-10",
+                  "inicio": "2026-09-10",
+                  "fechamento": "2026-10-10",
+                  "vencimento": "2026-10-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-10-17",
+                    "origemInicio": "vizinhoConfirmado",
+                    "origemFechamento": "vizinhoConfirmado"
+                  },
+                  "cartaoVersion": 1
+                }
+              },
+              "resultado": {
+                "cartaoId": "card",
+                "competencia": "2026-10",
+                "inicio": "2026-09-10",
+                "fechamento": "2026-10-10",
+                "vencimento": "2026-10-17",
+                "calendarioOrigem": {
+                  "calendarVersion": 2,
+                  "cartaoVersion": 1,
+                  "diaFechamento": 10,
+                  "diaVencimento": 17,
+                  "vencimentoOriginal": "2026-10-17",
+                  "origemInicio": "vizinhoConfirmado",
+                  "origemFechamento": "vizinhoConfirmado"
+                }
+              },
+              "createdAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/cartoes/card"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "banco": "Fixture",
+                  "nome": "Fixture",
+                  "titularId": "holder",
+                  "diaFechamento": 10,
+                  "diaVencimento": 17,
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "ultimoEventoId": "criarCartao__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-10"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-10",
+                  "inicio": "2026-09-10",
+                  "fechamento": "2026-10-10",
+                  "vencimento": "2026-10-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-10-17",
+                    "origemInicio": "vizinhoConfirmado",
+                    "origemFechamento": "vizinhoConfirmado"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__invoiceMaximum",
+                  "createdAt": "2026-10-18T21:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/confirmarFatura__invoiceMaximum"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "confirmarFatura",
+                  "operationKey": "invoiceMaximum",
+                  "alvoId": "card__2026-10",
+                  "expectedVersion": 0,
+                  "resultVersion": 1,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "confirmarFatura",
+                    "operationKey": "invoiceMaximum",
+                    "alvoId": "card__2026-10",
+                    "expectedVersion": 0,
+                    "payload": {
+                      "cartaoId": "card",
+                      "competencia": "2026-10",
+                      "inicio": "2026-09-10",
+                      "fechamento": "2026-10-10",
+                      "vencimento": "2026-10-17",
+                      "calendarioOrigem": {
+                        "calendarVersion": 2,
+                        "cartaoVersion": 1,
+                        "diaFechamento": 10,
+                        "diaVencimento": 17,
+                        "vencimentoOriginal": "2026-10-17",
+                        "origemInicio": "vizinhoConfirmado",
+                        "origemFechamento": "vizinhoConfirmado"
+                      },
+                      "cartaoVersion": 1
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2026-10",
+                    "inicio": "2026-09-10",
+                    "fechamento": "2026-10-10",
+                    "vencimento": "2026-10-17",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 1,
+                      "diaFechamento": 10,
+                      "diaVencimento": 17,
+                      "vencimentoOriginal": "2026-10-17",
+                      "origemInicio": "vizinhoConfirmado",
+                      "origemFechamento": "vizinhoConfirmado"
+                    }
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-08"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-08",
+                  "inicio": "2026-07-10",
+                  "fechamento": "2026-08-10",
+                  "vencimento": "2026-08-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-08-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-09"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-09",
+                  "inicio": "2026-08-10",
+                  "fechamento": "2026-09-10",
+                  "vencimento": "2026-09-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-09-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-11"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-11",
+                  "inicio": "2026-10-10",
+                  "fechamento": "2026-11-10",
+                  "vencimento": "2026-11-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-11-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-12"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-12",
+                  "inicio": "2026-11-10",
+                  "fechamento": "2026-12-10",
+                  "vencimento": "2026-12-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-12-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    },
+    {
+      "name": "circularOctober",
+      "test": {
+        "expectation": "DENY",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/faturas/card__2026-10",
+          "method": "create",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "cartaoId": "card",
+              "competencia": "2026-10",
+              "inicio": "2026-09-10",
+              "fechamento": "2026-10-12",
+              "vencimento": "2026-10-17",
+              "calendarioOrigem": {
+                "calendarVersion": 2,
+                "cartaoVersion": 1,
+                "diaFechamento": 10,
+                "diaVencimento": 17,
+                "vencimentoOriginal": "2026-10-17",
+                "origemInicio": "padrao",
+                "origemFechamento": "vizinhoConfirmado"
+              },
+              "schemaVersion": 1,
+              "versaoConteudo": 1,
+              "version": 1,
+              "ultimoEventoId": "confirmarFatura__circularOctober",
+              "createdAt": "2026-10-18T21:00:00Z",
+              "updatedAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/cartoes/card"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "banco": "Fixture",
+                  "nome": "Fixture",
+                  "titularId": "holder",
+                  "diaFechamento": 10,
+                  "diaVencimento": 17,
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "ultimoEventoId": "criarCartao__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-10"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-10",
+                  "inicio": "2026-09-10",
+                  "fechamento": "2026-10-12",
+                  "vencimento": "2026-10-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-10-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "vizinhoConfirmado"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__circularOctober",
+                  "createdAt": "2026-10-18T21:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/confirmarFatura__circularOctober"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "confirmarFatura",
+                  "operationKey": "circularOctober",
+                  "alvoId": "card__2026-10",
+                  "expectedVersion": 0,
+                  "resultVersion": 1,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "confirmarFatura",
+                    "operationKey": "circularOctober",
+                    "alvoId": "card__2026-10",
+                    "expectedVersion": 0,
+                    "payload": {
+                      "cartaoId": "card",
+                      "competencia": "2026-10",
+                      "inicio": "2026-09-10",
+                      "fechamento": "2026-10-12",
+                      "vencimento": "2026-10-17",
+                      "calendarioOrigem": {
+                        "calendarVersion": 2,
+                        "cartaoVersion": 1,
+                        "diaFechamento": 10,
+                        "diaVencimento": 17,
+                        "vencimentoOriginal": "2026-10-17",
+                        "origemInicio": "padrao",
+                        "origemFechamento": "vizinhoConfirmado"
+                      },
+                      "cartaoVersion": 1
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2026-10",
+                    "inicio": "2026-09-10",
+                    "fechamento": "2026-10-12",
+                    "vencimento": "2026-10-17",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 1,
+                      "diaFechamento": 10,
+                      "diaVencimento": 17,
+                      "vencimentoOriginal": "2026-10-17",
+                      "origemInicio": "padrao",
+                      "origemFechamento": "vizinhoConfirmado"
+                    }
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-08"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-09"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-11"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-12"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    },
+    {
+      "name": "circularNovember",
+      "test": {
+        "expectation": "DENY",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/faturas/card__2026-11",
+          "method": "create",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "cartaoId": "card",
+              "competencia": "2026-11",
+              "inicio": "2026-10-12",
+              "fechamento": "2026-11-10",
+              "vencimento": "2026-11-17",
+              "calendarioOrigem": {
+                "calendarVersion": 2,
+                "cartaoVersion": 1,
+                "diaFechamento": 10,
+                "diaVencimento": 17,
+                "vencimentoOriginal": "2026-11-17",
+                "origemInicio": "vizinhoConfirmado",
+                "origemFechamento": "padrao"
+              },
+              "schemaVersion": 1,
+              "versaoConteudo": 1,
+              "version": 1,
+              "ultimoEventoId": "confirmarFatura__circularNovember",
+              "createdAt": "2026-10-18T21:00:00Z",
+              "updatedAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/cartoes/card"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "banco": "Fixture",
+                  "nome": "Fixture",
+                  "titularId": "holder",
+                  "diaFechamento": 10,
+                  "diaVencimento": 17,
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "ultimoEventoId": "criarCartao__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-11"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-11",
+                  "inicio": "2026-10-12",
+                  "fechamento": "2026-11-10",
+                  "vencimento": "2026-11-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-11-17",
+                    "origemInicio": "vizinhoConfirmado",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__circularNovember",
+                  "createdAt": "2026-10-18T21:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/confirmarFatura__circularNovember"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "confirmarFatura",
+                  "operationKey": "circularNovember",
+                  "alvoId": "card__2026-11",
+                  "expectedVersion": 0,
+                  "resultVersion": 1,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "confirmarFatura",
+                    "operationKey": "circularNovember",
+                    "alvoId": "card__2026-11",
+                    "expectedVersion": 0,
+                    "payload": {
+                      "cartaoId": "card",
+                      "competencia": "2026-11",
+                      "inicio": "2026-10-12",
+                      "fechamento": "2026-11-10",
+                      "vencimento": "2026-11-17",
+                      "calendarioOrigem": {
+                        "calendarVersion": 2,
+                        "cartaoVersion": 1,
+                        "diaFechamento": 10,
+                        "diaVencimento": 17,
+                        "vencimentoOriginal": "2026-11-17",
+                        "origemInicio": "vizinhoConfirmado",
+                        "origemFechamento": "padrao"
+                      },
+                      "cartaoVersion": 1
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2026-11",
+                    "inicio": "2026-10-12",
+                    "fechamento": "2026-11-10",
+                    "vencimento": "2026-11-17",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 1,
+                      "diaFechamento": 10,
+                      "diaVencimento": 17,
+                      "vencimentoOriginal": "2026-11-17",
+                      "origemInicio": "vizinhoConfirmado",
+                      "origemFechamento": "padrao"
+                    }
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-09"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-10"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-12"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2027-01"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    },
+    {
+      "name": "batchControlOctober",
+      "test": {
+        "expectation": "ALLOW",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/faturas/card__2026-10",
+          "method": "create",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "cartaoId": "card",
+              "competencia": "2026-10",
+              "inicio": "2026-09-10",
+              "fechamento": "2026-10-10",
+              "vencimento": "2026-10-17",
+              "calendarioOrigem": {
+                "calendarVersion": 2,
+                "cartaoVersion": 1,
+                "diaFechamento": 10,
+                "diaVencimento": 17,
+                "vencimentoOriginal": "2026-10-17",
+                "origemInicio": "padrao",
+                "origemFechamento": "padrao"
+              },
+              "schemaVersion": 1,
+              "versaoConteudo": 1,
+              "version": 1,
+              "ultimoEventoId": "confirmarFatura__batchControlOctober",
+              "createdAt": "2026-10-18T21:00:00Z",
+              "updatedAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/cartoes/card"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "banco": "Fixture",
+                  "nome": "Fixture",
+                  "titularId": "holder",
+                  "diaFechamento": 10,
+                  "diaVencimento": 17,
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "ultimoEventoId": "criarCartao__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-10"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-10",
+                  "inicio": "2026-09-10",
+                  "fechamento": "2026-10-10",
+                  "vencimento": "2026-10-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-10-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__batchControlOctober",
+                  "createdAt": "2026-10-18T21:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/confirmarFatura__batchControlOctober"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "confirmarFatura",
+                  "operationKey": "batchControlOctober",
+                  "alvoId": "card__2026-10",
+                  "expectedVersion": 0,
+                  "resultVersion": 1,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "confirmarFatura",
+                    "operationKey": "batchControlOctober",
+                    "alvoId": "card__2026-10",
+                    "expectedVersion": 0,
+                    "payload": {
+                      "cartaoId": "card",
+                      "competencia": "2026-10",
+                      "inicio": "2026-09-10",
+                      "fechamento": "2026-10-10",
+                      "vencimento": "2026-10-17",
+                      "calendarioOrigem": {
+                        "calendarVersion": 2,
+                        "cartaoVersion": 1,
+                        "diaFechamento": 10,
+                        "diaVencimento": 17,
+                        "vencimentoOriginal": "2026-10-17",
+                        "origemInicio": "padrao",
+                        "origemFechamento": "padrao"
+                      },
+                      "cartaoVersion": 1
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2026-10",
+                    "inicio": "2026-09-10",
+                    "fechamento": "2026-10-10",
+                    "vencimento": "2026-10-17",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 1,
+                      "diaFechamento": 10,
+                      "diaVencimento": 17,
+                      "vencimentoOriginal": "2026-10-17",
+                      "origemInicio": "padrao",
+                      "origemFechamento": "padrao"
+                    }
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-08"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-09"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-11"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-12"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    },
+    {
+      "name": "batchControlOctoberReceipt",
+      "test": {
+        "expectation": "ALLOW",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/operacoesFaturas/confirmarFatura__batchControlOctober",
+          "method": "create",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "schemaVersion": 1,
+              "contractVersion": 1,
+              "tipo": "confirmarFatura",
+              "operationKey": "batchControlOctober",
+              "alvoId": "card__2026-10",
+              "expectedVersion": 0,
+              "resultVersion": 1,
+              "comando": {
+                "contractVersion": 1,
+                "tipo": "confirmarFatura",
+                "operationKey": "batchControlOctober",
+                "alvoId": "card__2026-10",
+                "expectedVersion": 0,
+                "payload": {
+                  "cartaoId": "card",
+                  "competencia": "2026-10",
+                  "inicio": "2026-09-10",
+                  "fechamento": "2026-10-10",
+                  "vencimento": "2026-10-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-10-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "cartaoVersion": 1
+                }
+              },
+              "resultado": {
+                "cartaoId": "card",
+                "competencia": "2026-10",
+                "inicio": "2026-09-10",
+                "fechamento": "2026-10-10",
+                "vencimento": "2026-10-17",
+                "calendarioOrigem": {
+                  "calendarVersion": 2,
+                  "cartaoVersion": 1,
+                  "diaFechamento": 10,
+                  "diaVencimento": 17,
+                  "vencimentoOriginal": "2026-10-17",
+                  "origemInicio": "padrao",
+                  "origemFechamento": "padrao"
+                }
+              },
+              "createdAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/cartoes/card"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "banco": "Fixture",
+                  "nome": "Fixture",
+                  "titularId": "holder",
+                  "diaFechamento": 10,
+                  "diaVencimento": 17,
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "ultimoEventoId": "criarCartao__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-10"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-10",
+                  "inicio": "2026-09-10",
+                  "fechamento": "2026-10-10",
+                  "vencimento": "2026-10-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-10-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__batchControlOctober",
+                  "createdAt": "2026-10-18T21:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/confirmarFatura__batchControlOctober"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "confirmarFatura",
+                  "operationKey": "batchControlOctober",
+                  "alvoId": "card__2026-10",
+                  "expectedVersion": 0,
+                  "resultVersion": 1,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "confirmarFatura",
+                    "operationKey": "batchControlOctober",
+                    "alvoId": "card__2026-10",
+                    "expectedVersion": 0,
+                    "payload": {
+                      "cartaoId": "card",
+                      "competencia": "2026-10",
+                      "inicio": "2026-09-10",
+                      "fechamento": "2026-10-10",
+                      "vencimento": "2026-10-17",
+                      "calendarioOrigem": {
+                        "calendarVersion": 2,
+                        "cartaoVersion": 1,
+                        "diaFechamento": 10,
+                        "diaVencimento": 17,
+                        "vencimentoOriginal": "2026-10-17",
+                        "origemInicio": "padrao",
+                        "origemFechamento": "padrao"
+                      },
+                      "cartaoVersion": 1
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2026-10",
+                    "inicio": "2026-09-10",
+                    "fechamento": "2026-10-10",
+                    "vencimento": "2026-10-17",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 1,
+                      "diaFechamento": 10,
+                      "diaVencimento": 17,
+                      "vencimentoOriginal": "2026-10-17",
+                      "origemInicio": "padrao",
+                      "origemFechamento": "padrao"
+                    }
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-08"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-09"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-11"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-12"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    },
+    {
+      "name": "batchControlNovember",
+      "test": {
+        "expectation": "ALLOW",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/faturas/card__2026-11",
+          "method": "create",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "cartaoId": "card",
+              "competencia": "2026-11",
+              "inicio": "2026-10-10",
+              "fechamento": "2026-11-10",
+              "vencimento": "2026-11-17",
+              "calendarioOrigem": {
+                "calendarVersion": 2,
+                "cartaoVersion": 1,
+                "diaFechamento": 10,
+                "diaVencimento": 17,
+                "vencimentoOriginal": "2026-11-17",
+                "origemInicio": "padrao",
+                "origemFechamento": "padrao"
+              },
+              "schemaVersion": 1,
+              "versaoConteudo": 1,
+              "version": 1,
+              "ultimoEventoId": "confirmarFatura__batchControlNovember",
+              "createdAt": "2026-10-18T21:00:00Z",
+              "updatedAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/cartoes/card"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "banco": "Fixture",
+                  "nome": "Fixture",
+                  "titularId": "holder",
+                  "diaFechamento": 10,
+                  "diaVencimento": 17,
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "ultimoEventoId": "criarCartao__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-11"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-11",
+                  "inicio": "2026-10-10",
+                  "fechamento": "2026-11-10",
+                  "vencimento": "2026-11-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-11-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__batchControlNovember",
+                  "createdAt": "2026-10-18T21:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/confirmarFatura__batchControlNovember"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "confirmarFatura",
+                  "operationKey": "batchControlNovember",
+                  "alvoId": "card__2026-11",
+                  "expectedVersion": 0,
+                  "resultVersion": 1,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "confirmarFatura",
+                    "operationKey": "batchControlNovember",
+                    "alvoId": "card__2026-11",
+                    "expectedVersion": 0,
+                    "payload": {
+                      "cartaoId": "card",
+                      "competencia": "2026-11",
+                      "inicio": "2026-10-10",
+                      "fechamento": "2026-11-10",
+                      "vencimento": "2026-11-17",
+                      "calendarioOrigem": {
+                        "calendarVersion": 2,
+                        "cartaoVersion": 1,
+                        "diaFechamento": 10,
+                        "diaVencimento": 17,
+                        "vencimentoOriginal": "2026-11-17",
+                        "origemInicio": "padrao",
+                        "origemFechamento": "padrao"
+                      },
+                      "cartaoVersion": 1
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2026-11",
+                    "inicio": "2026-10-10",
+                    "fechamento": "2026-11-10",
+                    "vencimento": "2026-11-17",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 1,
+                      "diaFechamento": 10,
+                      "diaVencimento": 17,
+                      "vencimentoOriginal": "2026-11-17",
+                      "origemInicio": "padrao",
+                      "origemFechamento": "padrao"
+                    }
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-09"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-10"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-12"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2027-01"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    },
+    {
+      "name": "batchControlNovemberReceipt",
+      "test": {
+        "expectation": "ALLOW",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/operacoesFaturas/confirmarFatura__batchControlNovember",
+          "method": "create",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "schemaVersion": 1,
+              "contractVersion": 1,
+              "tipo": "confirmarFatura",
+              "operationKey": "batchControlNovember",
+              "alvoId": "card__2026-11",
+              "expectedVersion": 0,
+              "resultVersion": 1,
+              "comando": {
+                "contractVersion": 1,
+                "tipo": "confirmarFatura",
+                "operationKey": "batchControlNovember",
+                "alvoId": "card__2026-11",
+                "expectedVersion": 0,
+                "payload": {
+                  "cartaoId": "card",
+                  "competencia": "2026-11",
+                  "inicio": "2026-10-10",
+                  "fechamento": "2026-11-10",
+                  "vencimento": "2026-11-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-11-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "cartaoVersion": 1
+                }
+              },
+              "resultado": {
+                "cartaoId": "card",
+                "competencia": "2026-11",
+                "inicio": "2026-10-10",
+                "fechamento": "2026-11-10",
+                "vencimento": "2026-11-17",
+                "calendarioOrigem": {
+                  "calendarVersion": 2,
+                  "cartaoVersion": 1,
+                  "diaFechamento": 10,
+                  "diaVencimento": 17,
+                  "vencimentoOriginal": "2026-11-17",
+                  "origemInicio": "padrao",
+                  "origemFechamento": "padrao"
+                }
+              },
+              "createdAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/cartoes/card"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "banco": "Fixture",
+                  "nome": "Fixture",
+                  "titularId": "holder",
+                  "diaFechamento": 10,
+                  "diaVencimento": 17,
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "ultimoEventoId": "criarCartao__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-11"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-11",
+                  "inicio": "2026-10-10",
+                  "fechamento": "2026-11-10",
+                  "vencimento": "2026-11-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-11-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__batchControlNovember",
+                  "createdAt": "2026-10-18T21:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/confirmarFatura__batchControlNovember"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "confirmarFatura",
+                  "operationKey": "batchControlNovember",
+                  "alvoId": "card__2026-11",
+                  "expectedVersion": 0,
+                  "resultVersion": 1,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "confirmarFatura",
+                    "operationKey": "batchControlNovember",
+                    "alvoId": "card__2026-11",
+                    "expectedVersion": 0,
+                    "payload": {
+                      "cartaoId": "card",
+                      "competencia": "2026-11",
+                      "inicio": "2026-10-10",
+                      "fechamento": "2026-11-10",
+                      "vencimento": "2026-11-17",
+                      "calendarioOrigem": {
+                        "calendarVersion": 2,
+                        "cartaoVersion": 1,
+                        "diaFechamento": 10,
+                        "diaVencimento": 17,
+                        "vencimentoOriginal": "2026-11-17",
+                        "origemInicio": "padrao",
+                        "origemFechamento": "padrao"
+                      },
+                      "cartaoVersion": 1
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2026-11",
+                    "inicio": "2026-10-10",
+                    "fechamento": "2026-11-10",
+                    "vencimento": "2026-11-17",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 1,
+                      "diaFechamento": 10,
+                      "diaVencimento": 17,
+                      "vencimentoOriginal": "2026-11-17",
+                      "origemInicio": "padrao",
+                      "origemFechamento": "padrao"
+                    }
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-09"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-10"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-12"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2027-01"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    },
+    {
+      "name": "distanceTwo",
+      "test": {
+        "expectation": "DENY",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/faturas/card__2026-12",
+          "method": "create",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "cartaoId": "card",
+              "competencia": "2026-12",
+              "inicio": "2026-10-25",
+              "fechamento": "2026-11-25",
+              "vencimento": "2026-12-05",
+              "calendarioOrigem": {
+                "calendarVersion": 2,
+                "cartaoVersion": 2,
+                "diaFechamento": 25,
+                "diaVencimento": 5,
+                "vencimentoOriginal": "2026-12-05",
+                "origemInicio": "padrao",
+                "origemFechamento": "padrao"
+              },
+              "schemaVersion": 1,
+              "versaoConteudo": 1,
+              "version": 1,
+              "ultimoEventoId": "confirmarFatura__distanceTwo",
+              "createdAt": "2026-10-18T21:00:00Z",
+              "updatedAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/cartoes/card"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "banco": "Fixture",
+                  "nome": "Fixture",
+                  "titularId": "holder",
+                  "diaFechamento": 25,
+                  "diaVencimento": 5,
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 2,
+                  "ultimoEventoId": "criarCartao__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-12"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-12",
+                  "inicio": "2026-10-25",
+                  "fechamento": "2026-11-25",
+                  "vencimento": "2026-12-05",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 2,
+                    "diaFechamento": 25,
+                    "diaVencimento": 5,
+                    "vencimentoOriginal": "2026-12-05",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__distanceTwo",
+                  "createdAt": "2026-10-18T21:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/confirmarFatura__distanceTwo"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "confirmarFatura",
+                  "operationKey": "distanceTwo",
+                  "alvoId": "card__2026-12",
+                  "expectedVersion": 0,
+                  "resultVersion": 1,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "confirmarFatura",
+                    "operationKey": "distanceTwo",
+                    "alvoId": "card__2026-12",
+                    "expectedVersion": 0,
+                    "payload": {
+                      "cartaoId": "card",
+                      "competencia": "2026-12",
+                      "inicio": "2026-10-25",
+                      "fechamento": "2026-11-25",
+                      "vencimento": "2026-12-05",
+                      "calendarioOrigem": {
+                        "calendarVersion": 2,
+                        "cartaoVersion": 2,
+                        "diaFechamento": 25,
+                        "diaVencimento": 5,
+                        "vencimentoOriginal": "2026-12-05",
+                        "origemInicio": "padrao",
+                        "origemFechamento": "padrao"
+                      },
+                      "cartaoVersion": 2
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2026-12",
+                    "inicio": "2026-10-25",
+                    "fechamento": "2026-11-25",
+                    "vencimento": "2026-12-05",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 2,
+                      "diaFechamento": 25,
+                      "diaVencimento": 5,
+                      "vencimentoOriginal": "2026-12-05",
+                      "origemInicio": "padrao",
+                      "origemFechamento": "padrao"
+                    }
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-10"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-10",
+                  "inicio": "2026-09-30",
+                  "fechamento": "2026-10-30",
+                  "vencimento": "2026-10-31",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 30,
+                    "diaVencimento": 31,
+                    "vencimentoOriginal": "2026-10-31",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-11"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2027-01"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2027-02"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    },
+    {
+      "name": "distanceTwoReverse",
+      "test": {
+        "expectation": "DENY",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/faturas/card__2026-10",
+          "method": "create",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "cartaoId": "card",
+              "competencia": "2026-10",
+              "inicio": "2026-09-30",
+              "fechamento": "2026-10-30",
+              "vencimento": "2026-10-31",
+              "calendarioOrigem": {
+                "calendarVersion": 2,
+                "cartaoVersion": 2,
+                "diaFechamento": 30,
+                "diaVencimento": 31,
+                "vencimentoOriginal": "2026-10-31",
+                "origemInicio": "padrao",
+                "origemFechamento": "padrao"
+              },
+              "schemaVersion": 1,
+              "versaoConteudo": 1,
+              "version": 1,
+              "ultimoEventoId": "confirmarFatura__distanceTwoReverse",
+              "createdAt": "2026-10-18T21:00:00Z",
+              "updatedAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/cartoes/card"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "banco": "Fixture",
+                  "nome": "Fixture",
+                  "titularId": "holder",
+                  "diaFechamento": 30,
+                  "diaVencimento": 31,
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 2,
+                  "ultimoEventoId": "criarCartao__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-10"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-10",
+                  "inicio": "2026-09-30",
+                  "fechamento": "2026-10-30",
+                  "vencimento": "2026-10-31",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 2,
+                    "diaFechamento": 30,
+                    "diaVencimento": 31,
+                    "vencimentoOriginal": "2026-10-31",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__distanceTwoReverse",
+                  "createdAt": "2026-10-18T21:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/confirmarFatura__distanceTwoReverse"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "confirmarFatura",
+                  "operationKey": "distanceTwoReverse",
+                  "alvoId": "card__2026-10",
+                  "expectedVersion": 0,
+                  "resultVersion": 1,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "confirmarFatura",
+                    "operationKey": "distanceTwoReverse",
+                    "alvoId": "card__2026-10",
+                    "expectedVersion": 0,
+                    "payload": {
+                      "cartaoId": "card",
+                      "competencia": "2026-10",
+                      "inicio": "2026-09-30",
+                      "fechamento": "2026-10-30",
+                      "vencimento": "2026-10-31",
+                      "calendarioOrigem": {
+                        "calendarVersion": 2,
+                        "cartaoVersion": 2,
+                        "diaFechamento": 30,
+                        "diaVencimento": 31,
+                        "vencimentoOriginal": "2026-10-31",
+                        "origemInicio": "padrao",
+                        "origemFechamento": "padrao"
+                      },
+                      "cartaoVersion": 2
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2026-10",
+                    "inicio": "2026-09-30",
+                    "fechamento": "2026-10-30",
+                    "vencimento": "2026-10-31",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 2,
+                      "diaFechamento": 30,
+                      "diaVencimento": 31,
+                      "vencimentoOriginal": "2026-10-31",
+                      "origemInicio": "padrao",
+                      "origemFechamento": "padrao"
+                    }
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-08"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-09"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-11"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-12"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-12",
+                  "inicio": "2026-10-25",
+                  "fechamento": "2026-11-25",
+                  "vencimento": "2026-12-05",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 25,
+                    "diaVencimento": 5,
+                    "vencimentoOriginal": "2026-12-05",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    },
+    {
+      "name": "februaryCoincidence",
+      "test": {
+        "expectation": "ALLOW",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/faturas/card__2027-02",
+          "method": "create",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "cartaoId": "card",
+              "competencia": "2027-02",
+              "inicio": "2027-01-30",
+              "fechamento": "2027-02-28",
+              "vencimento": "2027-02-28",
+              "calendarioOrigem": {
+                "calendarVersion": 2,
+                "cartaoVersion": 1,
+                "diaFechamento": 30,
+                "diaVencimento": 31,
+                "vencimentoOriginal": "2027-02-28",
+                "origemInicio": "padrao",
+                "origemFechamento": "padrao"
+              },
+              "schemaVersion": 1,
+              "versaoConteudo": 1,
+              "version": 1,
+              "ultimoEventoId": "confirmarFatura__februaryCoincidence",
+              "createdAt": "2026-10-18T21:00:00Z",
+              "updatedAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/cartoes/card"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "banco": "Fixture",
+                  "nome": "Fixture",
+                  "titularId": "holder",
+                  "diaFechamento": 30,
+                  "diaVencimento": 31,
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "ultimoEventoId": "criarCartao__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2027-02"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2027-02",
+                  "inicio": "2027-01-30",
+                  "fechamento": "2027-02-28",
+                  "vencimento": "2027-02-28",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 30,
+                    "diaVencimento": 31,
+                    "vencimentoOriginal": "2027-02-28",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__februaryCoincidence",
+                  "createdAt": "2026-10-18T21:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/confirmarFatura__februaryCoincidence"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "confirmarFatura",
+                  "operationKey": "februaryCoincidence",
+                  "alvoId": "card__2027-02",
+                  "expectedVersion": 0,
+                  "resultVersion": 1,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "confirmarFatura",
+                    "operationKey": "februaryCoincidence",
+                    "alvoId": "card__2027-02",
+                    "expectedVersion": 0,
+                    "payload": {
+                      "cartaoId": "card",
+                      "competencia": "2027-02",
+                      "inicio": "2027-01-30",
+                      "fechamento": "2027-02-28",
+                      "vencimento": "2027-02-28",
+                      "calendarioOrigem": {
+                        "calendarVersion": 2,
+                        "cartaoVersion": 1,
+                        "diaFechamento": 30,
+                        "diaVencimento": 31,
+                        "vencimentoOriginal": "2027-02-28",
+                        "origemInicio": "padrao",
+                        "origemFechamento": "padrao"
+                      },
+                      "cartaoVersion": 1
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2027-02",
+                    "inicio": "2027-01-30",
+                    "fechamento": "2027-02-28",
+                    "vencimento": "2027-02-28",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 1,
+                      "diaFechamento": 30,
+                      "diaVencimento": 31,
+                      "vencimentoOriginal": "2027-02-28",
+                      "origemInicio": "padrao",
+                      "origemFechamento": "padrao"
+                    }
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-12"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2027-01"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2027-03"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2027-04"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    },
+    {
+      "name": "februaryCoincidenceReceipt",
+      "test": {
+        "expectation": "ALLOW",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/operacoesFaturas/confirmarFatura__februaryCoincidence",
+          "method": "create",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "schemaVersion": 1,
+              "contractVersion": 1,
+              "tipo": "confirmarFatura",
+              "operationKey": "februaryCoincidence",
+              "alvoId": "card__2027-02",
+              "expectedVersion": 0,
+              "resultVersion": 1,
+              "comando": {
+                "contractVersion": 1,
+                "tipo": "confirmarFatura",
+                "operationKey": "februaryCoincidence",
+                "alvoId": "card__2027-02",
+                "expectedVersion": 0,
+                "payload": {
+                  "cartaoId": "card",
+                  "competencia": "2027-02",
+                  "inicio": "2027-01-30",
+                  "fechamento": "2027-02-28",
+                  "vencimento": "2027-02-28",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 30,
+                    "diaVencimento": 31,
+                    "vencimentoOriginal": "2027-02-28",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "cartaoVersion": 1
+                }
+              },
+              "resultado": {
+                "cartaoId": "card",
+                "competencia": "2027-02",
+                "inicio": "2027-01-30",
+                "fechamento": "2027-02-28",
+                "vencimento": "2027-02-28",
+                "calendarioOrigem": {
+                  "calendarVersion": 2,
+                  "cartaoVersion": 1,
+                  "diaFechamento": 30,
+                  "diaVencimento": 31,
+                  "vencimentoOriginal": "2027-02-28",
+                  "origemInicio": "padrao",
+                  "origemFechamento": "padrao"
+                }
+              },
+              "createdAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/cartoes/card"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "banco": "Fixture",
+                  "nome": "Fixture",
+                  "titularId": "holder",
+                  "diaFechamento": 30,
+                  "diaVencimento": 31,
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "ultimoEventoId": "criarCartao__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2027-02"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2027-02",
+                  "inicio": "2027-01-30",
+                  "fechamento": "2027-02-28",
+                  "vencimento": "2027-02-28",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 30,
+                    "diaVencimento": 31,
+                    "vencimentoOriginal": "2027-02-28",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__februaryCoincidence",
+                  "createdAt": "2026-10-18T21:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/confirmarFatura__februaryCoincidence"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "confirmarFatura",
+                  "operationKey": "februaryCoincidence",
+                  "alvoId": "card__2027-02",
+                  "expectedVersion": 0,
+                  "resultVersion": 1,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "confirmarFatura",
+                    "operationKey": "februaryCoincidence",
+                    "alvoId": "card__2027-02",
+                    "expectedVersion": 0,
+                    "payload": {
+                      "cartaoId": "card",
+                      "competencia": "2027-02",
+                      "inicio": "2027-01-30",
+                      "fechamento": "2027-02-28",
+                      "vencimento": "2027-02-28",
+                      "calendarioOrigem": {
+                        "calendarVersion": 2,
+                        "cartaoVersion": 1,
+                        "diaFechamento": 30,
+                        "diaVencimento": 31,
+                        "vencimentoOriginal": "2027-02-28",
+                        "origemInicio": "padrao",
+                        "origemFechamento": "padrao"
+                      },
+                      "cartaoVersion": 1
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2027-02",
+                    "inicio": "2027-01-30",
+                    "fechamento": "2027-02-28",
+                    "vencimento": "2027-02-28",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 1,
+                      "diaFechamento": 30,
+                      "diaVencimento": 31,
+                      "vencimentoOriginal": "2027-02-28",
+                      "origemInicio": "padrao",
+                      "origemFechamento": "padrao"
+                    }
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-12"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2027-01"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2027-03"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2027-04"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    },
+    {
+      "name": "archivedCard",
+      "test": {
+        "expectation": "DENY",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/faturas/card__2026-10",
+          "method": "create",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "cartaoId": "card",
+              "competencia": "2026-10",
+              "inicio": "2026-09-10",
+              "fechamento": "2026-10-10",
+              "vencimento": "2026-10-17",
+              "calendarioOrigem": {
+                "calendarVersion": 2,
+                "cartaoVersion": 1,
+                "diaFechamento": 10,
+                "diaVencimento": 17,
+                "vencimentoOriginal": "2026-10-17",
+                "origemInicio": "padrao",
+                "origemFechamento": "padrao"
+              },
+              "schemaVersion": 1,
+              "versaoConteudo": 1,
+              "version": 1,
+              "ultimoEventoId": "confirmarFatura__archivedCard",
+              "createdAt": "2026-10-18T21:00:00Z",
+              "updatedAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/cartoes/card"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "banco": "Fixture",
+                  "nome": "Fixture",
+                  "titularId": "holder",
+                  "diaFechamento": 10,
+                  "diaVencimento": 17,
+                  "estado": "arquivado",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "ultimoEventoId": "criarCartao__old",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z",
+                  "archivedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-10"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-10",
+                  "inicio": "2026-09-10",
+                  "fechamento": "2026-10-10",
+                  "vencimento": "2026-10-17",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-10-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 1,
+                  "ultimoEventoId": "confirmarFatura__archivedCard",
+                  "createdAt": "2026-10-18T21:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/confirmarFatura__archivedCard"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "confirmarFatura",
+                  "operationKey": "archivedCard",
+                  "alvoId": "card__2026-10",
+                  "expectedVersion": 0,
+                  "resultVersion": 1,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "confirmarFatura",
+                    "operationKey": "archivedCard",
+                    "alvoId": "card__2026-10",
+                    "expectedVersion": 0,
+                    "payload": {
+                      "cartaoId": "card",
+                      "competencia": "2026-10",
+                      "inicio": "2026-09-10",
+                      "fechamento": "2026-10-10",
+                      "vencimento": "2026-10-17",
+                      "calendarioOrigem": {
+                        "calendarVersion": 2,
+                        "cartaoVersion": 1,
+                        "diaFechamento": 10,
+                        "diaVencimento": 17,
+                        "vencimentoOriginal": "2026-10-17",
+                        "origemInicio": "padrao",
+                        "origemFechamento": "padrao"
+                      },
+                      "cartaoVersion": 1
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2026-10",
+                    "inicio": "2026-09-10",
+                    "fechamento": "2026-10-10",
+                    "vencimento": "2026-10-17",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 1,
+                      "diaFechamento": 10,
+                      "diaVencimento": 17,
+                      "vencimentoOriginal": "2026-10-17",
+                      "origemInicio": "padrao",
+                      "origemFechamento": "padrao"
+                    }
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-08"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-09"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-11"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          },
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-12"
+              }
+            ],
+            "result": {
+              "value": null
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    },
+    {
+      "name": "adjust",
+      "test": {
+        "expectation": "ALLOW",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/faturas/card__2026-10",
+          "method": "update",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "cartaoId": "card",
+              "competencia": "2026-10",
+              "inicio": "2026-09-10",
+              "fechamento": "2026-10-10",
+              "vencimento": "2026-10-19",
+              "calendarioOrigem": {
+                "calendarVersion": 2,
+                "cartaoVersion": 1,
+                "diaFechamento": 10,
+                "diaVencimento": 17,
+                "vencimentoOriginal": "2026-10-17",
+                "origemInicio": "padrao",
+                "origemFechamento": "padrao"
+              },
+              "schemaVersion": 1,
+              "versaoConteudo": 1,
+              "version": 2,
+              "ultimoEventoId": "ajustarVencimento__adjust",
+              "createdAt": "2020-01-01T00:00:00Z",
+              "updatedAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "resource": {
+          "data": {
+            "cartaoId": "card",
+            "competencia": "2026-10",
+            "inicio": "2026-09-10",
+            "fechamento": "2026-10-10",
+            "vencimento": "2026-10-17",
+            "calendarioOrigem": {
+              "calendarVersion": 2,
+              "cartaoVersion": 1,
+              "diaFechamento": 10,
+              "diaVencimento": 17,
+              "vencimentoOriginal": "2026-10-17",
+              "origemInicio": "padrao",
+              "origemFechamento": "padrao"
+            },
+            "schemaVersion": 1,
+            "versaoConteudo": 1,
+            "version": 1,
+            "ultimoEventoId": "confirmarFatura__old",
+            "createdAt": "2020-01-01T00:00:00Z",
+            "updatedAt": "2020-01-01T00:00:00Z"
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/ajustarVencimento__adjust"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "ajustarVencimento",
+                  "operationKey": "adjust",
+                  "alvoId": "card__2026-10",
+                  "expectedVersion": 1,
+                  "resultVersion": 2,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "ajustarVencimento",
+                    "operationKey": "adjust",
+                    "alvoId": "card__2026-10",
+                    "expectedVersion": 1,
+                    "payload": {
+                      "vencimento": "2026-10-19",
+                      "motivo": "Fixture"
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2026-10",
+                    "inicio": "2026-09-10",
+                    "fechamento": "2026-10-10",
+                    "vencimento": "2026-10-19",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 1,
+                      "diaFechamento": 10,
+                      "diaVencimento": 17,
+                      "vencimentoOriginal": "2026-10-17",
+                      "origemInicio": "padrao",
+                      "origemFechamento": "padrao"
+                    }
+                  },
+                  "antes": {
+                    "vencimento": "2026-10-17"
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-10"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-10",
+                  "inicio": "2026-09-10",
+                  "fechamento": "2026-10-10",
+                  "vencimento": "2026-10-19",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-10-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 2,
+                  "ultimoEventoId": "ajustarVencimento__adjust",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    },
+    {
+      "name": "adjustReceipt",
+      "test": {
+        "expectation": "ALLOW",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/operacoesFaturas/ajustarVencimento__adjust",
+          "method": "create",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "schemaVersion": 1,
+              "contractVersion": 1,
+              "tipo": "ajustarVencimento",
+              "operationKey": "adjust",
+              "alvoId": "card__2026-10",
+              "expectedVersion": 1,
+              "resultVersion": 2,
+              "comando": {
+                "contractVersion": 1,
+                "tipo": "ajustarVencimento",
+                "operationKey": "adjust",
+                "alvoId": "card__2026-10",
+                "expectedVersion": 1,
+                "payload": {
+                  "vencimento": "2026-10-19",
+                  "motivo": "Fixture"
+                }
+              },
+              "resultado": {
+                "cartaoId": "card",
+                "competencia": "2026-10",
+                "inicio": "2026-09-10",
+                "fechamento": "2026-10-10",
+                "vencimento": "2026-10-19",
+                "calendarioOrigem": {
+                  "calendarVersion": 2,
+                  "cartaoVersion": 1,
+                  "diaFechamento": 10,
+                  "diaVencimento": 17,
+                  "vencimentoOriginal": "2026-10-17",
+                  "origemInicio": "padrao",
+                  "origemFechamento": "padrao"
+                }
+              },
+              "antes": {
+                "vencimento": "2026-10-17"
+              },
+              "createdAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/ajustarVencimento__adjust"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "ajustarVencimento",
+                  "operationKey": "adjust",
+                  "alvoId": "card__2026-10",
+                  "expectedVersion": 1,
+                  "resultVersion": 2,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "ajustarVencimento",
+                    "operationKey": "adjust",
+                    "alvoId": "card__2026-10",
+                    "expectedVersion": 1,
+                    "payload": {
+                      "vencimento": "2026-10-19",
+                      "motivo": "Fixture"
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2026-10",
+                    "inicio": "2026-09-10",
+                    "fechamento": "2026-10-10",
+                    "vencimento": "2026-10-19",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 1,
+                      "diaFechamento": 10,
+                      "diaVencimento": 17,
+                      "vencimentoOriginal": "2026-10-17",
+                      "origemInicio": "padrao",
+                      "origemFechamento": "padrao"
+                    }
+                  },
+                  "antes": {
+                    "vencimento": "2026-10-17"
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-10"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-10",
+                  "inicio": "2026-09-10",
+                  "fechamento": "2026-10-10",
+                  "vencimento": "2026-10-19",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-10-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 2,
+                  "ultimoEventoId": "ajustarVencimento__adjust",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    },
+    {
+      "name": "adjustChangesBoundary",
+      "test": {
+        "expectation": "DENY",
+        "request": {
+          "path": "/databases/(default)/documents/users/fixture/faturas/card__2026-10",
+          "method": "update",
+          "auth": {
+            "uid": "fixture",
+            "token": {
+              "auth_time": 1792357200
+            }
+          },
+          "time": "2026-10-18T21:00:00Z",
+          "resource": {
+            "data": {
+              "cartaoId": "card",
+              "competencia": "2026-10",
+              "inicio": "2026-09-11",
+              "fechamento": "2026-10-10",
+              "vencimento": "2026-10-19",
+              "calendarioOrigem": {
+                "calendarVersion": 2,
+                "cartaoVersion": 1,
+                "diaFechamento": 10,
+                "diaVencimento": 17,
+                "vencimentoOriginal": "2026-10-17",
+                "origemInicio": "padrao",
+                "origemFechamento": "padrao"
+              },
+              "schemaVersion": 1,
+              "versaoConteudo": 1,
+              "version": 2,
+              "ultimoEventoId": "ajustarVencimento__adjust",
+              "createdAt": "2020-01-01T00:00:00Z",
+              "updatedAt": "2026-10-18T21:00:00Z"
+            }
+          }
+        },
+        "resource": {
+          "data": {
+            "cartaoId": "card",
+            "competencia": "2026-10",
+            "inicio": "2026-09-10",
+            "fechamento": "2026-10-10",
+            "vencimento": "2026-10-17",
+            "calendarioOrigem": {
+              "calendarVersion": 2,
+              "cartaoVersion": 1,
+              "diaFechamento": 10,
+              "diaVencimento": 17,
+              "vencimentoOriginal": "2026-10-17",
+              "origemInicio": "padrao",
+              "origemFechamento": "padrao"
+            },
+            "schemaVersion": 1,
+            "versaoConteudo": 1,
+            "version": 1,
+            "ultimoEventoId": "confirmarFatura__old",
+            "createdAt": "2020-01-01T00:00:00Z",
+            "updatedAt": "2020-01-01T00:00:00Z"
+          }
+        },
+        "functionMocks": [
+          {
+            "function": "get",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "uid": "fixture",
+                  "schemaVersion": 1,
+                  "primeiro_login": false,
+                  "timezone": "America/Rio_Branco",
+                  "passwordChangeCompletedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/titulares/holder"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "nome": "Fixture",
+                  "estado": "ativo",
+                  "schemaVersion": 1,
+                  "version": 1,
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2020-01-01T00:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/operacoesFaturas/ajustarVencimento__adjust"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "schemaVersion": 1,
+                  "contractVersion": 1,
+                  "tipo": "ajustarVencimento",
+                  "operationKey": "adjust",
+                  "alvoId": "card__2026-10",
+                  "expectedVersion": 1,
+                  "resultVersion": 2,
+                  "comando": {
+                    "contractVersion": 1,
+                    "tipo": "ajustarVencimento",
+                    "operationKey": "adjust",
+                    "alvoId": "card__2026-10",
+                    "expectedVersion": 1,
+                    "payload": {
+                      "vencimento": "2026-10-19",
+                      "motivo": "Fixture"
+                    }
+                  },
+                  "resultado": {
+                    "cartaoId": "card",
+                    "competencia": "2026-10",
+                    "inicio": "2026-09-10",
+                    "fechamento": "2026-10-10",
+                    "vencimento": "2026-10-19",
+                    "calendarioOrigem": {
+                      "calendarVersion": 2,
+                      "cartaoVersion": 1,
+                      "diaFechamento": 10,
+                      "diaVencimento": 17,
+                      "vencimentoOriginal": "2026-10-17",
+                      "origemInicio": "padrao",
+                      "origemFechamento": "padrao"
+                    }
+                  },
+                  "antes": {
+                    "vencimento": "2026-10-17"
+                  },
+                  "createdAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "function": "getAfter",
+            "args": [
+              {
+                "exactValue": "/databases/%28default%29/documents/users/fixture/faturas/card__2026-10"
+              }
+            ],
+            "result": {
+              "value": {
+                "data": {
+                  "cartaoId": "card",
+                  "competencia": "2026-10",
+                  "inicio": "2026-09-10",
+                  "fechamento": "2026-10-10",
+                  "vencimento": "2026-10-19",
+                  "calendarioOrigem": {
+                    "calendarVersion": 2,
+                    "cartaoVersion": 1,
+                    "diaFechamento": 10,
+                    "diaVencimento": 17,
+                    "vencimentoOriginal": "2026-10-17",
+                    "origemInicio": "padrao",
+                    "origemFechamento": "padrao"
+                  },
+                  "schemaVersion": 1,
+                  "versaoConteudo": 1,
+                  "version": 2,
+                  "ultimoEventoId": "ajustarVencimento__adjust",
+                  "createdAt": "2020-01-01T00:00:00Z",
+                  "updatedAt": "2026-10-18T21:00:00Z"
+                }
+              }
+            }
+          }
+        ],
+        "expressionReportLevel": "FULL"
+      }
+    }
+  ]
+}

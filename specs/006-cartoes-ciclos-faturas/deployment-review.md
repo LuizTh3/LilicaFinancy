@@ -35,3 +35,11 @@ Cinco índices novos foram submetidos; nenhum índice foi removido. Isenções a
 Matriz real de cartões concluída: cartoes006-full-20261018-01, cinco testes aprovados. Todos os14 índices READY; isenções configuradas, com operações assíncronas acompanhadas em006-readiness.json. Perfis de cartões promovidos; faturas não promovidas. Nenhuma limpeza executada.
 
 Verificação final concluída:14/14 índices READY, todas as isenções e operações concluídas, fonte ativa confere; ready=true em006-readiness.json.
+
+## Conserto G0 preparado pela007 — avaliação remota pendente
+
+A preparação007 acrescenta18 casos sintéticos reproduzíveis em specs/006-cartoes-ciclos-faturas/rules-evaluation-cases.json, regeneráveis por scripts/build-invoice-rules-cases.mjs sem rede/credenciais. Na fonte completa firestore.rules, a refatoração de invoiceOrigin/invoiceCalendar/invoiceMutation usa bindings locais para evitar releitura de campos, e invoiceBoundaries calcula uma vez o índice da competência para os quatro vizinhos. Preservados todos os predicados de calendário, shape, vínculos, origens e checagens completas dos vizinhos; nenhuma permissão foi ampliada. invoiceCalendar usa9 bindings, abaixo do teto10; chamadas documentais do grafo não foram reduzidas por hipótese de cache.
+
+As três permissões de mutação de faturas/eventos permanecem false; availability/perfis não foram alterados. A redução de expressões executadas ainda precisa de medição oficial; não afirmar que G0 foi resolvido por inspeção local. A avaliação preparada é test-only: habilita os ramos exclusivamente na cópia em memória enviada à API de testes, sem publicar Rules ou gravar faturas.
+
+Na execução007, a tentativa sandbox falhou por rede. A aprovação automática rejeitou a tentativa ampliada porque enviaria fonte privada à API Firebase sem autorização específica reconhecida para esse envio nesta execução. Não houve nova tentativa ou contorno. Compilação/avaliação e matriz real continuam pendentes; a fonte local é revisável antes da autorização específica de envio.

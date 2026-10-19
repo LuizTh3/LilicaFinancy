@@ -3,6 +3,12 @@ import type { Manifest } from './manifest'
 export function cleanupOrder(documents: Manifest['documents']) {
   const priority = (path: string) => {
     const group = path.split('/')[2]
+    if (group === 'parcelasCartao') return 0
+    if (group === 'operacoesCompras') return 1
+    if (group === 'controlesFaturas') return 2
+    if (group === 'compras') return 3
+    if (group === 'operacoesFaturas') return 4
+    if (group === 'faturas') return 5
     return group === 'reversoesExternas' ? 0 : group === 'operacoesExternas' ? 1 : group === 'lancamentosExternos' ? 2 : 3
   }
   return [...documents].sort((a,b) => b.path.split('/').length - a.path.split('/').length || priority(a.path) - priority(b.path) || a.path.localeCompare(b.path))

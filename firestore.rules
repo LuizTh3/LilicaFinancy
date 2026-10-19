@@ -352,9 +352,11 @@ service cloud.firestore {
     }
     function invoiceOrigin(o) {
       let keys = ['calendarVersion','cartaoVersion','diaFechamento','diaVencimento','vencimentoOriginal','origemInicio','origemFechamento'];
+      let closeDay = o.diaFechamento;
+      let dueDay = o.diaVencimento;
       return o is map && o.keys().hasAll(keys) && o.keys().hasOnly(keys) && o.calendarVersion is int && o.calendarVersion == 2
-        && safeVersion(o.cartaoVersion) && o.diaFechamento is int && o.diaFechamento >= 1 && o.diaFechamento <= 31
-        && o.diaVencimento is int && o.diaVencimento >= 1 && o.diaVencimento <= 31
+        && safeVersion(o.cartaoVersion) && closeDay is int && closeDay >= 1 && closeDay <= 31
+        && dueDay is int && dueDay >= 1 && dueDay <= 31
         && o.origemInicio in ['padrao','vizinhoConfirmado'] && o.origemFechamento in ['padrao','vizinhoConfirmado'];
     }
     function invoiceAnchorDay(s,day) {
@@ -371,15 +373,21 @@ service cloud.firestore {
     function invoiceCalendar(d) {
       let o = d.calendarioOrigem;
       let m = invoiceMonthIndex(d.competencia);
-      let close = m - (o.diaFechamento < o.diaVencimento ? 0 : 1);
+      let closeDay = o.diaFechamento;
+      let dueDay = o.diaVencimento;
+      let close = m - (closeDay < dueDay ? 0 : 1);
+      let start = d.inicio;
+      let closing = d.fechamento;
+      let due = d.vencimento;
+      let originalDue = o.vencimentoOriginal;
       return invoiceOrigin(o) && close - 1 >= 1900 * 12
-        && d.inicio is string && d.fechamento is string && calendarDate(d.vencimento)
-        && d.inicio < d.fechamento && d.fechamento <= d.vencimento && d.vencimento[0:7] == d.competencia
-        && invoiceMonthIndex(d.inicio[0:7]) in [m - 2,m - 1] && invoiceMonthIndex(d.fechamento[0:7]) in [m - 1,m]
-        && invoiceAnchoredDate(o.vencimentoOriginal,m,o.diaVencimento)
-        && (o.origemInicio == 'padrao' ? invoiceAnchoredDate(d.inicio,close - 1,o.diaFechamento) : calendarDate(d.inicio))
-        && (o.origemFechamento == 'padrao' ? invoiceAnchoredDate(d.fechamento,close,o.diaFechamento) : calendarDate(d.fechamento))
-        && (d.fechamento < d.vencimento || o.diaFechamento < o.diaVencimento && d.vencimento == o.vencimentoOriginal && int(d.vencimento[8:10]) <= o.diaFechamento);
+        && start is string && closing is string && calendarDate(due)
+        && start < closing && closing <= due && due[0:7] == d.competencia
+        && invoiceMonthIndex(start[0:7]) in [m - 2,m - 1] && invoiceMonthIndex(closing[0:7]) in [m - 1,m]
+        && invoiceAnchoredDate(originalDue,m,dueDay)
+        && (o.origemInicio == 'padrao' ? invoiceAnchoredDate(start,close - 1,closeDay) : calendarDate(start))
+        && (o.origemFechamento == 'padrao' ? invoiceAnchoredDate(closing,close,closeDay) : calendarDate(closing))
+        && (closing < due || closeDay < dueDay && due == originalDue && int(due[8:10]) <= closeDay);
     }
     function invoiceDoc(d) {
       let keys = invoiceKeys().concat(['schemaVersion','versaoConteudo','version','ultimoEventoId','createdAt','updatedAt']);
@@ -388,21 +396,22 @@ service cloud.firestore {
         && safeVersion(d.version) && d.ultimoEventoId is string && d.ultimoEventoId.matches('^(confirmarFatura|ajustarVencimento)__[A-Za-z0-9-]{1,64}$')
         && d.createdAt is timestamp && d.updatedAt is timestamp && d.createdAt <= d.updatedAt && invoiceCalendar(d);
     }
-    function invoiceNeighbor(uid,card,m,offset) {
-      let index = invoiceMonthIndex(m) + offset;
+    function invoiceNeighbor(uid,card,monthIndex,offset) {
+      let index = monthIndex + offset;
       return index < 1900 * 12 || index > 9999 * 12 + 11 ? null
         : get(/databases/$(database)/documents/users/$(uid)/faturas/$(card + '__' + invoiceMonth(index)));
     }
-    function invoiceNeighborValid(n,d,offset) {
+    function invoiceNeighborValid(n,d,monthIndex,offset) {
       return n == null || invoiceDoc(n.data) && n.data.cartaoId == d.cartaoId
-        && n.data.competencia == invoiceMonth(invoiceMonthIndex(d.competencia) + offset);
+        && n.data.competencia == invoiceMonth(monthIndex + offset);
     }
     function invoiceBoundaries(uid,d) {
-      let p2 = invoiceNeighbor(uid,d.cartaoId,d.competencia,-2);
-      let p1 = invoiceNeighbor(uid,d.cartaoId,d.competencia,-1);
-      let n1 = invoiceNeighbor(uid,d.cartaoId,d.competencia,1);
-      let n2 = invoiceNeighbor(uid,d.cartaoId,d.competencia,2);
-      return invoiceNeighborValid(p2,d,-2) && invoiceNeighborValid(p1,d,-1) && invoiceNeighborValid(n1,d,1) && invoiceNeighborValid(n2,d,2)
+      let monthIndex = invoiceMonthIndex(d.competencia);
+      let p2 = invoiceNeighbor(uid,d.cartaoId,monthIndex,-2);
+      let p1 = invoiceNeighbor(uid,d.cartaoId,monthIndex,-1);
+      let n1 = invoiceNeighbor(uid,d.cartaoId,monthIndex,1);
+      let n2 = invoiceNeighbor(uid,d.cartaoId,monthIndex,2);
+      return invoiceNeighborValid(p2,d,monthIndex,-2) && invoiceNeighborValid(p1,d,monthIndex,-1) && invoiceNeighborValid(n1,d,monthIndex,1) && invoiceNeighborValid(n2,d,monthIndex,2)
         && (p1 == null ? d.calendarioOrigem.origemInicio == 'padrao' : d.calendarioOrigem.origemInicio == 'vizinhoConfirmado' && d.inicio == p1.data.fechamento)
         && (n1 == null ? d.calendarioOrigem.origemFechamento == 'padrao' : d.calendarioOrigem.origemFechamento == 'vizinhoConfirmado' && d.fechamento == n1.data.inicio)
         && (p2 == null || p2.data.fechamento <= d.inicio) && (n2 == null || d.fechamento <= n2.data.inicio);
@@ -416,20 +425,22 @@ service cloud.firestore {
     function invoiceMutation(uid,id,creating) {
       let d = request.resource.data;
       let r = getAfter(/databases/$(database)/documents/users/$(uid)/operacoesFaturas/$(d.ultimoEventoId)).data;
+      let payload = r.comando.payload;
+      let o = d.calendarioOrigem;
       return id == d.cartaoId + '__' + d.competencia && d.updatedAt == request.time
         && r.alvoId == id && r.resultVersion == d.version
         && r.resultado.diff(d).affectedKeys().hasOnly(['schemaVersion','versaoConteudo','version','ultimoEventoId','createdAt','updatedAt'])
         && (creating ? d.version == 1 && d.createdAt == request.time && r.tipo == 'confirmarFatura' && r.expectedVersion == 0
-            && !('antes' in r) && r.comando.payload.diff(r.resultado).affectedKeys().hasOnly(['cartaoVersion'])
-            && r.comando.payload.cartaoVersion == d.calendarioOrigem.cartaoVersion
-            && d.vencimento == d.calendarioOrigem.vencimentoOriginal && invoiceCard(uid,d) && invoiceBoundaries(uid,d)
+            && !('antes' in r) && payload.diff(r.resultado).affectedKeys().hasOnly(['cartaoVersion'])
+            && payload.cartaoVersion == o.cartaoVersion
+            && d.vencimento == o.vencimentoOriginal && invoiceCard(uid,d) && invoiceBoundaries(uid,d)
           : safeVersion(resource.data.version) && resource.data.updatedAt is timestamp
             && resource.data.updatedAt >= resource.data.createdAt && resource.data.updatedAt <= request.time
             && resource.data.ultimoEventoId is string && resource.data.ultimoEventoId.matches('^(confirmarFatura|ajustarVencimento)__[A-Za-z0-9-]{1,64}$')
             && invoicePreviousDue(resource.data) && d.version == resource.data.version + 1 && r.expectedVersion == resource.data.version
             && d.diff(resource.data).affectedKeys().hasOnly(['vencimento','version','ultimoEventoId','updatedAt'])
             && d.vencimento != resource.data.vencimento && r.tipo == 'ajustarVencimento'
-            && r.antes == {'vencimento':resource.data.vencimento} && r.comando.payload.vencimento == d.vencimento);
+            && r.antes == {'vencimento':resource.data.vencimento} && payload.vencimento == d.vencimento);
     }
     function invoicePreviousDue(d) {
       return calendarDate(d.vencimento) && d.vencimento[0:7] == d.competencia && d.fechamento <= d.vencimento
