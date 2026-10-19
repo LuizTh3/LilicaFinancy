@@ -2,6 +2,18 @@ import { camposPermitidos, falha, registro, sucesso } from './errors'
 import type { Resultado } from './errors'
 
 export const LIMITES = Object.freeze({ parcelas: 12, ocorrencias: 12, mutacoes: 32, bytesRequisicao: 1048576, bytesDocumento: 32768, acessos: 18, acessosPorOperacao: 8, expressoes: 1000, pagina: 50 })
+export function perfilCartoesFaturas(tipo:string) {
+ const profiles:Record<string,{acessosMaximos:number;acessosPorEscrita:readonly number[];leiturasTransacionais:number}>={
+  criarCartao:{acessosMaximos:7,acessosPorEscrita:[3,1],leiturasTransacionais:3},
+  editarCartao:{acessosMaximos:7,acessosPorEscrita:[3,1],leiturasTransacionais:3},
+  arquivarCartao:{acessosMaximos:5,acessosPorEscrita:[2,1],leiturasTransacionais:2},
+  confirmarFatura:{acessosMaximos:15,acessosPorEscrita:[7,1],leiturasTransacionais:7},
+  ajustarVencimento:{acessosMaximos:5,acessosPorEscrita:[2,1],leiturasTransacionais:2},
+ }
+ // Cards: official evaluation + live matrix cartoes006-full-20261018-01.
+ // Invoice writes remain disabled after the official expression-limit failure.
+ return Object.hasOwn(profiles,tipo)?{status:['criarCartao','editarCartao','arquivarCartao'].includes(tipo)?'validadoNoProjeto':'validacaoRemotaPendente',contractVersion:1,mutacoesMaximas:2,...profiles[tipo]} as const:{status:'naoHabilitado'} as const
+}
 // Creation was validated in the authorized Firebase project (US1/T024).
 // Profiles never authorize the generic simulation adapter or publication.
 export function perfilFinanceiroRemoto(tipo: string) {

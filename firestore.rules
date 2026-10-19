@@ -267,6 +267,225 @@ service cloud.firestore {
         && o.version == r.resultVersion && o.ultimoEventoId == id && sameExternalBusiness(o,r.depois)
         && externalLabels(uid,r.depois);
     }
+    // Feature 006: cards enabled after validation; invoice writes remain gated.
+    function cardPayload(d) {
+      return {'banco':d.banco,'nome':d.nome,'titularId':d.titularId,'diaFechamento':d.diaFechamento,'diaVencimento':d.diaVencimento};
+    }
+    function cardResult(d) {
+      return {'banco':d.banco,'nome':d.nome,'titularId':d.titularId,'diaFechamento':d.diaFechamento,'diaVencimento':d.diaVencimento,'estado':d.estado};
+    }
+    function cardBusiness(d) {
+      return externalText(d.banco,120) && externalText(d.nome,120) && safeId(d.titularId)
+        && d.diaFechamento is int && d.diaFechamento >= 1 && d.diaFechamento <= 31
+        && d.diaVencimento is int && d.diaVencimento >= 1 && d.diaVencimento <= 31;
+    }
+    function cardDoc(d) {
+      let keys = ['banco','nome','titularId','diaFechamento','diaVencimento','estado','schemaVersion','version','ultimoEventoId','createdAt','updatedAt'];
+      return d.keys().hasAll(keys) && d.keys().hasOnly(keys.concat(['archivedAt'])) && cardBusiness(d)
+        && (d.estado == 'ativo' ? !('archivedAt' in d) : d.estado == 'arquivado' && d.archivedAt is timestamp && d.archivedAt == d.updatedAt)
+        && d.schemaVersion is int && d.schemaVersion == 1 && safeVersion(d.version)
+        && d.ultimoEventoId is string && d.ultimoEventoId.matches('^(criarCartao|editarCartao|arquivarCartao)__[A-Za-z0-9-]{1,64}$')
+        && d.createdAt is timestamp && d.updatedAt is timestamp && d.updatedAt >= d.createdAt;
+    }
+    function cardHolder(uid,d,before) {
+      let h = getAfter(/databases/$(database)/documents/users/$(uid)/titulares/$(d.titularId));
+      return h != null && validCatalogDoc('titulares',h.data)
+        && (h.data.estado == 'ativo' || before.get('titularId','') == d.titularId);
+    }
+    function cardMutation(uid,id,creating) {
+      let d = request.resource.data;
+      let r = getAfter(/databases/$(database)/documents/users/$(uid)/operacoesCartoes/$(d.ultimoEventoId)).data;
+      return d.updatedAt == request.time && r.alvoId == id && r.resultVersion == d.version
+        && r.resultado == cardResult(d)
+        && (creating
+          ? d.estado == 'ativo' && r.comando.payload == cardPayload(d) && d.version == 1 && d.createdAt == request.time && r.expectedVersion == 0 && r.tipo == 'criarCartao'
+            && !r.keys().hasAny(['antes']) && cardHolder(uid,d,{})
+          : cardDoc(resource.data) && resource.data.estado == 'ativo' && d.version == resource.data.version + 1 && d.createdAt == resource.data.createdAt
+            && r.expectedVersion == resource.data.version && r.antes == cardResult(resource.data)
+            && (r.tipo == 'arquivarCartao' ? d.estado == 'arquivado' && r.comando.payload == {} && d.archivedAt == request.time
+                && cardPayload(d) == cardPayload(resource.data)
+              : r.tipo == 'editarCartao' && d.estado == 'ativo' && r.comando.payload == cardPayload(d)
+                && cardResult(d) != cardResult(resource.data) && cardHolder(uid,d,resource.data)));
+    }
+    function cardReceiptShape(r) {
+      let keys = ['schemaVersion','contractVersion','operationKey','tipo','alvoId','expectedVersion','resultVersion','comando','resultado','createdAt'];
+      let c = r.comando;
+      let payloadKeys = ['banco','nome','titularId','diaFechamento','diaVencimento'];
+      return r.keys().hasAll(keys) && r.keys().hasOnly(keys.concat(['antes']))
+        && r.schemaVersion is int && r.schemaVersion == 1 && r.contractVersion is int && r.contractVersion == 1
+        && safeId(r.operationKey) && safeId(r.alvoId) && r.tipo in ['criarCartao','editarCartao','arquivarCartao']
+        && r.expectedVersion is int && r.expectedVersion >= 0 && r.expectedVersion < 9007199254740991
+        && safeVersion(r.resultVersion) && r.resultVersion == r.expectedVersion + 1 && r.createdAt == request.time
+        && (r.tipo == 'criarCartao' ? r.expectedVersion == 0 : r.expectedVersion >= 1)
+        && c is map && c.keys().hasAll(['contractVersion','tipo','operationKey','alvoId','expectedVersion','payload'])
+        && c.keys().hasOnly(['contractVersion','tipo','operationKey','alvoId','expectedVersion','payload'])
+        && c.contractVersion is int && c.contractVersion == 1 && c.tipo == r.tipo && c.operationKey == r.operationKey
+        && c.alvoId == r.alvoId && c.expectedVersion is int && c.expectedVersion == r.expectedVersion
+        && c.payload is map && (r.tipo == 'arquivarCartao' ? c.payload == {} : c.payload.keys().hasAll(payloadKeys) && c.payload.keys().hasOnly(payloadKeys))
+        && r.resultado is map && r.resultado.keys().hasAll(payloadKeys.concat(['estado']))
+        && r.resultado.keys().hasOnly(payloadKeys.concat(['estado']));
+    }
+    function cardReceiptCreate(uid,id) {
+      let r = request.resource.data;
+      let after = getAfter(/databases/$(database)/documents/users/$(uid)/cartoes/$(r.alvoId)).data;
+      return id == r.tipo + '__' + r.operationKey && after.ultimoEventoId == id
+        && after.version == r.resultVersion && after.updatedAt == request.time
+        && cardResult(after) == r.resultado;
+    }
+    // Feature 006. Calendar math uses nominal day relation before clamping.
+    function invoiceMonthIndex(m) { return int(m[0:4]) * 12 + int(m[5:7]) - 1; }
+    function invoiceTwo(n) { return n < 10 ? '0' + string(n) : string(n); }
+    function invoiceMonth(i) { return string(int(i / 12)) + '-' + invoiceTwo(i % 12 + 1); }
+    function invoiceDate(i,day) {
+      let y = int(i / 12);
+      let m = i % 12 + 1;
+      let leap = y % 4 == 0 && (y % 100 != 0 || y % 400 == 0);
+      let max = m == 2 ? (leap ? 29 : 28) : (m in [4,6,9,11] ? 30 : 31);
+      return invoiceMonth(i) + '-' + invoiceTwo(day < max ? day : max);
+    }
+    function invoiceKeys() { return ['cartaoId','competencia','inicio','fechamento','vencimento','calendarioOrigem']; }
+    function invoiceResult(d) {
+      return {'cartaoId':d.cartaoId,'competencia':d.competencia,'inicio':d.inicio,'fechamento':d.fechamento,'vencimento':d.vencimento,'calendarioOrigem':d.calendarioOrigem};
+    }
+    function invoiceConfirmPayload(d) {
+      return {'cartaoId':d.cartaoId,'competencia':d.competencia,'inicio':d.inicio,'fechamento':d.fechamento,'vencimento':d.vencimento,'calendarioOrigem':d.calendarioOrigem,'cartaoVersion':d.calendarioOrigem.cartaoVersion};
+    }
+    function invoiceOrigin(o) {
+      let keys = ['calendarVersion','cartaoVersion','diaFechamento','diaVencimento','vencimentoOriginal','origemInicio','origemFechamento'];
+      return o is map && o.keys().hasAll(keys) && o.keys().hasOnly(keys) && o.calendarVersion is int && o.calendarVersion == 2
+        && safeVersion(o.cartaoVersion) && o.diaFechamento is int && o.diaFechamento >= 1 && o.diaFechamento <= 31
+        && o.diaVencimento is int && o.diaVencimento >= 1 && o.diaVencimento <= 31
+        && o.origemInicio in ['padrao','vizinhoConfirmado'] && o.origemFechamento in ['padrao','vizinhoConfirmado'];
+    }
+    function invoiceAnchorDay(s,day) {
+      let y = int(s[0:4]);
+      let m = int(s[5:7]);
+      let leap = y % 4 == 0 && (y % 100 != 0 || y % 400 == 0);
+      let max = m == 2 ? (leap ? 29 : 28) : (m in [4,6,9,11] ? 30 : 31);
+      return int(s[8:10]) == (day < max ? day : max);
+    }
+    function invoiceAnchoredDate(s,m,day) {
+      return s is string && s.matches('^[0-9]{4}-(0[1-9]|1[0-2])-[0-9]{2}$')
+        && invoiceMonthIndex(s[0:7]) == m && invoiceAnchorDay(s,day);
+    }
+    function invoiceCalendar(d) {
+      let o = d.calendarioOrigem;
+      let m = invoiceMonthIndex(d.competencia);
+      let close = m - (o.diaFechamento < o.diaVencimento ? 0 : 1);
+      return invoiceOrigin(o) && close - 1 >= 1900 * 12
+        && d.inicio is string && d.fechamento is string && calendarDate(d.vencimento)
+        && d.inicio < d.fechamento && d.fechamento <= d.vencimento && d.vencimento[0:7] == d.competencia
+        && invoiceMonthIndex(d.inicio[0:7]) in [m - 2,m - 1] && invoiceMonthIndex(d.fechamento[0:7]) in [m - 1,m]
+        && invoiceAnchoredDate(o.vencimentoOriginal,m,o.diaVencimento)
+        && (o.origemInicio == 'padrao' ? invoiceAnchoredDate(d.inicio,close - 1,o.diaFechamento) : calendarDate(d.inicio))
+        && (o.origemFechamento == 'padrao' ? invoiceAnchoredDate(d.fechamento,close,o.diaFechamento) : calendarDate(d.fechamento))
+        && (d.fechamento < d.vencimento || o.diaFechamento < o.diaVencimento && d.vencimento == o.vencimentoOriginal && int(d.vencimento[8:10]) <= o.diaFechamento);
+    }
+    function invoiceDoc(d) {
+      let keys = invoiceKeys().concat(['schemaVersion','versaoConteudo','version','ultimoEventoId','createdAt','updatedAt']);
+      return d is map && d.keys().hasAll(keys) && d.keys().hasOnly(keys) && safeId(d.cartaoId) && validMonth(d.competencia)
+        && d.schemaVersion is int && d.schemaVersion == 1 && d.versaoConteudo is int && d.versaoConteudo == 1
+        && safeVersion(d.version) && d.ultimoEventoId is string && d.ultimoEventoId.matches('^(confirmarFatura|ajustarVencimento)__[A-Za-z0-9-]{1,64}$')
+        && d.createdAt is timestamp && d.updatedAt is timestamp && d.createdAt <= d.updatedAt && invoiceCalendar(d);
+    }
+    function invoiceNeighbor(uid,card,m,offset) {
+      let index = invoiceMonthIndex(m) + offset;
+      return index < 1900 * 12 || index > 9999 * 12 + 11 ? null
+        : get(/databases/$(database)/documents/users/$(uid)/faturas/$(card + '__' + invoiceMonth(index)));
+    }
+    function invoiceNeighborValid(n,d,offset) {
+      return n == null || invoiceDoc(n.data) && n.data.cartaoId == d.cartaoId
+        && n.data.competencia == invoiceMonth(invoiceMonthIndex(d.competencia) + offset);
+    }
+    function invoiceBoundaries(uid,d) {
+      let p2 = invoiceNeighbor(uid,d.cartaoId,d.competencia,-2);
+      let p1 = invoiceNeighbor(uid,d.cartaoId,d.competencia,-1);
+      let n1 = invoiceNeighbor(uid,d.cartaoId,d.competencia,1);
+      let n2 = invoiceNeighbor(uid,d.cartaoId,d.competencia,2);
+      return invoiceNeighborValid(p2,d,-2) && invoiceNeighborValid(p1,d,-1) && invoiceNeighborValid(n1,d,1) && invoiceNeighborValid(n2,d,2)
+        && (p1 == null ? d.calendarioOrigem.origemInicio == 'padrao' : d.calendarioOrigem.origemInicio == 'vizinhoConfirmado' && d.inicio == p1.data.fechamento)
+        && (n1 == null ? d.calendarioOrigem.origemFechamento == 'padrao' : d.calendarioOrigem.origemFechamento == 'vizinhoConfirmado' && d.fechamento == n1.data.inicio)
+        && (p2 == null || p2.data.fechamento <= d.inicio) && (n2 == null || d.fechamento <= n2.data.inicio);
+    }
+    function invoiceCard(uid,d) {
+      let c = getAfter(/databases/$(database)/documents/users/$(uid)/cartoes/$(d.cartaoId));
+      return c != null && cardDoc(c.data) && c.data.estado == 'ativo'
+        && c.data.version == d.calendarioOrigem.cartaoVersion && c.data.diaFechamento == d.calendarioOrigem.diaFechamento
+        && c.data.diaVencimento == d.calendarioOrigem.diaVencimento;
+    }
+    function invoiceMutation(uid,id,creating) {
+      let d = request.resource.data;
+      let r = getAfter(/databases/$(database)/documents/users/$(uid)/operacoesFaturas/$(d.ultimoEventoId)).data;
+      return id == d.cartaoId + '__' + d.competencia && d.updatedAt == request.time
+        && r.alvoId == id && r.resultVersion == d.version
+        && r.resultado.diff(d).affectedKeys().hasOnly(['schemaVersion','versaoConteudo','version','ultimoEventoId','createdAt','updatedAt'])
+        && (creating ? d.version == 1 && d.createdAt == request.time && r.tipo == 'confirmarFatura' && r.expectedVersion == 0
+            && !('antes' in r) && r.comando.payload.diff(r.resultado).affectedKeys().hasOnly(['cartaoVersion'])
+            && r.comando.payload.cartaoVersion == d.calendarioOrigem.cartaoVersion
+            && d.vencimento == d.calendarioOrigem.vencimentoOriginal && invoiceCard(uid,d) && invoiceBoundaries(uid,d)
+          : safeVersion(resource.data.version) && resource.data.updatedAt is timestamp
+            && resource.data.updatedAt >= resource.data.createdAt && resource.data.updatedAt <= request.time
+            && resource.data.ultimoEventoId is string && resource.data.ultimoEventoId.matches('^(confirmarFatura|ajustarVencimento)__[A-Za-z0-9-]{1,64}$')
+            && invoicePreviousDue(resource.data) && d.version == resource.data.version + 1 && r.expectedVersion == resource.data.version
+            && d.diff(resource.data).affectedKeys().hasOnly(['vencimento','version','ultimoEventoId','updatedAt'])
+            && d.vencimento != resource.data.vencimento && r.tipo == 'ajustarVencimento'
+            && r.antes == {'vencimento':resource.data.vencimento} && r.comando.payload.vencimento == d.vencimento);
+    }
+    function invoicePreviousDue(d) {
+      return calendarDate(d.vencimento) && d.vencimento[0:7] == d.competencia && d.fechamento <= d.vencimento
+        && (d.fechamento < d.vencimento || d.calendarioOrigem.diaFechamento < d.calendarioOrigem.diaVencimento
+          && d.vencimento == d.calendarioOrigem.vencimentoOriginal && int(d.vencimento[8:10]) <= d.calendarioOrigem.diaFechamento);
+    }
+    function invoiceReceiptShape(r) {
+      let keys = ['schemaVersion','contractVersion','operationKey','tipo','alvoId','expectedVersion','resultVersion','comando','resultado','createdAt'];
+      let c = r.comando;
+      return r.keys().hasAll(keys) && r.keys().hasOnly(keys.concat(['antes']))
+        && r.schemaVersion is int && r.schemaVersion == 1 && r.contractVersion is int && r.contractVersion == 1
+        && safeId(r.operationKey) && r.tipo in ['confirmarFatura','ajustarVencimento'] && r.alvoId is string
+        && r.expectedVersion is int && r.expectedVersion >= 0 && r.expectedVersion < 9007199254740991
+        && safeVersion(r.resultVersion) && r.resultVersion == r.expectedVersion + 1 && r.createdAt == request.time
+        && c is map && c.keys().hasAll(['contractVersion','tipo','operationKey','alvoId','expectedVersion','payload'])
+        && c.keys().hasOnly(['contractVersion','tipo','operationKey','alvoId','expectedVersion','payload'])
+        && c.contractVersion is int && c.contractVersion == 1 && c.tipo == r.tipo && c.operationKey == r.operationKey
+        && c.alvoId == r.alvoId && c.expectedVersion is int && c.expectedVersion == r.expectedVersion
+        && c.payload is map && r.resultado is map && r.resultado.keys().hasAll(invoiceKeys()) && r.resultado.keys().hasOnly(invoiceKeys())
+        && (r.tipo == 'confirmarFatura' ? r.expectedVersion == 0 && c.payload.keys().hasOnly(invoiceKeys().concat(['cartaoVersion']))
+          && c.payload.cartaoVersion is int
+          : r.expectedVersion >= 1 && c.payload.keys().hasAll(['vencimento','motivo']) && c.payload.keys().hasOnly(['vencimento','motivo']) && externalText(c.payload.motivo,1000));
+    }
+    function invoiceReceiptCreate(uid,id) {
+      let r = request.resource.data;
+      let d = getAfter(/databases/$(database)/documents/users/$(uid)/faturas/$(r.alvoId)).data;
+      return id == r.tipo + '__' + r.operationKey && d.ultimoEventoId == id && d.version == r.resultVersion
+        && d.updatedAt == request.time
+        && r.resultado.diff(d).affectedKeys().hasOnly(['schemaVersion','versaoConteudo','version','ultimoEventoId','createdAt','updatedAt']);
+    }
+    match /users/{uid}/faturas/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit is int && request.query.limit >= 1 && request.query.limit <= 50;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+    match /users/{uid}/operacoesFaturas/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit is int && request.query.limit >= 1 && request.query.limit <= 50;
+      allow create: if false;
+      allow update, delete: if false;
+    }
+    match /users/{uid}/cartoes/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit is int && request.query.limit >= 1 && request.query.limit <= 50;
+      allow create: if own(uid) && catalogReady(uid) && safeId(id) && cardDoc(request.resource.data) && cardMutation(uid,id,true);
+      allow update: if own(uid) && catalogReady(uid) && safeId(id) && cardDoc(request.resource.data) && cardMutation(uid,id,false);
+      allow delete: if false;
+    }
+    match /users/{uid}/operacoesCartoes/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit is int && request.query.limit >= 1 && request.query.limit <= 50;
+      allow create: if own(uid) && cardReceiptShape(request.resource.data) && cardReceiptCreate(uid,id);
+      allow update, delete: if false;
+    }
     match /users/{uid}/lancamentosExternos/{id} {
       allow get: if own(uid) && catalogReady(uid);
       allow list: if own(uid) && catalogReady(uid) && request.query.limit != null && request.query.limit >= 1 && request.query.limit <= 50;

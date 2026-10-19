@@ -12,6 +12,15 @@ export function validateManifest(manifest: Manifest, projectId: string, runId: s
       if (root !== 'users' || uid !== doc.owner || !uids.includes(uid) || seen.has(doc.path) || !doc.createdByRun || !Number.isFinite(Date.parse(doc.registeredAt))) throw new Error('MANIFEST_SCOPE')
       if (['titulares','categorias','contas','etiquetas'].includes(group)) {
         if (!/^[A-Za-z0-9-]{1,64}$/.test(child)) throw new Error('MANIFEST_SCOPE')
+      } else if (group === 'cartoes') {
+        if (!/^[A-Za-z0-9-]{1,64}$/.test(child)) throw new Error('MANIFEST_SCOPE')
+      } else if (group === 'faturas') {
+        const identity = /^([A-Za-z0-9-]{1,64})__([0-9]{4})-(0[1-9]|1[0-2])$/.exec(child)
+        if (!identity || Number(identity[2]) < 1900 || Number(identity[2]) > 9999) throw new Error('MANIFEST_SCOPE')
+      } else if (group === 'operacoesCartoes') {
+        if (!/^(criarCartao|editarCartao|arquivarCartao)__[A-Za-z0-9-]{1,64}$/.test(child)) throw new Error('MANIFEST_SCOPE')
+      } else if (group === 'operacoesFaturas') {
+        if (!/^(confirmarFatura|ajustarVencimento)__[A-Za-z0-9-]{1,64}$/.test(child)) throw new Error('MANIFEST_SCOPE')
       } else if (group === 'lancamentosExternos') {
         if (!/^[A-Za-z0-9-]{1,64}$/.test(child)) throw new Error('MANIFEST_SCOPE')
       } else if (group === 'operacoesExternas') {

@@ -1,4 +1,7 @@
 import { CadastrosPage } from '../features/cadastros/CadastrosPage'
+import { CartoesPage } from '../features/cartoes/CartoesPage'
+import { FaturasPage } from '../features/cartoes/FaturasPage'
+import { FaturaDetailPage } from '../features/cartoes/FaturaDetailPage'
 import { ExternosPage } from '../features/externos/ExternosPage'
 import { ExternoDetailPage } from '../features/externos/ExternoDetailPage'
 import { Link, Route, Routes } from 'react-router'
@@ -19,6 +22,9 @@ export function AppRoutes() {
     <Route path="/cadastro/recebido" element={<ReceiptPage />} />
     <Route path="/primeiro-acesso" element={<FirstLoginPage />} />
     <Route element={<SessionGate />}>
+      <Route path="/app/cartoes" element={<CartoesPage />} />
+      <Route path="/app/cartoes/:cartaoId/faturas" element={<FaturasPage />} />
+      <Route path="/app/cartoes/:cartaoId/faturas/:competencia" element={<FaturaDetailPage />} />
       <Route path="/app/lancamentos" element={<ExternosPage />} />
       <Route path="/app/lancamentos/:origemId" element={<ExternoDetailPage />} />
       <Route path="/app/cadastros" element={<CadastrosPage />} />

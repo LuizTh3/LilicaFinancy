@@ -143,3 +143,12 @@ Override pontual de @grpc/grpc-js 1.13.6 corrige GHSA-m9gg-hp2v-232j e
 GHSA-f596-whhp-79r4; não foi usado audit fix --force nem downgrade do Firebase.
 Consulte o [guia da integração](specs/002-autenticacao-cadastros-admin/quickstart.md) e o
 [registro atual de resultados e bloqueios](specs/002-autenticacao-cadastros-admin/validation.md).
+
+## Cartões e faturas — feature006
+
+Implementação local disponível em /app/cartoes: cadastrar/editar/arquivar cartões por banco, nome e titular; consultar faturas por período; revisar e confirmar calendário vazio; sugerir primeira fatura pela data da compra, com escolha corrigível; ajustar vencimento no mesmo mês com motivo e histórico. Não há campos para número completo, CVV ou acesso bancário.
+
+Compra no fechamento entra inicialmente na fatura seguinte. Dias inexistentes são ajustados ao último dia depois da decisão do mês por âncoras nominais. Datas confirmadas preservam seu snapshot; editar cartão não as reescreve. Não há deslocamento por feriados/fins de semana. Ciclo aberto/fechado é derivado da data local e independente de pagamento. Faturas são vazias, com total0 e sem pagamento registrado; não há registro de compras ou pagamentos neste incremento.
+
+O cadastro de cartões foi habilitado no Firebase após avaliação e publicação autorizadas. Gravação e ajuste de faturas permanecem desabilitados pelo limite de expressões; as demais avaliações e conferências assistidas da feature continuam pendentes. Consulte [validação006](specs/006-cartoes-ciclos-faturas/validation.md), [revisão de entrega](specs/006-cartoes-ciclos-faturas/deployment-review.md) e [guia de uso/testes](specs/006-cartoes-ciclos-faturas/quickstart.md). Testes locais com fronteira SDK controlada não substituem isolamento real por Rules.
+Atualização operacional006: cadastro/edição/arquivamento de cartões publicados após autorização e avaliação oficial. Gravação e ajuste de faturas permanecem desabilitados até a validação do limite de expressões; a interface informa essa indisponibilidade. Consultar o estado atual dos índices e testes reais no registro de validação006.

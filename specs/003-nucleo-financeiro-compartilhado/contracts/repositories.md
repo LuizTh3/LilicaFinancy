@@ -55,6 +55,8 @@ São comandos específicos, nunca update livre. Corrigir recebe escopo estaOcorr
 
 Fechar fatura avança ciclo aberta→fechada e guard; não gera pagamento ou total. Esses comandos permanecem contratos documentais quando ainda não houver consumidor funcional.
 
+Especialização006: a interface de cartões/faturas não habilita AlterarCicloFatura. Ciclo é derivado de hoje no fuso do perfil e fechamento preservado, sem gravação/job. Adaptadores consumidores fornecem ciclo derivado ao snapshot legado; fechar não cria pagamento. Os contratos genéricos acima permanecem documentais e não autorizam persistência006 de ciclo editável.
+
 ### MaterializarOcorrencias
 
 Entrada: recorrenciaId, expectedVersion do molde, até12 competências de ocorrência distintas, chave e dados de exceção confirmados quando aplicáveis. Saída: ocorrências novas/existentes e recibo; cada existente vence sobre virtual, inclusive cancelada. Todos os efeitos novos do comando são atômicos. Não grava apenas parte do período e retorna sucesso total. Mais de12 exige seleção explícita menor; uma série parcelada não pode ser dividida assim.

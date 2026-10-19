@@ -1,7 +1,14 @@
 import { expect, it } from 'vitest'
 import { avaliarAjuste, avaliarLiquidacao, derivarLiquidacao, preverEdicaoSerie, validarSnapshot } from './settlement'
-import { credito, fatura, pagamento, ref, snapshot } from './fixtures.testSupport'
+import { credito, fatura, faturaV2, pagamento, ref, snapshot } from './fixtures.testSupport'
 import { congelar, ler } from './testing.testSupport'
+
+it('valida calendário v2 com coincidência comprovada, preservando metadados e fatura vazia sem caixa',()=>{
+ const input=faturaV2()
+ expect(ler(validarSnapshot(input)).calendario?.calendarioOrigem?.cartaoVersion).toBe(4)
+ expect(ler(derivarLiquidacao(input,'2027-03-01')).atrasada).toBe(false)
+ expect(validarSnapshot({...input,calendario:{...input.calendario!,calendarioOrigem:undefined}}).ok).toBe(false)
+})
 
 it('deriva dívida, parcial, quitação e atraso sem editar ciclo da fatura', () => {
   const input = congelar(snapshot({ fatos: [pagamento()] }))

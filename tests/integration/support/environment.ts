@@ -19,5 +19,5 @@ export function cadastrosEnvironment(values: Record<string, string | undefined>)
 // Financial integration has the same four-role isolation gate as catalog tests.
 export const externosEnvironment = cadastrosEnvironment
 export function environmentForGroup(values: Record<string, string | undefined>) {
-  return ['cadastros', 'externos'].includes(values.TEST_INTEGRATION_GROUP ?? '') ? cadastrosEnvironment(values) : integrationEnvironment(values)
+  return ['cadastros', 'externos', 'cartoesFaturas'].includes(values.TEST_INTEGRATION_GROUP ?? '') ? cadastrosEnvironment(values) : integrationEnvironment(values)
 }

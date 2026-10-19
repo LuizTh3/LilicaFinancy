@@ -3,6 +3,14 @@ import { montarCronograma } from './installments'
 import { dataCalendario } from './calendar'
 import { somarCentavos } from './money'
 import { congelar, ler } from './testing.testSupport'
+import { calendarioBaseFatura } from './invoiceCalendar'
+
+it('parcela usa vencimento da fatura v2 mesmo quando coincide com fechamento',()=>{
+ const invoice=ler(calendarioBaseFatura('2027-02',30,31))
+ const input={origemDados:'nova',totalCentavos:100,quantidadeOriginal:1,primeiraCompetencia:'2027-02',primeiroVencimento:'2027-02-28',diaAncora:31,faturas:[invoice]}
+ expect(ler(montarCronograma(input))[0].vencimento).toBe('2027-02-28')
+ expect(montarCronograma({...input,vencimentosCopiados:['2027-03-01']}).ok).toBe(false)
+})
 
 const nova = { origemDados: 'nova', totalCentavos: 10000, quantidadeOriginal: 3, primeiraCompetencia: '2026-12', primeiroVencimento: '2027-01-31', diaAncora: 31 } as const
 it('conserva soma, ordinais e diferença entre planejamento e vencimento', () => {

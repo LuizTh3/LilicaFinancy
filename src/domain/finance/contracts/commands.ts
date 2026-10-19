@@ -18,7 +18,7 @@ export type ItemFatura = Readonly<{ id: string; uid: string; origemId: string; c
 export type SnapshotAlvo = Readonly<{
   uid: string; schemaVersion: number; version: number; alvo: ReferenciaAlvo; completo: boolean; revisao: Readonly<{ antes: number; depois: number }>
   estadoObrigacao: EstadoObrigacao; vencimento: string; valorOriginalCentavos?: number; origemId?: string; dataConsumo?: string; estimado?: boolean
-  calendario?: Readonly<{ cartaoId: string; competencia: string; fechamento: string; vencimento: string; ciclo: 'aberta' | 'fechada' }>
+  calendario?: Readonly<{ cartaoId: string; competencia: string; fechamento: string; vencimento: string; ciclo: 'aberta' | 'fechada'; inicio?: string; calendarioOrigem?: import('../invoiceCalendar').OrigemCalendario }>
   itens?: readonly ItemFatura[]; fatura?: SnapshotAlvo
   contas: readonly Readonly<{ id: string; uid: string; estadoCadastro: 'ativo' | 'arquivado' }>[]
   fatos: readonly FatoLiquidacao[]; creditos: readonly CreditoObrigacao[]

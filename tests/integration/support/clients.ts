@@ -4,7 +4,7 @@ import { initializeFirestore, memoryLocalCache, terminate } from 'firebase/fires
 import { environmentForGroup } from './environment'
 export async function integrationClients() {
   const env = process.env, scope = environmentForGroup(env)
-  const labels = ['cadastros','externos'].includes(env.TEST_INTEGRATION_GROUP ?? '') ? ['A','B','visitor','ADMIN','PENDING'] : ['A','B','visitor']
+  const labels = ['cadastros','externos','cartoesFaturas'].includes(env.TEST_INTEGRATION_GROUP ?? '') ? ['A','B','visitor','ADMIN','PENDING'] : ['A','B','visitor']
   const clients = labels.map(label => {
     const app = initializeApp({ projectId: scope.projectId, apiKey: env.VITE_FIREBASE_API_KEY, authDomain: env.VITE_FIREBASE_AUTH_DOMAIN, appId: env.VITE_FIREBASE_APP_ID }, `${scope.runId}-${label}-${crypto.randomUUID()}`)
     return { app, auth: initializeAuth(app, { persistence: inMemoryPersistence }), db: initializeFirestore(app, { localCache: memoryLocalCache() }) }

@@ -1,4 +1,6 @@
 import type { CreditoObrigacao, DadosPeriodo, FatoLiquidacao, SnapshotAlvo } from './contracts/commands'
+import { calendarioBaseFatura } from './invoiceCalendar'
+import { ler } from './testing.testSupport'
 export const ref = { tipo: 'obrigacaoExternaAvulsa', id: 'ob1' } as const
 export function snapshot(patch: Partial<SnapshotAlvo> = {}): SnapshotAlvo {
   return { uid: 'A', schemaVersion: 1, version: 3, alvo: ref, completo: true, revisao: { antes: 3, depois: 3 }, estadoObrigacao: 'ativa', vencimento: '2026-11-17', valorOriginalCentavos: 10000, origemId: 'ob1', dataConsumo: '2026-10-17', estimado: false, contas: [{ id: 'conta', uid: 'A', estadoCadastro: 'ativo' }], fatos: [], creditos: [], ...patch }
@@ -16,4 +18,8 @@ export function fatura(patch: Partial<SnapshotAlvo> = {}): SnapshotAlvo {
 }
 export function dadosPeriodo(patch: Partial<DadosPeriodo> = {}): DadosPeriodo {
   return { uid: 'A', completo: true, revisao: { antes: 1, depois: 1 }, origens: [], compromissos: [], receitas: [], fatos: [], estornos: [], creditos: [], ...patch }
+}
+export function faturaV2(): SnapshotAlvo {
+ const calendario=ler(calendarioBaseFatura('2027-02',30,31,4))
+ return fatura({vencimento:calendario.vencimento,calendario:{...calendario,cartaoId:'card',ciclo:'fechada'},itens:[]})
 }

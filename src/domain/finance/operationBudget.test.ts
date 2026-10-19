@@ -1,9 +1,17 @@
 import { expect, it } from 'vitest'
-import { avaliarOrcamento, perfilFinanceiroRemoto } from './operationBudget'
+import { avaliarOrcamento, perfilFinanceiroRemoto, perfilCartoesFaturas } from './operationBudget'
 import { ler } from './testing.testSupport'
 
 const perfil = { status: 'simulacao', contractVersion: 1 } as const
 const custo = { parcelas: 12, ocorrencias: 12, mutacoes: 3, bytesRequisicao: 1048576, bytesDocumentos: [32768, 32768, 32768], acessosPorOperacao: [8, 8, 2], expressoes: 1000, incluiMetadados: true }
+it('perfis006 promovem só cartões comprovados e não autorizam simulador ou séries',()=>{
+ for(const [tipo,cost] of [['criarCartao',7],['editarCartao',7],['arquivarCartao',5],['confirmarFatura',15],['ajustarVencimento',5]] as const) {
+  const profile=perfilCartoesFaturas(tipo)
+  expect(profile).toMatchObject({status:['criarCartao','editarCartao','arquivarCartao'].includes(tipo)?'validadoNoProjeto':'validacaoRemotaPendente',acessosMaximos:cost,mutacoesMaximas:2})
+  expect(avaliarOrcamento(custo,profile).ok).toBe(false)
+ }
+ expect(perfilCartoesFaturas('criarCompra').status).toBe('naoHabilitado')
+})
 it('aceita fronteiras somente como simulação local, nunca como autorização remota', () => {
   expect(ler(avaliarOrcamento(custo, perfil)).finalidade).toBe('testeDeContrato')
   expect(avaliarOrcamento(custo).ok).toBe(false)

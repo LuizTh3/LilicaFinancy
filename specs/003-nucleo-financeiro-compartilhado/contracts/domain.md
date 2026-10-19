@@ -70,6 +70,8 @@ No cartão, vencimento de cada item deve ser exatamente o vencimento confirmado 
 
 `sugerirPrimeiraFatura(dataConsumo, calendarioCartao)` retorna competência, fechamento, vencimento e `origem=sugestao`. No fechamento ou depois segue ciclo seguinte. Exemplos com fechamento10/vencimento17: compra2026-10-09 → competência2026-10; compra2026-10-10 →2026-11. Com fechamento25/vencimento5: compra2026-10-24 →2026-11. Ajustar datas inexistentes e validar `fechamento < vencimento` na mesma função. Primeira fatura informada explicitamente tem precedência, não é corrigida silenciosamente.
 
+Especialização006 autorizada em2026-10-18: relação mensal definida pelos dias nominais antes do ajuste; calendário v2 preserva início e âncoras/revisão em calendarioOrigem. Fechamento=vencimento só é permitido pela coincidência de dias nominais distintos ajustados ao último dia. Legado continua estritamente válido, sem inferir âncoras ou recalcular histórico. O adaptador006 traduz identidade lógica para ID remoto verificável cartão__competência; não usar base64 do núcleo como prova de identidade nas Rules.
+
 ## 5. Snapshot completo e pendência
 
 `SnapshotAlvo` contém alvo discriminado, estado de obrigação aplicável, base/itens de origem, créditos efetivos, fatos de liquidação/inversão, versões de coordenação e completude. Dados completos devem indicar revisão consistente; snapshot parcial tem `completo=false` e motivos e não é aceito para quitação/total definitivo. Construtor valida IDs únicos, referências, moeda, versão, faixa e duplicidade de efeito. Um simples booleano enviado por usuário não comprova segurança de persistência.

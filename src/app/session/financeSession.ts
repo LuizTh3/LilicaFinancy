@@ -5,7 +5,7 @@ export function financeTimezone(value: unknown) {
  return valid.valor
 }
 export function clearPrivateIntents(storage: Pick<Storage,'removeItem'>) {
- for(const key of ['lilica-cadastro-pendente','lilica-externo-pendente']) {
+ for(const key of ['lilica-cadastro-pendente','lilica-externo-pendente','lilica-cartoes-faturas-pendente']) {
   try { storage.removeItem(key) } catch { /* Storage cannot prevent invalidation. */ }
  }
 }

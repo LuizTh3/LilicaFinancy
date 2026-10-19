@@ -79,7 +79,7 @@ export function validarSnapshot(input: unknown): Resultado<SnapshotAlvo> {
   if (input.alvo.tipo === 'fatura') {
     const invoice = validarCalendarioFatura(input.calendario)
     if (!invoice.ok) return invoice
-    if (!registro(input.calendario) || !camposPermitidos(input.calendario, ['cartaoId', 'competencia', 'fechamento', 'vencimento', 'ciclo']) || !idValido(input.calendario.cartaoId) || !umDe(input.calendario.ciclo, ['aberta', 'fechada']) || invoice.valor.vencimento !== input.vencimento || !Array.isArray(input.itens) || input.valorOriginalCentavos !== undefined) return inconsistente()
+    if (!registro(input.calendario) || !camposPermitidos(input.calendario, ['cartaoId', 'competencia', 'fechamento', 'vencimento', 'ciclo', 'inicio', 'calendarioOrigem']) || !idValido(input.calendario.cartaoId) || !umDe(input.calendario.ciclo, ['aberta', 'fechada']) || invoice.valor.vencimento !== input.vencimento || !Array.isArray(input.itens) || input.valorOriginalCentavos !== undefined) return inconsistente()
     const ids = new Set<string>()
     for (const item of input.itens) {
       if (!registro(item) || !camposPermitidos(item, ['id', 'uid', 'origemId', 'cartaoId', 'faturaId', 'valorCentavos', 'competenciaPlanejamento', 'vencimento', 'estadoObrigacao']) || !idValido(item.id) || ids.has(item.id) || item.uid !== input.uid || !idValido(item.origemId) || item.cartaoId !== input.calendario.cartaoId || item.faturaId !== input.alvo.id || item.competenciaPlanejamento !== invoice.valor.competencia || item.vencimento !== invoice.valor.vencimento || !valorPositivo(item.valorCentavos).ok || !umDe(item.estadoObrigacao, ['ativa', 'cancelada'])) return inconsistente()

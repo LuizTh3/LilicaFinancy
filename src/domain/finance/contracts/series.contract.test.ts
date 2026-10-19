@@ -1,6 +1,13 @@
 import { expect, it } from 'vitest'
 import { criarSerieDouble, comandoSerie } from './seriesDouble.testSupport'
 
+it('calendários v2 também preservam o recibo e as parcelas nos contratos do núcleo',async()=>{
+ const repo=criarSerieDouble('A'),command=comandoSerie('v2','compra-v2',2)
+ expect((await repo.criar(command)).ok).toBe(true)
+ expect((await repo.criar(command)).ok).toBe(true)
+ expect(repo.estado()).toEqual({origens:1,parcelas:3,faturas:3,recibos:1})
+})
+
 it('confirma uma série inteira e repete o mesmo recibo sem duplicação', async () => {
   const repo = criarSerieDouble('A')
   const command = comandoSerie()

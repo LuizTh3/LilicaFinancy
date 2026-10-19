@@ -133,6 +133,80 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "queryScope": "COLLECTION",
+      "collectionGroup": "cartoes",
+      "fields": [
+        {
+          "fieldPath": "estado",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "nome",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "queryScope": "COLLECTION",
+      "collectionGroup": "operacoesCartoes",
+      "fields": [
+        {
+          "fieldPath": "alvoId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "resultVersion",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "faturas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "cartaoId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "competencia",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "faturas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "cartaoId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "inicio",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "fechamento",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "operacoesFaturas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "alvoId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "resultVersion",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [
@@ -174,6 +248,41 @@
     {
       "collectionGroup": "operacoesExternas",
       "fieldPath": "depois",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "operacoesCartoes",
+      "fieldPath": "comando",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "operacoesCartoes",
+      "fieldPath": "resultado",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "operacoesCartoes",
+      "fieldPath": "antes",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "faturas",
+      "fieldPath": "calendarioOrigem",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "operacoesFaturas",
+      "fieldPath": "comando",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "operacoesFaturas",
+      "fieldPath": "resultado",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "operacoesFaturas",
+      "fieldPath": "antes",
       "indexes": []
     }
   ]

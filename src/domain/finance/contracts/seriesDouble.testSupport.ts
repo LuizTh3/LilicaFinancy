@@ -5,12 +5,13 @@ import { montarCronograma } from '../installments'
 import { avancarCompetencia, dataNaCompetencia } from '../calendar'
 import { avaliarOrcamento } from '../operationBudget'
 import { ler } from '../testing.testSupport'
+import { calendarioBaseFatura } from '../invoiceCalendar'
 import type { ComandoSerie, Confirmacao, ConsultaOperacao, PortaCriarSerie } from './commands'
 
-export function comandoSerie(operationKey = 'op1', origemId = 'compra1'): ComandoSerie {
+export function comandoSerie(operationKey = 'op1', origemId = 'compra1', calendarVersion?:2): ComandoSerie {
   const faturas = [0, 1, 2].map(i => {
     const competencia = ler(avancarCompetencia('2026-11', i))
-    return { id: ler(identidadeNatural(['fatura', 'card', competencia])), calendario: { competencia, fechamento: ler(dataNaCompetencia(competencia, 10)), vencimento: ler(dataNaCompetencia(competencia, 17)) } }
+    return { id: ler(identidadeNatural(['fatura', 'card', competencia])), calendario: calendarVersion===2?ler(calendarioBaseFatura(competencia,10,17,3)):{ competencia, fechamento: ler(dataNaCompetencia(competencia, 10)), vencimento: ler(dataNaCompetencia(competencia, 17)) } }
   })
   const entradaCronograma = { origemDados: 'nova', totalCentavos: 10000, quantidadeOriginal: 3, primeiraCompetencia: '2026-11', primeiroVencimento: '2026-11-17', diaAncora: 17, faturas: faturas.map(f => f.calendario) }
   return { contractVersion: 1, tipo: 'criarCompra', operationKey, expectedVersions: [], payload: { origemId, origemTipo: 'compra', cartaoId: 'card', categoriaId: 'cat', entradaCronograma, parcelas: ler(montarCronograma(entradaCronograma)), faturas } }
