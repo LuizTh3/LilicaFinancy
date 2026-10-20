@@ -188,3 +188,19 @@ A revisão publicada de cartões foi conferida por hash 8469f7b4bcef603f26ec7518
 firestore.rules completo foi refatorado somente nos helpers de fatura: aliases locais de campos e cálculo único do índice mensal dos quatro vizinhos. Não foram removidos predicados, validação completa de vizinhos, regras de fronteira ou reciprocidade. As permissões de faturas/recibos continuam false e compras/pagamentos continuam negados. Nenhuma mudança de índices, modelo persistido, sessão ou permissão ativa decorre desse ajuste.
 
 O arquivo gerado não foi compilado/avaliado remotamente nesta execução: a primeira tentativa falhou por rede e a ampliação foi rejeitada pela aprovação automática por exportar fonte privada à API Firebase sem autorização específica reconhecida. Não houve contorno nem publicação. Casos sintéticos em specs/006-cartoes-ciclos-faturas/rules-evaluation-cases.json e registro em specs/007-compras-cartao-parceladas/validation.md. A versão publicada anterior e rollback006 permanecem preservados; mudanças locais não estão ativas automaticamente.
+# Complemento008 local — 2026-10-19
+
+Fonte completa firestore.rules conserva as permissões existentes e os bloqueios de faturas. Refatoração local em invoicePreviousDue reutiliza campos por aliases sem remover validação; nenhuma coleção008 foi aberta. Avaliação oficial de expressões, compilação e publicação não executadas nesta etapa. Preservar backup/reversão e procedimentos anteriores; os candidatos006/007 ainda precisam aprovação técnica, sem promover perfis ou executar migração/limpeza.
+# Avaliação oficial autorizada008 — 2026-10-19
+
+Fonte completa local avaliada na API oficial, com autorização explícita de envio e18 fixtures sintéticas; sem publicação ou dados reais. Foram testadas refatorações que mantêm as restrições de calendário e reduzem verificações redundantes de mês/clamp. Seis positivos ainda falham por1000 expressões; os bloqueios de fatura e perfis pendentes permanecem. Detalhes e hashes em specs/008-pagamentos-ajustes-faturas/g0-evaluation-summary.json. Publicação não está incluída na autorização de avaliação.
+
+## Candidata de faturas aprovada na API — 2026-10-19
+
+Problema de expressões G0 resolvido pela distribuição de validações entre primário e recibo obrigatório, com indução sobre cartões/limites preexistentes protegidos. Não foram removidas as invariantes de propriedade/calendário/identidade/quatro vizinhos; prova em specs/006-cartoes-ciclos-faturas/contracts/security.md. Matriz68/68 aprovada, zero estouro; fonte completa revisável em specs/006-cartoes-ciclos-faturas/firestore-faturas.candidate.rules, hash no resumo008. Nenhuma publicação, índice alterado, migração ou escrita financeira real; raiz/availability seguem bloqueados. Backup/revisão ativa, auditoria de legado e SDK real são pré-requisitos da habilitação. Arquivo candidato gerado não equivale a Rules ativas.
+
+## Publicação006 e regressão real — 2026-10-19
+
+Fonte integral de hash d305c3b7a39c8690a5022f04b297c95229178a97da0f1c8667522a9a699b87c8 publicada sob autorização específica e conferida ativa/local. Criação/ajuste de faturas e recibos agora permitidos somente pelo grafo protegido006, preservando base anterior/cartões. Índices não alterados. Backup anterior salvo e rollback completo atualizado para a revisão anterior, sem executar reversão.
+
+Matriz real cartões/faturas13/13 aprovada;263 testes locais, tipos/lint/build aprovados. Concorrência expôs erro de classificação no adaptador, corrigido com leitura de revisão confirmada sem alterar Rules ou repetir escrita. UI local006 liberada; hospedagem frontend não publicada aqui. Sem compras/pagamentos, migração ou limpeza. Fixtures fictícias manifestadas e preservadas. Ver validation006/008 para runIds, cobertura e pendências assistidas.

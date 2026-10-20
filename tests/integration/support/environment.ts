@@ -18,13 +18,13 @@ export function cadastrosEnvironment(values: Record<string, string | undefined>)
 }
 // Financial integration has the same four-role isolation gate as catalog tests.
 export const externosEnvironment = cadastrosEnvironment
-export const integrationGroups = ['access', 'session', 'firstLogin', 'registration', 'admin', 'trusted-api', 'notifications', 'cadastros', 'externos', 'cartoesFaturas', 'comprasCartao'] as const
+export const integrationGroups = ['access', 'session', 'firstLogin', 'registration', 'admin', 'trusted-api', 'notifications', 'cadastros', 'externos', 'cartoesFaturas', 'comprasCartao', 'liquidacoesFaturas'] as const
 export function integrationGroup(group = 'access') {
   if (!(integrationGroups as readonly string[]).includes(group)) throw new Error('TEST_INTEGRATION_GROUP inválido')
   return group
 }
 export function integrationClientLabels(group?: string): readonly string[] {
-  return ['cadastros', 'externos', 'cartoesFaturas', 'comprasCartao'].includes(integrationGroup(group))
+  return ['cadastros', 'externos', 'cartoesFaturas', 'comprasCartao', 'liquidacoesFaturas'].includes(integrationGroup(group))
     ? ['A', 'B', 'visitor', 'ADMIN', 'PENDING'] as const : ['A', 'B', 'visitor'] as const
 }
 export function environmentForGroup(values: Record<string, string | undefined>) {

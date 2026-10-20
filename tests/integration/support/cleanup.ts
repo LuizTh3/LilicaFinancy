@@ -3,6 +3,8 @@ import type { Manifest } from './manifest'
 export function cleanupOrder(documents: Manifest['documents']) {
   const priority = (path: string) => {
     const group = path.split('/')[2]
+    if (['controlesPagamentosFaturas','controlesItensFaturas','controlesAjustesFaturas'].includes(group)) return -2
+    if (group === 'operacoesLiquidacoesFaturas') return -1
     if (group === 'parcelasCartao') return 0
     if (group === 'operacoesCompras') return 1
     if (group === 'controlesFaturas') return 2

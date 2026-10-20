@@ -43,3 +43,19 @@ A preparação007 acrescenta18 casos sintéticos reproduzíveis em specs/006-car
 As três permissões de mutação de faturas/eventos permanecem false; availability/perfis não foram alterados. A redução de expressões executadas ainda precisa de medição oficial; não afirmar que G0 foi resolvido por inspeção local. A avaliação preparada é test-only: habilita os ramos exclusivamente na cópia em memória enviada à API de testes, sem publicar Rules ou gravar faturas.
 
 Na execução007, a tentativa sandbox falhou por rede. A aprovação automática rejeitou a tentativa ampliada porque enviaria fonte privada à API Firebase sem autorização específica reconhecida para esse envio nesta execução. Não houve nova tentativa ou contorno. Compilação/avaliação e matriz real continuam pendentes; a fonte local é revisável antes da autorização específica de envio.
+# Complemento local008 — 2026-10-19
+
+O helper invoicePreviousDue passou a reutilizar aliases de vencimento/fechamento/origem/dia, mantendo as mesmas condições. Fonte integral firestore.rules entregue; mutações de faturas continuam false. Não houve compilação oficial, publicação ou alegação de redução medida de expressões. A fonte candidata só pode ser avaliada remotamente com autorização reconhecida para envio à API oficial; o bloqueio registrado em validation007 permanece. Regras locais não são regras ativas.
+# Avaliação008 autorizada — 2026-10-19
+
+A autorização específica de envio foi concedida e a API oficial avaliou a fonte candidata e18 casos. O impedimento de autorização de envio está superado; G0 continua técnico:6 operações legítimas excedem1000 expressões. As candidatas mantêm validações, condicionam comparação de mês à origem e evitam clamp para dias1–28; nenhuma foi publicada. Consultar validation008 e g0-evaluation-summary.json para resultados/hash. Não habilitar mutações de faturas ou promover perfis enquanto positivos completos falharem.
+
+## Candidata G0 aprovada — 2026-10-19
+
+68 casos oficiais aprovados, incluindo máximos de quatro vizinhos, bissextos, fronteiras/reciprocidade e escritas inválidas, sem estouro. Fonte integral revisável em firestore-faturas.candidate.rules e hash no resumo008. Fonte raiz continua negando mutações; não publicar a raiz bloqueada por engano nem promover perfis a partir da avaliação sintética. Publicação e SDK real continuam separados e pendentes. Preservar backup/índices e verificar ausência/integridade de legado antes de adotar a prova por indução descrita em contracts/security.md; nenhuma ampliação de permissões002/004/005/cartões.
+
+## Habilitação autorizada e verificada — 2026-10-19
+
+O usuário autorizou publicar e executar testes fictícios. Preflight de fonte/índices/escopo, inventário zero de faturas/eventos e backup concluídos. Publicada candidata de hash d305c3b7a39c8690a5022f04b297c95229178a97da0f1c8667522a9a699b87c8; fonte ativa relida e igual à raiz. Não houve alteração de índices. docs/firestore-rules-006-safe-rollback.rules agora contém exatamente a revisão anterior de cartões/base, sem mutações de faturas; somente preparada, não executada.
+
+13/13 testes reais aprovados (faturas006-final-20261019-04), após corrigir classificação de conflito concorrente no adaptador. UI local e perfis específicos006 habilitados. Nenhuma compra/pagamento foi aberta; fixtures inventariadas permanecem, sem limpeza automática. Medição com participantes e conferência visual continuam pendentes. Estado histórico de bloqueios descrito acima é superado por esta seção para criação/ajuste de faturas, sem promover gates007/008.

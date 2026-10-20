@@ -10,9 +10,9 @@ export function perfilCartoesFaturas(tipo:string) {
   confirmarFatura:{acessosMaximos:15,acessosPorEscrita:[7,1],leiturasTransacionais:7},
   ajustarVencimento:{acessosMaximos:5,acessosPorEscrita:[2,1],leiturasTransacionais:2},
  }
- // Cards: official evaluation + live matrix cartoes006-full-20261018-01.
- // Invoice writes remain disabled after the official expression-limit failure.
- return Object.hasOwn(profiles,tipo)?{status:['criarCartao','editarCartao','arquivarCartao'].includes(tipo)?'validadoNoProjeto':'validacaoRemotaPendente',contractVersion:1,mutacoesMaximas:2,...profiles[tipo]} as const:{status:'naoHabilitado'} as const
+ // Cards and invoices: official evaluation and live matrix
+ // faturas006-final-20261019-04 (13 tests). Does not enable purchases/payments.
+ return Object.hasOwn(profiles,tipo)?{status:'validadoNoProjeto',contractVersion:1,mutacoesMaximas:2,...profiles[tipo]} as const:{status:'naoHabilitado'} as const
 }
 // Creation was validated in the authorized Firebase project (US1/T024).
 // Profiles never authorize the generic simulation adapter or publication.

@@ -37,3 +37,11 @@ Conferidos arquivos atuais, runtime e configuração. Testes novos de preparaç�
 - Regressão local:68 arquivos/258 testes aprovados, com TEMP/TMP restritos a.integration/tmp. Typecheck de aplicação/integração, lint e build aprovados. Build conserva aviso de chunk>500KiB já presente (aprox.967KiB), sem erro; não houve ampliação de escopo para otimização de bundle.
 - T001–T005 concluídas e marcadas. T006 preparada localmente mas aberta até comprovação oficial; T007 bloqueada pela recusa do envio e tarefas dependentes não iniciadas. Nenhuma história de compras foi declarada pronta.
 - Arquivos completos de Rules e notas entregues para revisão; nenhuma publicação, novo índice ou fixture financeira remota. extensions.yml ausente: hooks before/after_implement não aplicáveis.
+
+## G0 corrigido durante008 — 2026-10-19
+
+A refatoração final passou68/68 casos oficiais sem1000 expressões; T006 concluída. T007 segue aberta na publicação/SDK, que não ocorreram; T008 e gates007 não foram promovidos. Referências: contracts/security006, candidata completa firestore-faturas.candidate.rules e resumo/hashes em specs/008-pagamentos-ajustes-faturas/g0-evaluation-summary.json. Última regressão:262 testes, tipos, lint e build aprovados.
+
+## G0 publicado e testado durante008 — 2026-10-19
+
+Publicação autorizada e fonte ativa verificada; matriz final SDK cartões/faturas13/13 aprovada, runId faturas006-final-20261019-04. T007 concluída após essa evidência; nenhum gate007 de parcelamento foi promovido. Fonte raiz sincronizada e rollback anterior preservado; UI/perfis006 habilitados. G1 e dependentes007 seguem sem prova própria. Ver validation008 para correção do conflito concorrente e regressão263 testes/tipos/lint/build.

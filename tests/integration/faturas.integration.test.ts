@@ -63,7 +63,7 @@ it('ajuste é atômico, imutável e concorrente; arquivamento conserva consultas
  const c=await newCard(),repo=createFaturasRepository(clients.a.db,ctx()),original=confirmCommand(c.id,calendar('2026-10'));expect((await repo.executar(original)).ok).toBe(true)
  const adjust=(date:string)=>{const operationKey=key();inventory('operacoesFaturas',`ajustarVencimento__${operationKey}`);return {contractVersion:1 as const,tipo:'ajustarVencimento' as const,operationKey,alvoId:original.alvoId,expectedVersion:1,payload:{vencimento:date,motivo:'Emissor fictício confirmou'}}}
  const bad=adjust('2026-11-19');expect((await repo.executar(bad)).ok).toBe(false)
- const outcomes=await Promise.all([repo.executar(adjust('2026-10-19')),repo.executar(adjust('2026-10-20'))]);expect(outcomes.filter(r=>r.ok)).toHaveLength(1);expect(outcomes.filter(r=>!r.ok&&r.erro.codigo==='conflitoVersao')).toHaveLength(1)
+ const outcomes=await Promise.all([repo.executar(adjust('2026-10-19')),repo.executar(adjust('2026-10-20'))]);expect(outcomes.filter(r=>r.ok)).toHaveLength(1);expect(outcomes.filter(r=>!r.ok&&r.erro.codigo==='conflitoVersao'),JSON.stringify(outcomes.map(r=>r.ok?'confirmado':r.erro.codigo))).toHaveLength(1)
  const archiveKey=key();inventory('operacoesCartoes',`arquivarCartao__${archiveKey}`);expect((await c.repo.executar({contractVersion:1,tipo:'arquivarCartao',operationKey:archiveKey,alvoId:c.id,expectedVersion:1,payload:{}})).ok).toBe(true)
  expect((await repo.executar(original)).ok).toBe(true)
  const nextAdjust={...adjust('2026-10-21'),expectedVersion:2};expect((await repo.executar(nextAdjust)).ok).toBe(true)

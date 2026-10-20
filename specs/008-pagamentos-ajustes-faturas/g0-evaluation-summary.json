@@ -1,0 +1,538 @@
+{
+  "date": "2026-10-19",
+  "mode": "official-test-only-no-release",
+  "authorization": "Explicit user authorization for official evaluation. No publication authorized or performed.",
+  "localSourceSha256": "ff40b2b0c387555380ddb0333f6d0a909f5f9702d4dcbc0609ef7025b724443f",
+  "candidateTransformation": "Enable only invoice create/update and receipt create in memory through .integration/evaluate-g0-007.mjs; local release allows stay false.",
+  "casesSha256": "d6f9bdece7c59bf9088e25e26a363e0fd2600c0709cc280e7ebe8c8f560a7c35",
+  "issues": [
+    {
+      "sourcePosition": {
+        "fileName": "firestore.rules",
+        "line": 339,
+        "column": 14,
+        "currentOffset": 24938,
+        "endOffset": 24948
+      },
+      "description": "Unused function: invoiceDate.",
+      "severity": "WARNING"
+    },
+    {
+      "sourcePosition": {
+        "fileName": "firestore.rules",
+        "line": 347,
+        "column": 14,
+        "currentOffset": 25359,
+        "endOffset": 25371
+      },
+      "description": "Unused function: invoiceResult.",
+      "severity": "WARNING"
+    },
+    {
+      "sourcePosition": {
+        "fileName": "firestore.rules",
+        "line": 350,
+        "column": 14,
+        "currentOffset": 25571,
+        "endOffset": 25591
+      },
+      "description": "Unused function: invoiceConfirmPayload.",
+      "severity": "WARNING"
+    }
+  ],
+  "results": [
+    {
+      "name": "invoiceEmpty",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "invoiceEmptyReceipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "invoiceMaximum",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "invoiceMaximumReceipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "circularOctober",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "circularNovember",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "batchControlOctober",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "batchControlOctoberReceipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "batchControlNovember",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "batchControlNovemberReceipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "distanceTwo",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "distanceTwoReverse",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "februaryCoincidence",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "februaryCoincidenceReceipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "archivedCard",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 3
+    },
+    {
+      "name": "adjust",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 2
+    },
+    {
+      "name": "adjustReceipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "adjustChangesBoundary",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 2
+    },
+    {
+      "name": "equalDays",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "equalDaysReceipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "leapFebruary",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "leapFebruaryReceipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "nonLeapCentury",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "nonLeapCenturyReceipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "leapCentury",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "leapCenturyReceipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "crossYear",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "crossYearReceipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "aprilClamp",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "aprilClampReceipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "day29",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "day29Receipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "day28",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "day28Receipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "dueBeforeClose",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "dueBeforeCloseReceipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "year9999",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 5
+    },
+    {
+      "name": "year9999Receipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "invalidDueDay",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "invalidStartDay",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "invalidClosingDay",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "invalidMonth",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "invalidOriginalDue",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "invalidOriginSchema",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "invalidNominalDay",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "invalidCycleOrder",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "missingReceipt",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [
+        "Error: firestore.rules line [443], column [15]. Null value error."
+      ],
+      "functionCalls": 7
+    },
+    {
+      "name": "wrongOwner",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 0
+    },
+    {
+      "name": "visitor",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [
+        "Error: firestore.rules line [4], column [32]. Property auth is undefined on object."
+      ],
+      "functionCalls": 7
+    },
+    {
+      "name": "unknownInvoiceSchema",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "invoiceExtraField",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "unknownNeighborSchema",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "wrongNeighborCard",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "invalidAdjustmentDue",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "maximumLeap",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "maximumLeapReceipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "maximumEqual",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "maximumEqualReceipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "maximumCrossYear",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 7
+    },
+    {
+      "name": "maximumCrossYearReceipt",
+      "expectation": "ALLOW",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "creationWrongVersion",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 2
+    },
+    {
+      "name": "creationWrongTimestamp",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 2
+    },
+    {
+      "name": "creationWrongEvent",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [
+        "Error: firestore.rules line [443], column [15]. Service call error. Function: [getAfter], Argument: [path_value {\n  segments {\n    simple: \"databases\"\n  }\n  segments {\n    simple: \"(default)\"\n  }\n  segments {\n    simple: \"documents\"\n  }\n  segments {\n    simple: \"users\"\n  }\n  segments {\n    simple: \"fixture\"\n  }\n  segments {\n    simple: \"operacoesFaturas\"\n  }\n  segments {\n    simple: \"confirmarFatura__another\"\n  }\n}\n]."
+      ],
+      "functionCalls": 7
+    },
+    {
+      "name": "creationWrongIdentity",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 2
+    },
+    {
+      "name": "receiptMissingPrimary",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [
+        "Error: firestore.rules line [489], column [15]. Null value error."
+      ],
+      "functionCalls": 1
+    },
+    {
+      "name": "receiptWrongResult",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 1
+    },
+    {
+      "name": "receiptExtraField",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 0
+    },
+    {
+      "name": "receiptWrongKey",
+      "expectation": "DENY",
+      "state": "SUCCESS",
+      "debugMessages": [],
+      "functionCalls": 0
+    }
+  ],
+  "gate": "PASS official evaluation and authorized publication; 13/13 real SDK tests passed. Purchase/payment features remain blocked by their own gates.",
+  "candidateSourceSha256": "d305c3b7a39c8690a5022f04b297c95229178a97da0f1c8667522a9a699b87c8",
+  "publication": {
+    "activeSourceSha256": "d305c3b7a39c8690a5022f04b297c95229178a97da0f1c8667522a9a699b87c8",
+    "runId": "faturas006-final-20261019-04",
+    "realTestsPassed": 13,
+    "realTestsTotal": 13,
+    "frontendHostingDeployed": false
+  }
+}

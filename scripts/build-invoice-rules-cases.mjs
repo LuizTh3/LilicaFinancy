@@ -45,6 +45,60 @@ const mocks=[mock('getAfter',path('operacoesFaturas','ajustarVencimento__adjust'
 add('adjust','faturas','card__2026-10','update',after,before,mocks)
 add('adjustReceipt','operacoesFaturas','ajustarVencimento__adjust','create',r,undefined,mocks)
 add('adjustChangesBoundary','faturas','card__2026-10','update',{...after,inicio:'2026-09-11'},before,mocks,false)
+// Directed calendar coverage, including clamping, nominal equality and centuries.
+for(const [name,m,close,due] of [
+ ['equalDays','2027-02',31,31],['leapFebruary','2028-02',30,31],
+ ['nonLeapCentury','2100-02',30,31],['leapCentury','2000-02',30,31],
+ ['crossYear','2027-01',25,5],['aprilClamp','2027-04',30,31],
+ ['day29','2027-02',29,30],['day28','2027-02',28,31],
+ ['dueBeforeClose','2027-03',31,1],['year9999','9999-12',10,17],
+]) invoicePair(name,calendar(m,close,due),{},true,{...card,diaFechamento:close,diaVencimento:due})
+// Calendars are validated by the mandatory reciprocal receipt, not twice.
+function rejectCalendar(name,b){
+ const event='confirmarFatura__'+name,id='card__'+b.competencia,data={...stored(b),ultimoEventoId:event,createdAt:time,updatedAt:time}
+ const r=receipt('confirmarFatura',name,id,0,{...b,cartaoVersion:1},b)
+ if(name==='invalidNominalDay') add(name,'faturas',id,'create',data,undefined,[mock('getAfter',path('operacoesFaturas',event),{data:r})],false)
+ else add(name,'operacoesFaturas',event,'create',r,undefined,[mock('getAfter',path('faturas',id),{data})],false)
+}
+rejectCalendar('invalidDueDay',{...calendar('2026-10'),vencimento:'2026-10-32'})
+rejectCalendar('invalidStartDay',{...calendar('2026-10'),inicio:'2026-09-31'})
+rejectCalendar('invalidClosingDay',{...calendar('2026-10'),fechamento:'2026-10-11'})
+rejectCalendar('invalidMonth',{...calendar('2026-10'),vencimento:'2026-11-17'})
+rejectCalendar('invalidOriginalDue',{...calendar('2026-10'),calendarioOrigem:{...calendar('2026-10').calendarioOrigem,vencimentoOriginal:'2026-10-18'}})
+rejectCalendar('invalidOriginSchema',{...calendar('2026-10'),calendarioOrigem:{...calendar('2026-10').calendarioOrigem,calendarVersion:3}})
+rejectCalendar('invalidNominalDay',{...calendar('2026-10'),calendarioOrigem:{...calendar('2026-10').calendarioOrigem,diaFechamento:32}})
+rejectCalendar('invalidCycleOrder',{...calendar('2026-10'),inicio:'2026-10-11'})
+const empty=cases.find(c=>c.name==='invoiceEmpty').test
+for(const [name,change] of [
+ ['missingReceipt',t=>{t.functionMocks=t.functionMocks.map(m=>m.args[0].exactValue.includes('/operacoesFaturas/')?{...m,result:{value:null}}:m)}],
+ ['wrongOwner',t=>{t.request.auth.uid='another'}],
+ ['visitor',t=>{delete t.request.auth}],
+ ['unknownInvoiceSchema',t=>{t.request.resource.data.schemaVersion=2}],
+ ['invoiceExtraField',t=>{t.request.resource.data.pago=true}],
+ ['unknownNeighborSchema',t=>{const n=t.functionMocks.find(m=>m.args[0].exactValue.endsWith('card__2026-09'));n.result={value:{data:{...stored(calendar('2026-09')),schemaVersion:2}}}}],
+ ['wrongNeighborCard',t=>{const n=t.functionMocks.find(m=>m.args[0].exactValue.endsWith('card__2026-09'));n.result={value:{data:{...stored(calendar('2026-09')),cartaoId:'another'}}}}],
+ ]) { const t=structuredClone(empty);t.expectation='DENY';change(t);cases.push({name,test:t}) }
+const invalidAdjustment={...b,vencimento:'2026-10-32'},invalidEvent='ajustarVencimento__invalidDue'
+const invalidAfter={...after,...invalidAdjustment,ultimoEventoId:invalidEvent}
+const invalidReceipt=receipt('ajustarVencimento','invalidDue','card__2026-10',1,{vencimento:invalidAdjustment.vencimento,motivo:'Fixture'},invalidAdjustment,{vencimento:before.vencimento})
+add('invalidAdjustmentDue','operacoesFaturas',invalidEvent,'create',invalidReceipt,undefined,[mock('getAfter',path('faturas','card__2026-10'),{data:invalidAfter})],false)
+for(const [name,m,close,due] of [['maximumLeap','2028-02',30,31],['maximumEqual','2027-02',31,31],['maximumCrossYear','2027-01',25,5]]){
+ const cal=calendar(m,close,due)
+ invoicePair(name,{...cal,calendarioOrigem:{...cal.calendarioOrigem,origemInicio:'vizinhoConfirmado',origemFechamento:'vizinhoConfirmado'}},Object.fromEntries([-2,-1,1,2].map(n=>[n,stored(calendar(month(m,n),close,due))])),true,{...card,diaFechamento:close,diaVencimento:due})
+}
+for(const [name,change] of [
+ ['creationWrongVersion',t=>{t.request.resource.data.version=2}],
+ ['creationWrongTimestamp',t=>{t.request.resource.data.createdAt=old}],
+ ['creationWrongEvent',t=>{t.request.resource.data.ultimoEventoId='confirmarFatura__another'}],
+ ['creationWrongIdentity',t=>{t.request.resource.data.competencia='2026-11'}],
+ ['receiptMissingPrimary',t=>{t.functionMocks=t.functionMocks.map(m=>m.args[0].exactValue.includes('/faturas/')?{...m,result:{value:null}}:m)}],
+ ['receiptWrongResult',t=>{t.request.resource.data.resultado.vencimento='2026-10-18'}],
+ ['receiptExtraField',t=>{t.request.resource.data.extra=true}],
+ ['receiptWrongKey',t=>{t.request.resource.data.operationKey='another'}],
+ ]){
+ const t=structuredClone(cases.find(c=>c.name===(name.startsWith('receipt')?'invoiceEmptyReceipt':'invoiceEmpty')).test)
+ t.expectation='DENY';change(t);cases.push({name,test:t})
+}
 const output = new URL('../specs/006-cartoes-ciclos-faturas/rules-evaluation-cases.json', import.meta.url)
 const invoiceCases = cases.filter(item => !['criarCartao','editarCartao','arquivarCartao','cardForbiddenField'].some(prefix => item.name.startsWith(prefix)))
 fs.writeFileSync(output, JSON.stringify({schemaVersion:1, purpose:'Official test-only invoice Rules fixtures. Fixed synthetic data; no credentials, deploy or writes.', cases:invoiceCases}, null, 2)+'\n')

@@ -1,2 +1,2 @@
-// Enabled only after the complete invoice Rules pass official evaluation.
-export const faturasDisponiveis=false
+// Official evaluation + active source + real SDK matrix, 2026-10-19.
+export const faturasDisponiveis=true

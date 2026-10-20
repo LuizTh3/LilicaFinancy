@@ -34,6 +34,17 @@ export function createFaturasRepository(db:Firestore,ctx:ContextoCartoes,afterCo
     return {estado:'confirmado',alvoId:d.alvoId,resultVersion:d.expectedVersion+1,eventoId:eventoFaturaId(d)} as ResultadoFatura
    })
    if(afterCommit&&result.estado==='confirmado')await afterCommit();check();return sucesso(result)
-  }catch(e){const out=erroFatura(e);if(c&&ctx.atual()&&['indisponivel','cotaExcedida'].includes(out.erro.codigo)){const r=await consultarOperacao({modo:'comandoCompleto',comando:c});if(r.ok&&r.valor.estado==='confirmado')return sucesso<ResultadoFatura>({estado:'confirmado',alvoId:r.valor.alvoId,resultVersion:r.valor.resultVersion,eventoId:r.valor.eventoId});if(!r.ok)return r;return falha('confirmacaoIndeterminada','Sem confirmação remota. Consulte a mesma intenção antes de reenviar.',{recuperacao:'repetirMesmaChave'})}return out}
+  }catch(e){const out=erroFatura(e)
+   // A competing commit can make the Rules reject the stale revision before
+   // the SDK retries it. Reconcile using authorized server reads, never retry
+   // the write blindly or reinterpret an unchanged target as a version conflict.
+   if(c&&ctx.atual()&&out.erro.codigo==='semPermissao'){
+    const recovered=await consultarOperacao({modo:'comandoCompleto',comando:c})
+    if(recovered.ok&&recovered.valor.estado==='confirmado')return sucesso<ResultadoFatura>({estado:'confirmado',alvoId:recovered.valor.alvoId,resultVersion:recovered.valor.resultVersion,eventoId:recovered.valor.eventoId})
+    if(recovered.ok&&recovered.valor.estado==='ausenteConfirmado'){
+     try{const latest=await getDocFromServer(doc(db,'users',ctx.uid,'faturas',c.alvoId));check();if(latest.exists()&&decodeFatura(ctx.uid,c.alvoId,latest.data()).version!==c.expectedVersion)return falha('conflitoVersao','A fatura mudou. Releia antes de confirmar.',{recuperacao:'reler'})}catch{/* Preserve the original access error if confirmation cannot be read. */}
+    }
+   }
+   if(c&&ctx.atual()&&['indisponivel','cotaExcedida'].includes(out.erro.codigo)){const r=await consultarOperacao({modo:'comandoCompleto',comando:c});if(r.ok&&r.valor.estado==='confirmado')return sucesso<ResultadoFatura>({estado:'confirmado',alvoId:r.valor.alvoId,resultVersion:r.valor.resultVersion,eventoId:r.valor.eventoId});if(!r.ok)return r;return falha('confirmacaoIndeterminada','Sem confirmação remota. Consulte a mesma intenção antes de reenviar.',{recuperacao:'repetirMesmaChave'})}return out}
  }}
 }

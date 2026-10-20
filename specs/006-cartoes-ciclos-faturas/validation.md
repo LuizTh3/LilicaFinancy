@@ -110,3 +110,20 @@ O responsável autorizou explicitamente o envio das Rules à API oficial, valida
 
 A correção do cadastro está publicada e testada por SDK real. Conferência visual na sessão do responsável e medições assistidas permanecem pendentes; a entrega completa de faturas ainda requer resolver o limite de expressões e executar sua própria matriz real.
 Checagem final: fonte ativa corresponde ao hash publicado;14/14 índices READY,15/15 isenções configuradas e todas as operações assíncronas concluídas. wait006 terminou com ready=true. Regressão local final:66 arquivos/252 testes aprovados; typecheck, lint e build aprovados. Nenhum monitor ou limpeza continua em execução.
+# Avaliação autorizada durante008 — 2026-10-19
+
+Envio explicitamente autorizado pelo usuário à API oficial de Rules, sem publicação. Foram avaliadas três candidatas mantendo18 casos006 e permissões habilitadas somente em memória. Refatorações de aliases, comparação de mês condicionada à origem e atalho de clamp para dias1–28 não resolveram o limite. Resultado final:6 operações legítimas FAILURE;11 casos com diagnóstico de1000 expressões. Negativos negados por orçamento não são prova semântica. G0 permanece ERROR, availability/perfis e allow false preservados. Resumo com hashes/resultados em specs/008-pagamentos-ajustes-faturas/g0-evaluation-summary.json; fonte ativa não foi alterada.
+
+## Correção G0 concluída na candidata — 2026-10-19
+
+A avaliação oficial agora aprova68/68 casos sintéticos, sem diagnóstico de1000 expressões. A prova foi distribuída entre fatura e recibo recíprocos; calendário/origem são validados pelo recibo, forma/dias/transição/fronteiras pelo primário. Consultas de documentos protegidos existentes verificam schema/identidade e consomem limites imutáveis, sem recalcular todo o histórico. Condições detalhadas em contracts/security.md.
+
+Candidata integral: firestore-faturas.candidate.rules, gerada localmente por scripts/build-invoice-rules-candidate.mjs. Hash d305c3b7a39c8690a5022f04b297c95229178a97da0f1c8667522a9a699b87c8; resumo oficial em specs/008-pagamentos-ajustes-faturas/g0-evaluation-summary.json. Regressão262 testes/tipos/lint/build aprovada. Nenhum deploy/SDK real006 novo foi executado. Availability e perfis continuam bloqueados até publicação autorizada e matriz real. Antes dela, conferir fonte ativa/backup e inventariar legado: a prova indutiva pressupõe origens históricas criadas pelas regras, sem inserções privilegiadas arbitrárias.
+
+## Fonte ativa e matriz real de faturas — 2026-10-19
+
+Publicação autorizada concluída e verificada pelo hash d305c3b7a39c8690a5022f04b297c95229178a97da0f1c8667522a9a699b87c8. Backup da revisão anterior exata e índices salvo; índices/isenções preservados e prontos,zero faturas/eventos antes da execução. Raiz firestore.rules corresponde à fonte ativa; rollback completo conserva cartões e bloqueia novamente as mutações de faturas.
+
+Matriz final real:13/13 testes aprovados em89,22s, faturas006-final-20261019-04, incluindo cartões e oito histórias/cenários de faturas. Primeiro ciclo expôs recusa de acesso na corrida entre ajustes; adaptador corrigido mediante leitura confirmada de recibo/versão, sem retry cego ou mudança nas regras. Teste unitário reproduziu a falha antes da correção; cenário isolado e matriz completa passaram depois. Cobertura e limitações detalhadas em validation008.
+
+Regressão263 testes e tipos/lint/build aprovados; ações locais de confirmação/ajuste habilitadas e perfis006 validadosNoProjeto. Faturas continuam vazias: compras/pagamentos não implementados. Sem limpeza ou migração; fixtures sob UIDs fictícios inventariadas. Conferência visual com usuário e medição assistida continuam pendentes, portanto tarefas com essa parte não foram encerradas por inferência.

@@ -21,8 +21,18 @@ export function validateManifest(manifest: Manifest, projectId: string, runId: s
       } else if (group === 'parcelasCartao') {
         const identity = /^([A-Za-z0-9-]{1,64})__r([1-9][0-9]{0,15})__n([1-9]|1[0-2])$/.exec(child)
         if (!identity || !Number.isSafeInteger(Number(identity[2])) || !manifest.documents.some(item => item.path === 'users/' + uid + '/compras/' + identity[1] && item.owner === uid)) throw new Error('MANIFEST_SCOPE')
+      } else if (group === 'operacoesLiquidacoesFaturas') {
+        if (!/^(pagarFatura|reverterPagamentoErro|reabrirFatura|encerrarRevisao|registrarEncargo|corrigirItem|compensarAjuste|estornarCompra)__[A-Za-z0-9-]{1,64}$/.test(child)) throw new Error('MANIFEST_SCOPE')
+      } else if (group === 'controlesPagamentosFaturas' || group === 'controlesAjustesFaturas') {
+        const identity = /^(pagarFatura|registrarEncargo|corrigirItem|compensarAjuste|estornarCompra)__([A-Za-z0-9-]{1,64})__e([1-9]|1[0-2])$/.exec(child)
+        if (!identity || (group === 'controlesPagamentosFaturas' ? identity[1] !== 'pagarFatura' : identity[1] === 'pagarFatura') || !manifest.documents.some(item => item.path === 'users/' + uid + '/operacoesLiquidacoesFaturas/' + identity[1] + '__' + identity[2] && item.owner === uid)) throw new Error('MANIFEST_SCOPE')
+      } else if (group === 'controlesItensFaturas') {
+        const parcel = /^parcelaCartao__([A-Za-z0-9-]{1,64}__r[1-9][0-9]{0,15}__n(?:[1-9]|1[0-2]))$/.exec(child)
+        const charge = /^encargo__(registrarEncargo__[A-Za-z0-9-]{1,64})__e1$/.exec(child)
+        const source = parcel ? 'parcelasCartao/' + parcel[1] : charge ? 'operacoesLiquidacoesFaturas/' + charge[1] : undefined
+        if (!source || !manifest.documents.some(item => item.path === 'users/' + uid + '/' + source && item.owner === uid)) throw new Error('MANIFEST_SCOPE')
       } else if (group === 'operacoesCompras') {
-        if (!/^(criarCompra|editarCompra|cancelarCompra)__[A-Za-z0-9-]{1,64}$/.test(child)) throw new Error('MANIFEST_SCOPE')
+        if (!/^(criarCompra|editarCompra|cancelarCompra|incluirCompraEsquecida)__[A-Za-z0-9-]{1,64}$/.test(child)) throw new Error('MANIFEST_SCOPE')
       } else if (group === 'operacoesCartoes') {
         if (!/^(criarCartao|editarCartao|arquivarCartao)__[A-Za-z0-9-]{1,64}$/.test(child)) throw new Error('MANIFEST_SCOPE')
       } else if (group === 'operacoesFaturas') {

@@ -2,7 +2,7 @@ import { beforeEach, expect, it, vi } from 'vitest'
 import type { Firestore } from 'firebase/firestore'
 import { calendarioBaseFatura } from '../../domain/finance/invoiceCalendar'
 import { createFaturasRepository } from './faturasRepository'
-const memory=vi.hoisted(()=>({docs:new Map<string,Record<string,unknown>>(),reads:[] as string[],race:undefined as (()=>void)|undefined,offline:false}))
+const memory=vi.hoisted(()=>({docs:new Map<string,Record<string,unknown>>(),reads:[] as string[],race:undefined as (()=>void)|undefined,offline:false,rejectCommit:false}))
 vi.mock('firebase/firestore',async original=>{
  const a=await original<typeof import('firebase/firestore')>()
  const snap=(path:string)=>({exists:()=>memory.docs.has(path),data:()=>memory.docs.get(path)})
@@ -10,7 +10,7 @@ vi.mock('firebase/firestore',async original=>{
   let writes=new Map<string,Record<string,unknown>>(),writing=false
   const tx={get:async(r:{path:string})=>{if(writing)throw Error('READ_AFTER_WRITE');memory.reads.push(r.path);return snap(r.path)},set:(r:{path:string},d:Record<string,unknown>)=>{writing=true;writes.set(r.path,d)}}
   let result=await fn(tx)
-  if(memory.race){memory.race();memory.race=undefined;writes=new Map();writing=false;result=await fn(tx)}
+  if(memory.race){memory.race();memory.race=undefined;writes=new Map();writing=false;if(memory.rejectCommit)throw Object.assign(Error('denied'),{code:'permission-denied'});result=await fn(tx)}
   for(const [path,data] of writes)memory.docs.set(path,data)
   return result
  }}
@@ -18,7 +18,7 @@ vi.mock('firebase/firestore',async original=>{
 const db={} as Firestore,ctx={uid:'A',generation:1,atual:()=>true}
 const base=calendarioBaseFatura('2026-10',10,17);if(!base.ok)throw Error('fixture')
 const command={contractVersion:1 as const,tipo:'confirmarFatura' as const,operationKey:'key',alvoId:'card__2026-10',expectedVersion:0,payload:{...base.valor,cartaoId:'card',cartaoVersion:1}}
-beforeEach(async()=>{memory.docs.clear();memory.reads=[];memory.race=undefined;memory.offline=false;const {Timestamp}=await import('firebase/firestore');memory.docs.set('users/A/cartoes/card',{banco:'Banco',nome:'Nome',titularId:'holder',diaFechamento:10,diaVencimento:17,estado:'ativo',schemaVersion:1,version:1,ultimoEventoId:'criarCartao__key',createdAt:Timestamp.fromMillis(1),updatedAt:Timestamp.fromMillis(1)})})
+beforeEach(async()=>{memory.docs.clear();memory.reads=[];memory.race=undefined;memory.offline=false;memory.rejectCommit=false;const {Timestamp}=await import('firebase/firestore');memory.docs.set('users/A/cartoes/card',{banco:'Banco',nome:'Nome',titularId:'holder',diaFechamento:10,diaVencimento:17,estado:'ativo',schemaVersion:1,version:1,ultimoEventoId:'criarCartao__key',createdAt:Timestamp.fromMillis(1),updatedAt:Timestamp.fromMillis(1)})})
 it('lê recibo, alvo, cartão e quatro ausências antes das duas escritas; mesmo período é existente',async()=>{
  const repo=createFaturasRepository(db,ctx)
  expect(await repo.executar(command)).toMatchObject({ok:true,valor:{estado:'confirmado'}})
@@ -57,4 +57,15 @@ it('arquivamento concorrente bloqueia nova confirmação no retry; sessão tardi
  const card=memory.docs.get('users/A/cartoes/card')!;delete card.archivedAt;card.estado='ativo'
  let current=true
  expect(await createFaturasRepository(db,{...ctx,atual:()=>current},async()=>{current=false}).executar(command)).toMatchObject({ok:false,erro:{codigo:'semPermissao'}})
+})
+it('reconcilia recusa concorrente com revisão confirmada, sem mascarar permissão real',async()=>{
+ const repo=createFaturasRepository(db,ctx)
+ expect((await repo.executar(command)).ok).toBe(true)
+ const adjust={contractVersion:1 as const,tipo:'ajustarVencimento' as const,operationKey:'race',alvoId:command.alvoId,expectedVersion:1,payload:{vencimento:'2026-10-19',motivo:'Fixture'}}
+ memory.rejectCommit=true
+ memory.race=()=>{const f=memory.docs.get('users/A/faturas/card__2026-10')!;memory.docs.set('users/A/faturas/card__2026-10',{...f,version:2,vencimento:'2026-10-20',ultimoEventoId:'ajustarVencimento__other'})}
+ expect(await repo.executar(adjust)).toMatchObject({ok:false,erro:{codigo:'conflitoVersao'}})
+ expect(memory.docs.has('users/A/operacoesFaturas/ajustarVencimento__race')).toBe(false)
+ memory.race=()=>{}
+ expect(await repo.executar({...adjust,expectedVersion:2})).toMatchObject({ok:false,erro:{codigo:'semPermissao'}})
 })
