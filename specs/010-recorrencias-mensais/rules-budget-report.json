@@ -1,0 +1,567 @@
+{
+  "scope": "documented-composition-call-graphs-only",
+  "gate": "PENDENTE_PROVA_EXECUTAVEL",
+  "limites": {
+    "acessos": 18,
+    "acessosPorEscrita": 8,
+    "mutacoes": 32
+  },
+  "profiles": [
+    {
+      "leituras": [],
+      "descricao": "S(R,V)2; V(S,categoria)2; R(ready,S)2.",
+      "id": "criarSerie-externa",
+      "escritas": [
+        2,
+        2,
+        2
+      ],
+      "casoMinimo": true,
+      "total": 6,
+      "maiorEscrita": 2,
+      "mutacoes": 3,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [],
+      "descricao": "V valida cartão adicional; titular derivado.",
+      "id": "criarSerie-cartao",
+      "escritas": [
+        2,
+        3,
+        2
+      ],
+      "casoMinimo": true,
+      "total": 7,
+      "maiorEscrita": 3,
+      "mutacoes": 3,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1
+      ],
+      "descricao": "Titular/conta previstos, cinco etiquetas, primeiro uso categoria.",
+      "id": "criarSerie-externa-maximo",
+      "escritas": [
+        2,
+        4,
+        7,
+        2
+      ],
+      "casoMinimo": false,
+      "total": 16,
+      "maiorEscrita": 7,
+      "mutacoes": 4,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1,
+        1
+      ],
+      "descricao": "S3 O2 R2; tx S,V,O. Categoria classificada na revisão; revalidar ativo.",
+      "id": "materializar-externa",
+      "escritas": [
+        3,
+        2,
+        2
+      ],
+      "casoMinimo": true,
+      "total": 10,
+      "maiorEscrita": 3,
+      "mutacoes": 3,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "descricao": "S(R,V,O)3; O(S,categoria,cartão,F)4; R(ready,S,Gpos)3; G(Rpos)1; tx S,V,O,F,G. CapacidadeJ é parte autoritativa de O, não removida.",
+      "id": "materializar-cartao-capacidadeEmO",
+      "escritas": [
+        3,
+        4,
+        3,
+        1
+      ],
+      "casoMinimo": true,
+      "total": 16,
+      "maiorEscrita": 4,
+      "mutacoes": 4,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1,
+        1
+      ],
+      "descricao": "Mesma materialização, definitivo explicitamente confirmado.",
+      "id": "confirmarValor-virtual-externa",
+      "escritas": [
+        3,
+        2,
+        2
+      ],
+      "casoMinimo": true,
+      "total": 10,
+      "maiorEscrita": 3,
+      "mutacoes": 3,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "descricao": "Criação integral compra/item/capacidade e deltaG.",
+      "id": "confirmarValor-virtual-cartao",
+      "escritas": [
+        3,
+        4,
+        3,
+        1
+      ],
+      "casoMinimo": true,
+      "total": 16,
+      "maiorEscrita": 4,
+      "mutacoes": 4,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1
+      ],
+      "descricao": "S(R,Opos)2 O(Spos)1 R(ready,Spos)2; tx S,O; sem referências novas.",
+      "id": "editarEsta-ou-confirmarValor-externa",
+      "escritas": [
+        2,
+        1,
+        2
+      ],
+      "casoMinimo": true,
+      "total": 7,
+      "maiorEscrita": 2,
+      "mutacoes": 3,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1,
+        1
+      ],
+      "descricao": "Mesmo cartão/F, referência conservada; G obriga ausência de história e delta exato; fechamento snapshot imutável em O.",
+      "id": "editarEsta-ou-confirmarValor-cartao",
+      "escritas": [
+        2,
+        1,
+        3,
+        1
+      ],
+      "casoMinimo": true,
+      "total": 10,
+      "maiorEscrita": 3,
+      "mutacoes": 4,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "descricao": "S2 O(S,novoCartao,novaF)3 R(ready,S,Gantiga,Gnova)4; doisG1; tx S,O,Gantiga,Gnova,novaF. Fontes/capacidade preservadas e transferência atômica.",
+      "id": "editarEsta-moverCartao",
+      "escritas": [
+        2,
+        3,
+        4,
+        1,
+        1
+      ],
+      "casoMinimo": true,
+      "total": 16,
+      "maiorEscrita": 4,
+      "mutacoes": 5,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1
+      ],
+      "descricao": "S(R,VantigaAntes/VantigaDepois,Vnova)4; Vantiga1 Vnova1 R2; tx S,Vantiga. Referências conservadas, sem slots ocupados no intervalo.",
+      "id": "revisarFuturas-virtual",
+      "escritas": [
+        4,
+        1,
+        1,
+        2
+      ],
+      "casoMinimo": true,
+      "total": 10,
+      "maiorEscrita": 4,
+      "mutacoes": 4,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1,
+        1
+      ],
+      "descricao": "Split com um slot pré/pós, referências conservadas.",
+      "id": "revisarFuturas-externa-umSlot",
+      "escritas": [
+        6,
+        1,
+        1,
+        2,
+        1
+      ],
+      "casoMinimo": true,
+      "total": 14,
+      "maiorEscrita": 6,
+      "mutacoes": 5,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "descricao": "S(R,Vantiga pre/pos,Vnova,Opre/pos,Gpre)7; Vantiga1 Vnova1 R(ready,S,Gpos)3 O1 G1; tx S,Vantiga,O,G. Fechamento de O é snapshot006 verificado e imutável.",
+      "id": "revisarFuturas-cartao-umSlot",
+      "escritas": [
+        7,
+        1,
+        1,
+        3,
+        1,
+        1
+      ],
+      "casoMinimo": true,
+      "total": 18,
+      "maiorEscrita": 7,
+      "mutacoes": 6,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1
+      ],
+      "descricao": "S(R,Vpre,Vpos)3 V1 R2; tx S,V; sem slots no intervalo e sem referências novas.",
+      "id": "substituirRevisao-mesmoLimite-externa",
+      "escritas": [
+        3,
+        1,
+        2
+      ],
+      "casoMinimo": true,
+      "total": 8,
+      "maiorEscrita": 3,
+      "mutacoes": 3,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "descricao": "Troca conteúdoV preserva limites/histórico; O e G atualizados juntos.",
+      "id": "substituirRevisao-mesmoLimite-cartao-umSlot",
+      "escritas": [
+        6,
+        1,
+        3,
+        1,
+        1
+      ],
+      "casoMinimo": true,
+      "total": 16,
+      "maiorEscrita": 6,
+      "mutacoes": 5,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1,
+        1
+      ],
+      "descricao": "S(R,V,O)3 O(S)1 R2; tx S,V,O; revisão prova mês elegível antes do tombstone.",
+      "id": "pular-virtual",
+      "escritas": [
+        3,
+        1,
+        2
+      ],
+      "casoMinimo": true,
+      "total": 9,
+      "maiorEscrita": 3,
+      "mutacoes": 3,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1
+      ],
+      "descricao": "Supressão preserva O e história, sem apagar.",
+      "id": "cancelar-externa",
+      "escritas": [
+        2,
+        1,
+        2
+      ],
+      "casoMinimo": true,
+      "total": 7,
+      "maiorEscrita": 2,
+      "mutacoes": 3,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1,
+        1
+      ],
+      "descricao": "O e capacidade incorporada canceladas; G reduz exigível no mesmo commit.",
+      "id": "cancelar-cartao",
+      "escritas": [
+        2,
+        1,
+        3,
+        1
+      ],
+      "casoMinimo": true,
+      "total": 10,
+      "maiorEscrita": 3,
+      "mutacoes": 4,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1
+      ],
+      "descricao": "SóS/R; nenhuma O confirmada é cancelada.",
+      "id": "encerrar",
+      "escritas": [
+        1,
+        2
+      ],
+      "casoMinimo": true,
+      "total": 4,
+      "maiorEscrita": 2,
+      "mutacoes": 2,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1,
+        1
+      ],
+      "descricao": "S2 O(S,conta)2 R2; tx S,O,conta.",
+      "id": "pagar-ou-receber-externa",
+      "escritas": [
+        2,
+        2,
+        2
+      ],
+      "casoMinimo": true,
+      "total": 9,
+      "maiorEscrita": 2,
+      "mutacoes": 3,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1,
+        1
+      ],
+      "descricao": "Mesmo grafo mais patch2; conta já é lida na transação.",
+      "id": "pagar-primeiroUsoConta",
+      "escritas": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "casoMinimo": true,
+      "total": 11,
+      "maiorEscrita": 2,
+      "mutacoes": 4,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "descricao": "S2 O(S,original,Mpos)3 R2 M(R)1; tx S,O,original,M.",
+      "id": "reverter-externa",
+      "escritas": [
+        2,
+        3,
+        2,
+        1
+      ],
+      "casoMinimo": true,
+      "total": 12,
+      "maiorEscrita": 3,
+      "mutacoes": 4,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "descricao": "Regressão de rejeição: grafo descartado21; não habilitável.",
+      "id": "antigo-composicao-G-J-separados",
+      "escritas": [
+        3,
+        4,
+        4,
+        2,
+        1
+      ],
+      "casoMinimo": false,
+      "total": 21,
+      "maiorEscrita": 4,
+      "mutacoes": 5,
+      "dentroDosLimites": false
+    },
+    {
+      "leituras": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "descricao": "Rejeitar antes de escrita: total e S>8.",
+      "id": "revisarFuturas-cartao-doisSlots",
+      "escritas": [
+        10,
+        1,
+        1,
+        4,
+        1,
+        1,
+        1,
+        1
+      ],
+      "casoMinimo": false,
+      "total": 26,
+      "maiorEscrita": 10,
+      "mutacoes": 8,
+      "dentroDosLimites": false
+    },
+    {
+      "leituras": [
+        1,
+        1
+      ],
+      "descricao": "G(R,Fpre,Fpos)3 R(ready,G)2; tx F,G. F preexistente e inalterada no commit; nenhum zero inferido de lista.",
+      "escritas": [
+        3,
+        2
+      ],
+      "casoMinimo": true,
+      "id": "inicializarControleFatura",
+      "total": 7,
+      "maiorEscrita": 3,
+      "mutacoes": 2,
+      "dentroDosLimites": true
+    },
+    {
+      "leituras": [
+        1,
+        1,
+        1
+      ],
+      "descricao": "F(ready,R006,Gpre,Gpos)4 R006(Fpos)1 G(R006pos,Fpos)2; tx F,R006,G; imutáveis financeiros preservados.",
+      "escritas": [
+        4,
+        1,
+        2
+      ],
+      "casoMinimo": true,
+      "id": "ajustarVencimento006-comControle010",
+      "total": 10,
+      "maiorEscrita": 4,
+      "mutacoes": 3,
+      "dentroDosLimites": true
+    }
+  ],
+  "falhasMinimas": [],
+  "fontesSha256": {
+    "specs/008-pagamentos-ajustes-faturas/data-model.md": "36faa616e1010e8bcd263629aaaf7d8213e5f41654ad04b4a9d5b21f743799e2",
+    "specs/008-pagamentos-ajustes-faturas/contracts/security.md": "7637e1de843dbe948ad9f1ce850899dfe23550b1c330ffc6c3e0818c41cd268c",
+    "specs/010-recorrencias-mensais/data-model.md": "c8a2bc60ccc9189a67909522857bff31d2e2a29bb8851f4509a47335c14ae124",
+    "specs/010-recorrencias-mensais/contracts/security.md": "b6521797455cd203fb96d38a2a430b0cbbc4e52a6a7e18a9ce0998b9b03436f9",
+    "src/domain/finance/operationBudget.ts": "a1fad7056644d78eefc5e2be32140ecb8f8a4a627c8d067453df4adf4851550e",
+    "firestore.rules": "d305c3b7a39c8690a5022f04b297c95229178a97da0f1c8667522a9a699b87c8"
+  },
+  "compiler": "NOT_RUN",
+  "expressions": "NOT_MEASURED",
+  "bytes": "NOT_PROVEN",
+  "officialEvaluation": "NOT_RUN",
+  "deployment": "NOT_RUN",
+  "grafosMinimosDocumentados": [
+    "criarSerie-externa",
+    "criarSerie-cartao",
+    "materializar-externa",
+    "materializar-cartao-capacidadeEmO",
+    "confirmarValor-virtual-externa",
+    "confirmarValor-virtual-cartao",
+    "editarEsta-ou-confirmarValor-externa",
+    "editarEsta-ou-confirmarValor-cartao",
+    "editarEsta-moverCartao",
+    "revisarFuturas-virtual",
+    "revisarFuturas-externa-umSlot",
+    "revisarFuturas-cartao-umSlot",
+    "substituirRevisao-mesmoLimite-externa",
+    "substituirRevisao-mesmoLimite-cartao-umSlot",
+    "pular-virtual",
+    "cancelar-externa",
+    "cancelar-cartao",
+    "encerrar",
+    "pagar-ou-receber-externa",
+    "pagar-primeiroUsoConta",
+    "reverter-externa",
+    "inicializarControleFatura",
+    "ajustarVencimento006-comControle010"
+  ],
+  "coberturaCompletaDeComandos": false,
+  "observacao": "Falha deste grafo exige redesenho; não demonstra impossibilidade de todas as arquiteturas. Não é aprovação de Rules nem medição remota."
+}

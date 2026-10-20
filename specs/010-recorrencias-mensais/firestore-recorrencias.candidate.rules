@@ -1,0 +1,1037 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function own(uid) { return request.auth != null && request.auth.uid == uid; }
+    function ready() {
+      let p = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return request.auth != null && p.uid == request.auth.uid
+        && p.schemaVersion is int && p.schemaVersion == 1 && p.primeiro_login == false
+        && p.passwordChangeCompletedAt is timestamp
+        && request.auth.token.auth_time * 1000 > p.passwordChangeCompletedAt.toMillis();
+    }
+    function admin() {
+      return ready() && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.enabled == true;
+    }
+    function validDate(s) {
+      // ISO comparison plus explicit month/day/leap-year validity. No client timezone.
+      let y = int(s[0:4]);
+      let m = int(s[5:7]);
+      let d = int(s[8:10]);
+      let leap = y % 4 == 0 && (y % 100 != 0 || y % 400 == 0);
+      let max = m == 2 ? (leap ? 29 : 28) : (m in [4,6,9,11] ? 30 : 31);
+      return s is string && s.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && y >= 1900 && y <= 9999 && m >= 1 && m <= 12 && d >= 1 && d <= max;
+    }
+    function subscription(id) {
+      let d = request.resource.data;
+      return d.keys().hasAll(['requestId','startDate','endDate','version','createdAt','updatedAt','updatedBy'])
+        && d.keys().hasOnly(['requestId','startDate','endDate','version','createdAt','updatedAt','updatedBy'])
+        && d.requestId == id && exists(/databases/$(database)/documents/registrationRequests/$(id))
+        && validDate(d.startDate) && validDate(d.endDate) && d.endDate >= d.startDate
+        && d.version is int && d.version >= 1 && d.updatedBy == request.auth.uid
+        && d.updatedAt == request.time;
+    }
+    // Feature 004: all paths are constructed inside the authenticated owner.
+    function catalogReady(uid) {
+      let p = get(/databases/$(database)/documents/users/$(uid)).data;
+      return own(uid) && p.uid == uid && p.schemaVersion == 1 && p.schemaVersion is int
+        && p.timezone == 'America/Rio_Branco' && p.primeiro_login == false
+        && p.passwordChangeCompletedAt is timestamp
+        && request.auth.token.auth_time * 1000 > p.passwordChangeCompletedAt.toMillis();
+    }
+    function catalog(c) { return c in ['titulares','categorias','contas','etiquetas']; }
+    function safeId(id) { return id is string && id.matches('^[A-Za-z0-9-]{1,64}$'); }
+    function safeVersion(v) { return v is int && v >= 1 && v <= 9007199254740991; }
+    function contentKeys(c) {
+      return c == 'categorias' ? ['nome','estado','natureza'] : c == 'contas'
+        ? ['nome','estado','tipo','titularId','saldoInicialCentavos','saldoInicialPosicao','saldoInicialDataBase'] : ['nome','estado'];
+    }
+    function calendarParts(s) {
+      let y = int(s[0:4]); let m = int(s[5:7]); let d = int(s[8:10]);
+      let leap = y % 4 == 0 && (y % 100 != 0 || y % 400 == 0);
+      let max = m == 2 ? (leap ? 29 : 28) : (m in [4,6,9,11] ? 30 : 31);
+      return y >= 1900 && y <= 9999 && m >= 1 && m <= 12 && d >= 1 && d <= max;
+    }
+    function calendarDate(s) {
+      return s is string && s.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$') && calendarParts(s);
+    }
+    function notFuture(s) {
+      let local = request.time - duration.value(5, 'h');
+      return int(s[0:4]) * 10000 + int(s[5:7]) * 100 + int(s[8:10]) <= local.year() * 10000 + local.month() * 100 + local.day();
+    }
+    function accountBase(d) {
+      let keys = ['saldoInicialCentavos','saldoInicialPosicao','saldoInicialDataBase'];
+      return !d.keys().hasAny(keys) || (d.keys().hasAll(keys)
+        && d.saldoInicialCentavos is int && d.saldoInicialCentavos >= 0 && d.saldoInicialCentavos <= 9007199254740991
+        && d.saldoInicialPosicao in ['credora','devedora'] && (d.saldoInicialCentavos != 0 || d.saldoInicialPosicao == 'credora')
+        && calendarDate(d.saldoInicialDataBase) && notFuture(d.saldoInicialDataBase));
+    }
+    function validContent(c,d) {
+      return d.nome is string && d.nome == d.nome.trim() && d.nome.size() >= 1 && d.nome.size() <= 120
+        && d.estado in ['ativo','arquivado']
+        && (c != 'categorias' || d.natureza in ['receita','despesa'])
+        && (c != 'contas' || (d.tipo in ['banco','carteira','contaPagamento']
+          && (!('titularId' in d) || safeId(d.titularId)) && accountBase(d)));
+    }
+    function validUse(c,u) {
+      return u is map && u.keys().hasAll(['eventoId','origemId','papel','createdAt'])
+        && u.keys().hasOnly(['eventoId','origemId','papel','createdAt']) && safeId(u.origemId) && u.createdAt is timestamp
+        && u.eventoId is string && (c == 'categorias'
+          ? u.papel == 'classificacao' && u.eventoId.matches('^(criarReceita|criarDespesa|gastoImediato|editarOrigem|recCriarSerie|recEditarEsta|recRevisarFuturas)__[A-Za-z0-9-]{1,64}$')
+          : c == 'contas' && u.papel == 'movimentacao' && u.eventoId.matches('^(pagar|receber|gastoImediato|recPagar|recReceber)__[A-Za-z0-9-]{1,64}$'));
+    }
+    function validCatalogDoc(c,d) {
+      return d.keys().hasAll(['nome','estado','schemaVersion','version','createdAt','updatedAt'])
+        && d.keys().hasOnly(contentKeys(c).concat(['schemaVersion','version','createdAt','updatedAt','archivedAt','usoFinanceiro']))
+        && validContent(c,d) && d.schemaVersion is int
+        && (d.schemaVersion == 1 || (d.schemaVersion == 2 && c in ['categorias','contas'])) && safeVersion(d.version)
+        && (!('usoFinanceiro' in d) || (d.schemaVersion == 2 && validUse(c,d.usoFinanceiro)))
+        && d.createdAt is timestamp && d.updatedAt is timestamp && d.updatedAt >= d.createdAt
+        && (d.estado == 'ativo' ? !('archivedAt' in d) : ('archivedAt' in d && d.archivedAt is timestamp && d.archivedAt == d.updatedAt));
+    }
+    function sameContent(a,b) {
+      return a.nome == b.nome && a.estado == b.estado && sameFields(a,b);
+    }
+    function sameFields(a,b) {
+      return a.get('natureza',null) == b.get('natureza',null) && a.get('tipo',null) == b.get('tipo',null)
+        && a.get('titularId',null) == b.get('titularId',null)
+        && a.get('saldoInicialCentavos',null) == b.get('saldoInicialCentavos',null)
+        && a.get('saldoInicialPosicao',null) == b.get('saldoInicialPosicao',null)
+        && a.get('saldoInicialDataBase',null) == b.get('saldoInicialDataBase',null);
+    }
+    function historicalHolder(uid,d,before) {
+      let t = getAfter(/databases/$(database)/documents/users/$(uid)/titulares/$(d.titularId));
+      return t != null && validCatalogDoc('titulares',t.data) && (t.data.estado == 'ativo' || before.get('titularId',null) == d.titularId);
+    }
+    function validHolder(uid,c,d,before) {
+      return c != 'contas' || !('titularId' in d) || historicalHolder(uid,d,before);
+    }
+    function sensitiveAllowed(uid,c,id,d,before) {
+      let changed = c == 'categorias' ? d.natureza != before.natureza : c == 'contas'
+        ? d.tipo != before.tipo || d.get('saldoInicialCentavos',null) != before.get('saldoInicialCentavos',null)
+          || d.get('saldoInicialPosicao',null) != before.get('saldoInicialPosicao',null)
+          || d.get('saldoInicialDataBase',null) != before.get('saldoInicialDataBase',null) : false;
+      return !changed || (!('usoFinanceiro' in before) && !('usoFinanceiro' in d)
+        && !existsAfter(/databases/$(database)/documents/users/$(uid)/usoCadastros/$(c + '__' + id)));
+    }
+    function receiptPath(uid,c,id,v) {
+      return /databases/$(database)/documents/users/$(uid)/operacoesCadastros/$(c + '__' + id + '__' + string(v));
+    }
+    function catalogMutation(uid,c,id,creating) {
+      let d = request.resource.data;
+      let r = getAfter(receiptPath(uid,c,id,d.version)).data;
+      return safeId(id) && validCatalogDoc(c,d) && d.updatedAt == request.time
+        && r.colecao == c && r.cadastroId == id && r.version == d.version && r.createdAt == request.time
+        && sameContent(d,r.dados)
+        && (creating ? d.version == 1 && d.estado == 'ativo' && d.createdAt == request.time && r.expectedVersion == 0 && r.tipo == 'criar'
+            && d.schemaVersion == (c in ['categorias','contas'] ? 2 : 1) && !('usoFinanceiro' in d) && validHolder(uid,c,d,{})
+          : validCatalogDoc(c,resource.data) && resource.data.estado == 'ativo' && d.createdAt == resource.data.createdAt && d.schemaVersion == resource.data.schemaVersion
+            && d.version == resource.data.version + 1 && r.expectedVersion == resource.data.version
+            && d.get('usoFinanceiro',null) == resource.data.get('usoFinanceiro',null)
+            && validHolder(uid,c,d,resource.data)
+            && (r.tipo == 'arquivar' ? d.estado == 'arquivado' && d.archivedAt == request.time
+                && d.nome == resource.data.nome && sameFields(d,resource.data)
+              : r.tipo == 'editar' && d.estado == 'ativo' && !sameContent(d,resource.data) && sensitiveAllowed(uid,c,id,d,resource.data)));
+    }
+
+    function usePatch() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasAny(['usoFinanceiro']);
+    }
+    function financialUsePatch(uid,c,id) {
+      let d = request.resource.data;
+      let u = d.usoFinanceiro;
+      let before = get(/databases/$(database)/documents/users/$(uid)/operacoesExternas/$(u.eventoId));
+      let after = getAfter(/databases/$(database)/documents/users/$(uid)/operacoesExternas/$(u.eventoId));
+      return c in ['categorias','contas'] && safeId(id) && validCatalogDoc(c,resource.data) && validCatalogDoc(c,d)
+        && resource.data.estado == 'ativo' && d.schemaVersion == 2 && !('usoFinanceiro' in resource.data)
+        && d.diff(resource.data).affectedKeys().hasOnly(['schemaVersion','usoFinanceiro'])
+        && validUse(c,u) && u.createdAt == request.time && before == null && after != null
+        && after.data.origemId == u.origemId && after.data.createdAt == request.time
+        && (c == 'categorias'
+          ? after.data.tipo in ['criarReceita','criarDespesa','gastoImediato','editarOrigem'] && after.data.depois.categoriaId == id
+          : after.data.tipo in ['pagar','receber','gastoImediato'] && after.data.fato.contaId == id);
+    }
+    function receiptCreate(uid,id) {
+      let r = request.resource.data;
+      let path = /databases/$(database)/documents/users/$(uid)/$(r.colecao)/$(r.cadastroId);
+      let before = get(path);
+      let after = getAfter(path);
+      return r.keys().hasAll(['schemaVersion','operationKey','colecao','cadastroId','expectedVersion','version','tipo','dados','createdAt'])
+        && r.keys().hasOnly(['schemaVersion','operationKey','colecao','cadastroId','expectedVersion','version','tipo','dados','createdAt'])
+        && r.schemaVersion is int && r.schemaVersion == 1 && catalog(r.colecao) && safeId(r.cadastroId) && safeId(r.operationKey)
+        && r.expectedVersion is int && r.expectedVersion >= 0 && safeVersion(r.version) && r.version == r.expectedVersion + 1
+        && id == r.colecao + '__' + r.cadastroId + '__' + string(r.version) && r.createdAt == request.time
+        && r.dados is map && r.dados.keys().hasAll(['nome','estado']) && r.dados.keys().hasOnly(contentKeys(r.colecao)) && validContent(r.colecao,r.dados)
+        && after != null && after.data.version == r.version && after.data.updatedAt == request.time && sameContent(after.data,r.dados)
+        && (r.tipo == 'criar' ? before == null && r.expectedVersion == 0 && after.data.createdAt == request.time && after.data.estado == 'ativo'
+          : before != null && before.data.version == r.expectedVersion && before.data.estado == 'ativo'
+            && (r.tipo == 'editar' ? after.data.estado == 'ativo' && !sameContent(after.data,before.data)
+              : r.tipo == 'arquivar' && after.data.estado == 'arquivado' && after.data.archivedAt == request.time
+                && after.data.nome == before.data.nome && sameFields(after.data,before.data)));
+    }
+
+    // Feature 005: only prediction creation is enabled at this checkpoint.
+    function externalBusinessKeys() {
+      return ['natureza','descricao','categoriaId','valorCentavos','estimado','competenciaPlanejamento',
+        'dataPrevista','vencimento','dataConsumo','titularId','contaPrevistaId','etiquetaIds','observacao'];
+    }
+    function externalText(s,max) { return s is string && s == s.trim() && s.size() >= 1 && s.size() <= max; }
+    function validMonth(s) { return s is string && s.matches('^[0-9]{4}-(0[1-9]|1[0-2])$') && int(s[0:4]) >= 1900 && int(s[0:4]) <= 9999; }
+    function labelShape(labels) {
+      return labels is list && labels.size() <= 5 && labels.size() >= 1 && labels.toSet().size() == labels.size()
+        && (labels.size() < 2 || labels[0] < labels[1]) && (labels.size() < 3 || labels[1] < labels[2])
+        && (labels.size() < 4 || labels[2] < labels[3]) && (labels.size() < 5 || labels[3] < labels[4]);
+    }
+    function validExternalBusiness(d) {
+      return d is map && d.keys().hasAll(['natureza','descricao','categoriaId','valorCentavos','estimado','competenciaPlanejamento'])
+        && d.keys().hasOnly(externalBusinessKeys()) && externalText(d.descricao,120) && safeId(d.categoriaId)
+        && d.valorCentavos is int && d.valorCentavos > 0 && d.valorCentavos <= 9007199254740991
+        && d.estimado is bool && validMonth(d.competenciaPlanejamento)
+        // Calendar semantics are checked by the mandatory origin write, bound
+        // to this exact map. Keep shape here to balance expression budgets.
+        && (d.natureza == 'receita' ? d.keys().hasAll(['dataPrevista']) && !d.keys().hasAny(['vencimento','dataConsumo'])
+          : d.natureza == 'despesa' && d.keys().hasAll(['vencimento','dataConsumo']) && !('dataPrevista' in d))
+        && (!('titularId' in d) || safeId(d.titularId)) && (!('contaPrevistaId' in d) || safeId(d.contaPrevistaId))
+        && (!('observacao' in d) || externalText(d.observacao,1000)) && (!('etiquetaIds' in d) || labelShape(d.etiquetaIds));
+    }
+    function sameExternalBusiness(a,b) {
+      // The closed business map must match exactly, including absent vs null.
+      // Only protected origin metadata may differ. MapDiff avoids repeatedly
+      // evaluating every field/presence and stays within the expression budget.
+      return a.diff(b).affectedKeys().hasOnly(['schemaVersion','version','createdAt','updatedAt',
+        'estadoObrigacao','liquidadoLiquidoCentavos','jaLiquidada','ultimoEventoId']);
+    }
+    function externalCategory(uid,d) {
+      let c = getAfter(/databases/$(database)/documents/users/$(uid)/categorias/$(d.categoriaId));
+      return c != null && c.data.schemaVersion is int && c.data.schemaVersion == 2 && c.data.estado == 'ativo'
+        && c.data.natureza == d.natureza && validUse('categorias',c.data.usoFinanceiro);
+    }
+    function activeSimpleReference(d) {
+      // Financial authorization depends on the owner-scoped path, supported
+      // schema and active state. Catalog mutations independently enforce the
+      // closed full schema; labels do not need to revalidate unrelated metadata.
+      return d.schemaVersion is int && d.schemaVersion == 1 && d.estado == 'ativo';
+    }
+    function externalHolder(uid,id) {
+      let h = getAfter(/databases/$(database)/documents/users/$(uid)/titulares/$(id));
+      return safeId(id) && h != null && activeSimpleReference(h.data);
+    }
+    function externalPlannedAccount(uid,id) {
+      let a = getAfter(/databases/$(database)/documents/users/$(uid)/contas/$(id));
+      return safeId(id) && a != null && a.data.schemaVersion is int && a.data.schemaVersion in [1,2]
+        && a.data.estado == 'ativo' && a.data.tipo in ['banco','carteira','contaPagamento'];
+    }
+    function externalLabel(uid,id) {
+      let e = getAfter(/databases/$(database)/documents/users/$(uid)/etiquetas/$(id));
+      return safeId(id) && e != null && activeSimpleReference(e.data);
+    }
+    function externalLabels(uid,d) {
+      let ids = d.get('etiquetaIds',[]);
+      return (ids.size() < 1 || externalLabel(uid,ids[0])) && (ids.size() < 2 || externalLabel(uid,ids[1]))
+        && (ids.size() < 3 || externalLabel(uid,ids[2])) && (ids.size() < 4 || externalLabel(uid,ids[3]))
+        && (ids.size() < 5 || externalLabel(uid,ids[4]));
+    }
+    function externalOriginCreate(uid,id) {
+      let d = request.resource.data;
+      let r = getAfter(/databases/$(database)/documents/users/$(uid)/operacoesExternas/$(d.ultimoEventoId)).data;
+      return safeId(id) && d.keys().hasAll(['schemaVersion','version','createdAt','updatedAt','estadoObrigacao','liquidadoLiquidoCentavos','jaLiquidada','ultimoEventoId'])
+        && d.keys().hasOnly(externalBusinessKeys().concat(['schemaVersion','version','createdAt','updatedAt','estadoObrigacao','liquidadoLiquidoCentavos','jaLiquidada','ultimoEventoId']))
+        && d.schemaVersion is int && d.schemaVersion == 1 && d.version is int && d.version == 1
+        && d.createdAt == request.time && d.updatedAt == request.time && d.estadoObrigacao == 'ativa'
+        && d.valorCentavos is int && d.valorCentavos > 0 && d.valorCentavos <= 9007199254740991 && d.estimado is bool
+        && d.liquidadoLiquidoCentavos is int && d.liquidadoLiquidoCentavos == 0 && d.jaLiquidada is bool && d.jaLiquidada == false
+        && r.origemId == id && r.expectedVersion == 0 && r.resultVersion == 1 && r.createdAt == request.time
+        && r.tipo == (d.natureza == 'receita' ? 'criarReceita' : 'criarDespesa') && sameExternalBusiness(d,r.depois)
+        && (d.natureza == 'receita' ? calendarDate(d.dataPrevista) : calendarDate(d.vencimento) && calendarDate(d.dataConsumo))
+        // The mandatory new receipt validates the closed business map. The
+        // exact MapDiff above binds it to this origin without a duplicate pass.
+        && externalCategory(uid,d)
+        && (!('titularId' in d) || externalHolder(uid,d.titularId))
+        && (!('contaPrevistaId' in d) || externalPlannedAccount(uid,d.contaPrevistaId));
+    }
+    function externalReceiptCreate(uid,id) {
+      let r = request.resource.data;
+      let c = r.comando;
+      let o = getAfter(/databases/$(database)/documents/users/$(uid)/lancamentosExternos/$(r.origemId)).data;
+      return r.keys().hasAll(['schemaVersion','contractVersion','tipo','operationKey','origemId','natureza','expectedVersion','resultVersion','comando','depois','createdAt'])
+        && r.keys().hasOnly(['schemaVersion','contractVersion','tipo','operationKey','origemId','natureza','expectedVersion','resultVersion','comando','depois','createdAt'])
+        && r.schemaVersion is int && r.schemaVersion == 1 && r.contractVersion is int && r.contractVersion == 1
+        && safeId(r.operationKey) && safeId(r.origemId) && id == r.tipo + '__' + r.operationKey
+        && r.tipo in ['criarReceita','criarDespesa'] && r.expectedVersion is int && r.expectedVersion == 0
+        && r.resultVersion is int && r.resultVersion == 1 && r.createdAt == request.time
+        && c is map && c.keys().hasAll(['contractVersion','tipo','operationKey','origemId','expectedVersion','dados'])
+        && c.keys().hasOnly(['contractVersion','tipo','operationKey','origemId','expectedVersion','dados'])
+        && c.contractVersion is int && c.contractVersion == 1 && c.tipo == r.tipo && c.operationKey == r.operationKey
+        && c.origemId == r.origemId && c.expectedVersion is int && c.expectedVersion == 0 && c.dados == r.depois
+        && validExternalBusiness(r.depois) && r.natureza == r.depois.natureza
+        && o.version == r.resultVersion && o.ultimoEventoId == id && sameExternalBusiness(o,r.depois)
+        && externalLabels(uid,r.depois);
+    }
+    // Feature 006: cards enabled after validation; invoice writes remain gated.
+    function cardPayload(d) {
+      return {'banco':d.banco,'nome':d.nome,'titularId':d.titularId,'diaFechamento':d.diaFechamento,'diaVencimento':d.diaVencimento};
+    }
+    function cardResult(d) {
+      return {'banco':d.banco,'nome':d.nome,'titularId':d.titularId,'diaFechamento':d.diaFechamento,'diaVencimento':d.diaVencimento,'estado':d.estado};
+    }
+    function cardBusiness(d) {
+      return externalText(d.banco,120) && externalText(d.nome,120) && safeId(d.titularId)
+        && d.diaFechamento is int && d.diaFechamento >= 1 && d.diaFechamento <= 31
+        && d.diaVencimento is int && d.diaVencimento >= 1 && d.diaVencimento <= 31;
+    }
+    function cardDoc(d) {
+      let keys = ['banco','nome','titularId','diaFechamento','diaVencimento','estado','schemaVersion','version','ultimoEventoId','createdAt','updatedAt'];
+      return d.keys().hasAll(keys) && d.keys().hasOnly(keys.concat(['archivedAt'])) && cardBusiness(d)
+        && (d.estado == 'ativo' ? !('archivedAt' in d) : d.estado == 'arquivado' && d.archivedAt is timestamp && d.archivedAt == d.updatedAt)
+        && d.schemaVersion is int && d.schemaVersion == 1 && safeVersion(d.version)
+        && d.ultimoEventoId is string && d.ultimoEventoId.matches('^(criarCartao|editarCartao|arquivarCartao)__[A-Za-z0-9-]{1,64}$')
+        && d.createdAt is timestamp && d.updatedAt is timestamp && d.updatedAt >= d.createdAt;
+    }
+    function cardHolder(uid,d,before) {
+      let h = getAfter(/databases/$(database)/documents/users/$(uid)/titulares/$(d.titularId));
+      return h != null && validCatalogDoc('titulares',h.data)
+        && (h.data.estado == 'ativo' || before.get('titularId','') == d.titularId);
+    }
+    function cardMutation(uid,id,creating) {
+      let d = request.resource.data;
+      let r = getAfter(/databases/$(database)/documents/users/$(uid)/operacoesCartoes/$(d.ultimoEventoId)).data;
+      return d.updatedAt == request.time && r.alvoId == id && r.resultVersion == d.version
+        && r.resultado == cardResult(d)
+        && (creating
+          ? d.estado == 'ativo' && r.comando.payload == cardPayload(d) && d.version == 1 && d.createdAt == request.time && r.expectedVersion == 0 && r.tipo == 'criarCartao'
+            && !r.keys().hasAny(['antes']) && cardHolder(uid,d,{})
+          : cardDoc(resource.data) && resource.data.estado == 'ativo' && d.version == resource.data.version + 1 && d.createdAt == resource.data.createdAt
+            && r.expectedVersion == resource.data.version && r.antes == cardResult(resource.data)
+            && (r.tipo == 'arquivarCartao' ? d.estado == 'arquivado' && r.comando.payload == {} && d.archivedAt == request.time
+                && cardPayload(d) == cardPayload(resource.data)
+              : r.tipo == 'editarCartao' && d.estado == 'ativo' && r.comando.payload == cardPayload(d)
+                && cardResult(d) != cardResult(resource.data) && cardHolder(uid,d,resource.data)));
+    }
+    function cardReceiptShape(r) {
+      let keys = ['schemaVersion','contractVersion','operationKey','tipo','alvoId','expectedVersion','resultVersion','comando','resultado','createdAt'];
+      let c = r.comando;
+      let payloadKeys = ['banco','nome','titularId','diaFechamento','diaVencimento'];
+      return r.keys().hasAll(keys) && r.keys().hasOnly(keys.concat(['antes']))
+        && r.schemaVersion is int && r.schemaVersion == 1 && r.contractVersion is int && r.contractVersion == 1
+        && safeId(r.operationKey) && safeId(r.alvoId) && r.tipo in ['criarCartao','editarCartao','arquivarCartao']
+        && r.expectedVersion is int && r.expectedVersion >= 0 && r.expectedVersion < 9007199254740991
+        && safeVersion(r.resultVersion) && r.resultVersion == r.expectedVersion + 1 && r.createdAt == request.time
+        && (r.tipo == 'criarCartao' ? r.expectedVersion == 0 : r.expectedVersion >= 1)
+        && c is map && c.keys().hasAll(['contractVersion','tipo','operationKey','alvoId','expectedVersion','payload'])
+        && c.keys().hasOnly(['contractVersion','tipo','operationKey','alvoId','expectedVersion','payload'])
+        && c.contractVersion is int && c.contractVersion == 1 && c.tipo == r.tipo && c.operationKey == r.operationKey
+        && c.alvoId == r.alvoId && c.expectedVersion is int && c.expectedVersion == r.expectedVersion
+        && c.payload is map && (r.tipo == 'arquivarCartao' ? c.payload == {} : c.payload.keys().hasAll(payloadKeys) && c.payload.keys().hasOnly(payloadKeys))
+        && r.resultado is map && r.resultado.keys().hasAll(payloadKeys.concat(['estado']))
+        && r.resultado.keys().hasOnly(payloadKeys.concat(['estado']));
+    }
+    function cardReceiptCreate(uid,id) {
+      let r = request.resource.data;
+      let after = getAfter(/databases/$(database)/documents/users/$(uid)/cartoes/$(r.alvoId)).data;
+      return id == r.tipo + '__' + r.operationKey && after.ultimoEventoId == id
+        && after.version == r.resultVersion && after.updatedAt == request.time
+        && cardResult(after) == r.resultado;
+    }
+    // Feature 006. Calendar math uses nominal day relation before clamping.
+    function invoiceMonthIndex(m) { return int(m[0:4]) * 12 + int(m[5:7]) - 1; }
+    function invoiceTwo(n) { return n < 10 ? '0' + string(n) : string(n); }
+    function invoiceMonth(i) { return string(int(i / 12)) + '-' + invoiceTwo(i % 12 + 1); }
+    function invoiceDate(i,day) {
+      let y = int(i / 12);
+      let m = i % 12 + 1;
+      let leap = y % 4 == 0 && (y % 100 != 0 || y % 400 == 0);
+      let max = m == 2 ? (leap ? 29 : 28) : (m in [4,6,9,11] ? 30 : 31);
+      return invoiceMonth(i) + '-' + invoiceTwo(day < max ? day : max);
+    }
+    function invoiceKeys() { return ['cartaoId','competencia','inicio','fechamento','vencimento','calendarioOrigem']; }
+    function invoiceResult(d) {
+      return {'cartaoId':d.cartaoId,'competencia':d.competencia,'inicio':d.inicio,'fechamento':d.fechamento,'vencimento':d.vencimento,'calendarioOrigem':d.calendarioOrigem};
+    }
+    function invoiceConfirmPayload(d) {
+      return {'cartaoId':d.cartaoId,'competencia':d.competencia,'inicio':d.inicio,'fechamento':d.fechamento,'vencimento':d.vencimento,'calendarioOrigem':d.calendarioOrigem,'cartaoVersion':d.calendarioOrigem.cartaoVersion};
+    }
+    function invoiceOrigin(o) {
+      let keys = ['calendarVersion','cartaoVersion','diaFechamento','diaVencimento','vencimentoOriginal','origemInicio','origemFechamento'];
+      return o is map && o.keys().hasAll(keys) && o.keys().hasOnly(keys) && o.calendarVersion is int && o.calendarVersion == 2
+        && safeVersion(o.cartaoVersion)
+        && o.origemInicio in ['padrao','vizinhoConfirmado'] && o.origemFechamento in ['padrao','vizinhoConfirmado'];
+    }
+    function invoiceNominalDays(o) {
+      let closeDay = o.diaFechamento;
+      let dueDay = o.diaVencimento;
+      return closeDay is int && closeDay >= 1 && closeDay <= 31
+        && dueDay is int && dueDay >= 1 && dueDay <= 31;
+    }
+    function invoiceAnchorDay(s,day) {
+      let y = int(s[0:4]);
+      let m = int(s[5:7]);
+      let leap = y % 4 == 0 && (y % 100 != 0 || y % 400 == 0);
+      let max = m == 2 ? (leap ? 29 : 28) : (m in [4,6,9,11] ? 30 : 31);
+      // Days 1–28 exist in every valid month; clamping is needed only above 28.
+      return day <= 28 ? int(s[8:10]) == day : int(s[8:10]) == (day < max ? day : max);
+    }
+    function invoiceAnchoredDate(s,m,day) {
+      return s is string && s.matches('^[0-9]{4}-(0[1-9]|1[0-2])-[0-9]{2}$')
+        && invoiceMonthIndex(s[0:7]) == m && invoiceAnchorDay(s,day);
+    }
+    function invoiceCalendar(d) {
+      let o = d.calendarioOrigem;
+      let m = invoiceMonthIndex(d.competencia);
+      let closeDay = o.diaFechamento;
+      let dueDay = o.diaVencimento;
+      let close = m - (closeDay < dueDay ? 0 : 1);
+      let start = d.inicio;
+      let closing = d.fechamento;
+      let due = d.vencimento;
+      let originalDue = o.vencimentoOriginal;
+      // Nominal day ranges are checked by the reciprocal primary invoice write.
+      return invoiceOrigin(o) && close - 1 >= 1900 * 12
+        && start is string && closing is string && calendarDate(due)
+        && start < closing && closing <= due && due[0:7] == d.competencia
+        && invoiceAnchoredDate(originalDue,m,dueDay)
+        && (o.origemInicio == 'padrao' ? invoiceAnchoredDate(start,close - 1,closeDay)
+          : start.matches('^[0-9]{4}-(0[1-9]|1[0-2])-[0-9]{2}$') && invoiceMonthIndex(start[0:7]) in [m - 2,m - 1])
+        && (o.origemFechamento == 'padrao' ? invoiceAnchoredDate(closing,close,closeDay)
+          : closing.matches('^[0-9]{4}-(0[1-9]|1[0-2])-[0-9]{2}$') && invoiceMonthIndex(closing[0:7]) in [m - 1,m])
+        && (closing < due || closeDay < dueDay && due == originalDue && int(due[8:10]) <= closeDay);
+    }
+    function invoiceDoc(d) {
+      // Primary-write half of an atomic proof. Calendar/origin metadata are
+      // checked by invoiceReceiptCreate; neither write can commit alone.
+      let keys = invoiceKeys().concat(['schemaVersion','versaoConteudo','version','ultimoEventoId','createdAt','updatedAt']);
+      return d is map && d.keys().hasAll(keys) && d.keys().hasOnly(keys) && safeId(d.cartaoId) && validMonth(d.competencia)
+        && d.schemaVersion is int && d.schemaVersion == 1 && d.versaoConteudo is int && d.versaoConteudo == 1
+        // Exact event identity and server timestamps are enforced by the
+        // reciprocal mutation; repeating their structural checks adds no guard.
+        && safeVersion(d.version)
+        && invoiceNominalDays(d.calendarioOrigem);
+    }
+    function invoiceNeighbor(uid,card,monthIndex,offset) {
+      let index = monthIndex + offset;
+      return index < 1900 * 12 || index > 9999 * 12 + 11 ? null
+        : get(/databases/$(database)/documents/users/$(uid)/faturas/$(card + '__' + invoiceMonth(index)));
+    }
+    function invoiceNeighborValid(n,d) {
+      // Existing snapshots were validated with their immutable creation receipt.
+      // Recheck supported schema/card here. The lookup path supplies the month;
+      // creation fixes card+month identity and all updates preserve that identity.
+      return n == null || n.data.schemaVersion is int && n.data.schemaVersion == 1
+        && n.data.versaoConteudo is int && n.data.versaoConteudo == 1
+        && n.data.cartaoId == d.cartaoId;
+    }
+    function invoiceBoundaries(uid,d) {
+      let monthIndex = invoiceMonthIndex(d.competencia);
+      let p2 = invoiceNeighbor(uid,d.cartaoId,monthIndex,-2);
+      let p1 = invoiceNeighbor(uid,d.cartaoId,monthIndex,-1);
+      let n1 = invoiceNeighbor(uid,d.cartaoId,monthIndex,1);
+      let n2 = invoiceNeighbor(uid,d.cartaoId,monthIndex,2);
+      return invoiceNeighborValid(p2,d) && invoiceNeighborValid(p1,d) && invoiceNeighborValid(n1,d) && invoiceNeighborValid(n2,d)
+        && (p1 == null ? d.calendarioOrigem.origemInicio == 'padrao' : d.calendarioOrigem.origemInicio == 'vizinhoConfirmado' && d.inicio == p1.data.fechamento)
+        && (n1 == null ? d.calendarioOrigem.origemFechamento == 'padrao' : d.calendarioOrigem.origemFechamento == 'vizinhoConfirmado' && d.fechamento == n1.data.inicio)
+        && (p2 == null || p2.data.fechamento <= d.inicio) && (n2 == null || d.fechamento <= n2.data.inicio);
+    }
+    function invoiceCard(uid,d) {
+      let c = getAfter(/databases/$(database)/documents/users/$(uid)/cartoes/$(d.cartaoId));
+      // Card writes enforce the full card schema. Only the snapshot authority
+      // (schema, active state, revision and nominal days) is consumed here.
+      return c != null && c.data.schemaVersion is int && c.data.schemaVersion == 1 && c.data.estado == 'ativo'
+        && c.data.version == d.calendarioOrigem.cartaoVersion && c.data.diaFechamento == d.calendarioOrigem.diaFechamento
+        && c.data.diaVencimento == d.calendarioOrigem.diaVencimento;
+    }
+    function invoiceMutation(uid,id,creating) {
+      let d = request.resource.data;
+      let r = getAfter(/databases/$(database)/documents/users/$(uid)/operacoesFaturas/$(d.ultimoEventoId)).data;
+      let payload = r.comando.payload;
+      let o = d.calendarioOrigem;
+      return id == d.cartaoId + '__' + d.competencia && d.updatedAt == request.time
+        && r.alvoId == id && r.resultVersion == d.version
+        && r.resultado.diff(d).affectedKeys().hasOnly(['schemaVersion','versaoConteudo','version','ultimoEventoId','createdAt','updatedAt'])
+        && (creating ? d.version == 1 && d.createdAt == request.time && r.tipo == 'confirmarFatura' && r.expectedVersion == 0
+            && !('antes' in r) && payload.diff(r.resultado).affectedKeys().hasOnly(['cartaoVersion'])
+            && payload.cartaoVersion == o.cartaoVersion
+            && d.vencimento == o.vencimentoOriginal && invoiceCard(uid,d) && invoiceBoundaries(uid,d)
+          : safeVersion(resource.data.version) && resource.data.updatedAt is timestamp
+            && resource.data.updatedAt >= resource.data.createdAt && resource.data.updatedAt <= request.time
+            && resource.data.ultimoEventoId is string && resource.data.ultimoEventoId.matches('^(confirmarFatura|ajustarVencimento)__[A-Za-z0-9-]{1,64}$')
+            && invoicePreviousDue(resource.data) && d.version == resource.data.version + 1 && r.expectedVersion == resource.data.version
+            && d.diff(resource.data).affectedKeys().hasOnly(['vencimento','version','ultimoEventoId','updatedAt'])
+            && d.vencimento != resource.data.vencimento && r.tipo == 'ajustarVencimento'
+            && r.antes == {'vencimento':resource.data.vencimento} && payload.vencimento == d.vencimento);
+    }
+    function invoicePreviousDue(d) {
+      let due = d.vencimento;
+      let closing = d.fechamento;
+      let origin = d.calendarioOrigem;
+      let closeDay = origin.diaFechamento;
+      return calendarDate(due) && due[0:7] == d.competencia && closing <= due
+        && (closing < due || closeDay < origin.diaVencimento
+          && due == origin.vencimentoOriginal && int(due[8:10]) <= closeDay);
+    }
+    function invoiceReceiptShape(r) {
+      let keys = ['schemaVersion','contractVersion','operationKey','tipo','alvoId','expectedVersion','resultVersion','comando','resultado','createdAt'];
+      let c = r.comando;
+      return r.keys().hasAll(keys) && r.keys().hasOnly(keys.concat(['antes']))
+        && r.schemaVersion is int && r.schemaVersion == 1 && r.contractVersion is int && r.contractVersion == 1
+        && safeId(r.operationKey) && r.tipo in ['confirmarFatura','ajustarVencimento'] && r.alvoId is string
+        && r.expectedVersion is int && r.expectedVersion >= 0 && r.expectedVersion < 9007199254740991
+        && safeVersion(r.resultVersion) && r.resultVersion == r.expectedVersion + 1 && r.createdAt == request.time
+        && c is map && c.keys().hasAll(['contractVersion','tipo','operationKey','alvoId','expectedVersion','payload'])
+        && c.keys().hasOnly(['contractVersion','tipo','operationKey','alvoId','expectedVersion','payload'])
+        && c.contractVersion is int && c.contractVersion == 1 && c.tipo == r.tipo && c.operationKey == r.operationKey
+        && c.alvoId == r.alvoId && c.expectedVersion is int && c.expectedVersion == r.expectedVersion
+        && c.payload is map && r.resultado is map && r.resultado.keys().hasAll(invoiceKeys()) && r.resultado.keys().hasOnly(invoiceKeys())
+        && (r.tipo == 'confirmarFatura' ? r.expectedVersion == 0 && c.payload.keys().hasOnly(invoiceKeys().concat(['cartaoVersion']))
+          && c.payload.cartaoVersion is int
+          : r.expectedVersion >= 1 && c.payload.keys().hasAll(['vencimento','motivo']) && c.payload.keys().hasOnly(['vencimento','motivo']) && externalText(c.payload.motivo,1000));
+    }
+    function invoiceReceiptCreate(uid,id) {
+      let r = request.resource.data;
+      let d = getAfter(/databases/$(database)/documents/users/$(uid)/faturas/$(r.alvoId)).data;
+      return id == r.tipo + '__' + r.operationKey && d.ultimoEventoId == id && d.version == r.resultVersion
+        && d.updatedAt == request.time
+        && r.resultado.diff(d).affectedKeys().hasOnly(['schemaVersion','versaoConteudo','version','ultimoEventoId','createdAt','updatedAt'])
+        && (r.tipo == 'confirmarFatura' ? invoiceCalendar(r.resultado) : invoicePreviousDue(r.resultado));
+    }
+    // Feature010: complete candidate only; never published by this generator.
+    function r10Path(u,c,id) { return /databases/$(database)/documents/users/$(u)/$(c)/$(id); }
+    function r10Id(id) { return id is string && id.matches('^[A-Za-z0-9-]{1,40}$'); }
+    function r10Event(id) { return id is string && id.matches('^(recCriarSerie|recMaterializar|recConfirmarValor|recEditarEsta|recRevisarFuturas|recPular|recCancelar|recEncerrar|recPagar|recReceber|recReverter|recInicializarFatura)__[A-Za-z0-9-]{1,64}$'); }
+    function r10Oid(s,m) { return 'r10-'+s+'-'+m[0:4]+m[5:7]; }
+    function r10Vid(s,m) { return s+'-'+m[0:4]+m[5:7]; }
+    function r10CurrentMonth(m) {
+      let t=request.time-duration.value(5,'h');
+      return validMonth(m) && invoiceMonthIndex(m)>=t.year()*12+t.month()-1;
+    }
+    function r10Money(n) { return n is int && n>0 && n<=9007199254740991; }
+    function r10Nonnegative(n) { return n is int && n>=0 && n<=9007199254740991; }
+    function r10Open(d) {
+      let t=request.time-duration.value(5,'h');
+      return calendarDate(d) && int(d[0:4])*10000+int(d[5:7])*100+int(d[8:10])>t.year()*10000+t.month()*100+t.day();
+    }
+    function r10Command(c,s) {
+      return c is map && c.keys().hasAll(['tipo','serieId','operationKey','expectedVersion','ocorrenciaIds','ocorrencias','revisoes','referenciasNovas','faturaIds','deltasFaturas','versoesFaturas'])
+        && c.keys().hasOnly(['tipo','serieId','operationKey','expectedVersion','ocorrenciaIds','ocorrencias','revisoes','referenciasNovas','faturaIds','deltasFaturas','versoesFaturas','revisaoId','revisaoAnteriorId','mesReferencia','vigencia','motivo','fato','originalEventoId','encerradaDesdeMes'])
+        && c.tipo in ['recCriarSerie','recMaterializar','recConfirmarValor','recEditarEsta','recRevisarFuturas','recPular','recCancelar','recEncerrar','recPagar','recReceber','recReverter','recInicializarFatura'] && c.tipo!='recInicializarFatura' && c.serieId==s && safeId(c.operationKey)
+        && c.expectedVersion is int && c.expectedVersion>=0 && c.expectedVersion<9007199254740991
+        && c.ocorrenciaIds is list && c.ocorrenciaIds.size()<=12 && c.ocorrenciaIds.toSet().size()==c.ocorrenciaIds.size()
+        && c.ocorrencias is map && c.ocorrencias.keys().toSet()==c.ocorrenciaIds.toSet() && c.revisoes is map && c.revisoes.size()<=2
+        && c.referenciasNovas is map && c.referenciasNovas.keys().hasOnly(['categoriaId','titularId','contaPrevistaId','cartaoId','etiquetaIds'])
+        && c.faturaIds is list && c.faturaIds.size()<=2 && c.faturaIds.toSet().size()==c.faturaIds.size()
+        && c.versoesFaturas is map && c.versoesFaturas.keys().toSet()==c.faturaIds.toSet()
+        && c.deltasFaturas is map && c.deltasFaturas.keys().toSet()==c.faturaIds.toSet()
+        && (c.tipo in ['recCancelar','recPular','recEncerrar','recReverter','recEditarEsta','recRevisarFuturas'] ? externalText(c.motivo,1000) : !('motivo' in c))
+        && (c.tipo in ['recPagar','recReceber','recReverter'] ? 'fato' in c : !('fato' in c))
+        && (c.tipo=='recReverter' ? r10Event(c.originalEventoId) : !('originalEventoId' in c))
+        && (!('revisaoId' in c) || c.revisaoId is string && c.revisaoId.size()<=47)
+        && (!('revisaoAnteriorId' in c) || c.revisaoAnteriorId is string && c.revisaoAnteriorId.size()<=47)
+        && (!('mesReferencia' in c) || validMonth(c.mesReferencia)) && (!('vigencia' in c) || validMonth(c.vigencia))
+        && (!('encerradaDesdeMes' in c) || validMonth(c.encerradaDesdeMes)) && r10ByteBound(c);
+    }
+    function r10TextWeight(d) {
+      let b=d.get('financeiro',d);
+      return b.get('descricao','').size()+b.get('observacao','').size()+d.get('motivoSupressao','').size();
+    }
+    function r10PairWeight(p) { return r10TextWeight(p.get('antes',{}))+r10TextWeight(p.get('depois',{})); }
+    function r10ByteBound(c) {
+      let vs=c.revisoes.keys(); let os=c.ocorrenciaIds;
+      return os.size()<=1 && 10000+4*(c.get('motivo','').size()
+        +(vs.size()>0 ? r10PairWeight(c.revisoes[vs[0]]):0)+(vs.size()>1 ? r10PairWeight(c.revisoes[vs[1]]):0)
+        +(os.size()>0 ? r10PairWeight(c.ocorrencias[os[0]]):0))<=32768;
+    }
+    function r10Budget(c,n) {
+      let p=c.referenciasNovas; let labels=p.get('etiquetaIds',[]).size();
+      let refs=(p.get('categoriaId',null)!=null ? 4:0)+(p.get('titularId',null)!=null ? 1:0)+(p.get('contaPrevistaId',null)!=null ? 1:0);
+      let initial=c.tipo in ['recMaterializar','recPular'] || c.tipo=='recConfirmarValor' && !('antes' in c.ocorrencias[c.ocorrenciaIds[0]]);
+      let card=n=='assinaturaCartao';
+      return c.tipo=='recCriarSerie' ? (card ? 7:6)+labels+refs-(p.get('categoriaId',null)!=null ? 1:0)<=18
+        : c.tipo=='recRevisarFuturas' ? (card && c.ocorrenciaIds.size()>0 ? 18:14)+labels+refs+(p.get('cartaoId',null)!=null ? 1:0)<=18
+        : initial ? (c.tipo=='recPular' ? 9:(card ? 16:10))+labels+(p.get('titularId',null)!=null ? 1:0)+(p.get('contaPrevistaId',null)!=null ? 1:0)<=18
+        : c.tipo in ['recEditarEsta','recConfirmarValor'] ? (card ? (c.faturaIds.size()>1 ? 16:10):7)+refs+labels<=18 : true;
+    }
+    function r10SeriesShape(s) {
+      return s is map && s.keys().hasAll(['schemaVersion','version','natureza','inicio','primeiraRevisaoId','estado','ultimoEventoId','comandoAtual','createdAt','updatedAt'])
+        && s.keys().hasOnly(['schemaVersion','version','natureza','inicio','terminoOriginal','primeiraRevisaoId','estado','encerradaDesdeMes','ultimoMesOcupado','ultimoEventoId','comandoAtual','createdAt','updatedAt'])
+        && s.schemaVersion is int && s.schemaVersion==1 && safeVersion(s.version) && s.natureza in ['receitaExterna','despesaExterna','assinaturaCartao']
+        && calendarDate(s.inicio) && (!('terminoOriginal' in s) || calendarDate(s.terminoOriginal) && s.terminoOriginal>=s.inicio)
+        && (s.estado=='ativa' ? !('encerradaDesdeMes' in s) : s.estado=='encerrada' && validMonth(s.encerradaDesdeMes))
+        && (!('ultimoMesOcupado' in s) || validMonth(s.ultimoMesOcupado)) && r10Event(s.ultimoEventoId)
+        && s.createdAt is timestamp && s.updatedAt==request.time;
+    }
+    function r10Pattern(v) {
+      return v is map && v.keys().hasAll(['schemaVersion','serieId','inicioMes','version','descricao','categoriaId','valorCentavos','estimado','diaAncora','ultimoEventoId','createdAt','updatedAt'])
+        && v.keys().hasOnly(['schemaVersion','serieId','inicioMes','fimExclusivo','version','descricao','categoriaId','valorCentavos','estimado','diaAncora','titularId','contaPrevistaId','cartaoId','etiquetaIds','observacao','ultimoEventoId','createdAt','updatedAt'])
+        && v.schemaVersion is int && v.schemaVersion==1 && r10Id(v.serieId) && validMonth(v.inicioMes) && safeVersion(v.version)
+        && (!('fimExclusivo' in v) || validMonth(v.fimExclusivo) && v.fimExclusivo>v.inicioMes)
+        && externalText(v.descricao,120) && safeId(v.categoriaId) && r10Money(v.valorCentavos) && v.estimado is bool
+        && v.diaAncora is int && v.diaAncora>=1 && v.diaAncora<=31 && r10Event(v.ultimoEventoId)
+        && (!('titularId' in v) || safeId(v.titularId)) && (!('contaPrevistaId' in v) || safeId(v.contaPrevistaId))
+        && (!('cartaoId' in v) || safeId(v.cartaoId)) && (!('etiquetaIds' in v) || v.etiquetaIds==[] || labelShape(v.etiquetaIds))
+        && (!('observacao' in v) || externalText(v.observacao,1000)) && v.createdAt is timestamp && v.updatedAt==request.time;
+    }
+    function r10RefPatch(a,b,p) {
+      return b.categoriaId==p.get('categoriaId',a.get('categoriaId',null))
+        && b.get('titularId',null)==p.get('titularId',a.get('titularId',null))
+        && b.get('contaPrevistaId',null)==p.get('contaPrevistaId',a.get('contaPrevistaId',null))
+        && b.get('cartaoId',null)==p.get('cartaoId',a.get('cartaoId',null))
+        && b.get('etiquetaIds',[])==p.get('etiquetaIds',a.get('etiquetaIds',[]));
+    }
+    function r10Refs(u,p,natureza,checkCard) {
+      return (!('categoriaId' in p) || r10Category(u,p.categoriaId,natureza))
+        && (p.get('titularId',null)==null || externalHolder(u,p.titularId))
+        && (p.get('contaPrevistaId',null)==null || externalPlannedAccount(u,p.contaPrevistaId))
+        && (!checkCard || p.get('cartaoId',null)==null || getAfter(r10Path(u,'cartoes',p.cartaoId)).data.estado=='ativo');
+    }
+    function r10Category(u,id,natureza) {
+      let d=getAfter(r10Path(u,'categorias',id)).data;
+      return validCatalogDoc('categorias',d) && d.estado=='ativo' && d.schemaVersion==2 && 'usoFinanceiro' in d
+        && d.natureza==(natureza=='receitaExterna' ? 'receita':'despesa');
+    }
+    function r10RevisionWrite(u,id,creating) {
+      let d=request.resource.data; let s=getAfter(r10Path(u,'seriesRecorrentes',d.serieId)).data; let c=s.comandoAtual;
+      return r10Pattern(d) && id==r10Vid(d.serieId,d.inicioMes) && id in c.revisoes && c.revisoes[id].depois==d
+        && c.revisoes[id].keys().hasAll(['depois']) && c.revisoes[id].keys().hasOnly(['antes','depois'])
+        && d.ultimoEventoId==s.ultimoEventoId && d.updatedAt==request.time && (creating ? !('antes' in c.revisoes[id]) && d.version==1 && d.createdAt==request.time
+          : c.revisoes[id].antes==resource.data && d.version==resource.data.version+1 && d.createdAt==resource.data.createdAt)
+        && (s.natureza=='assinaturaCartao' ? 'cartaoId' in d && !d.keys().hasAny(['titularId','contaPrevistaId']) : !('cartaoId' in d))
+        && (c.tipo=='recCriarSerie' || id==c.revisaoId ? r10Refs(u,c.referenciasNovas,s.natureza,true) : true);
+    }
+    function r10Financial(d,n) {
+      return d is map && d.keys().hasAll(['descricao','categoriaId','valorCentavos','estimado'])
+        && externalText(d.descricao,120) && safeId(d.categoriaId) && r10Money(d.valorCentavos) && d.estimado is bool
+        && (!('etiquetaIds' in d) || d.etiquetaIds==[] || labelShape(d.etiquetaIds)) && (!('observacao' in d) || externalText(d.observacao,1000))
+        && (n=='assinaturaCartao' ? d.keys().hasAll(['dataCompra','cartaoId','faturaId','competenciaFatura','inicioCiclo','fechamentoCiclo'])
+          && d.keys().hasOnly(['descricao','categoriaId','valorCentavos','estimado','dataCompra','cartaoId','faturaId','competenciaFatura','inicioCiclo','fechamentoCiclo','etiquetaIds','observacao'])
+          && safeId(d.cartaoId) && calendarDate(d.dataCompra) && validMonth(d.competenciaFatura)
+          && d.faturaId==d.cartaoId+'__'+d.competenciaFatura && calendarDate(d.inicioCiclo) && calendarDate(d.fechamentoCiclo) && d.inicioCiclo<d.fechamentoCiclo
+          : d.keys().hasAll(['competenciaPlanejamento','liquidadoLiquidoCentavos','jaLiquidada'])
+          && d.keys().hasOnly(['descricao','categoriaId','valorCentavos','estimado','competenciaPlanejamento','dataPrevista','vencimento','dataConsumo','titularId','contaPrevistaId','etiquetaIds','observacao','liquidadoLiquidoCentavos','jaLiquidada'])
+          && validMonth(d.competenciaPlanejamento) && r10Nonnegative(d.liquidadoLiquidoCentavos) && d.liquidadoLiquidoCentavos<=d.valorCentavos && d.jaLiquidada is bool
+          && (d.jaLiquidada || d.liquidadoLiquidoCentavos==0) && (!('titularId' in d) || safeId(d.titularId))
+          && (!('contaPrevistaId' in d) || safeId(d.contaPrevistaId))
+          && (n=='receitaExterna' ? calendarDate(d.dataPrevista) && !d.keys().hasAny(['vencimento','dataConsumo']) : calendarDate(d.vencimento) && calendarDate(d.dataConsumo) && !('dataPrevista' in d)));
+    }
+    function r10Capacity(o) {
+      let j=o.capacidadeItem; let d=o.financeiro;
+      return j is map && j.keys().hasAll(['schemaVersion','valorOriginalCentavos','correcaoAcrescimosCentavos','correcaoReducoesCentavos','devolvidoCentavos','categoriaEfetivaId'])
+        && j.keys().hasOnly(['schemaVersion','valorOriginalCentavos','correcaoAcrescimosCentavos','correcaoReducoesCentavos','devolvidoCentavos','categoriaEfetivaId'])
+        && j.schemaVersion is int && j.schemaVersion==1 && r10Money(j.valorOriginalCentavos) && r10Nonnegative(j.correcaoAcrescimosCentavos)
+        && r10Nonnegative(j.correcaoReducoesCentavos) && r10Nonnegative(j.devolvidoCentavos) && j.categoriaEfetivaId==d.categoriaId
+        && j.valorOriginalCentavos+j.correcaoAcrescimosCentavos<=9007199254740991
+        && j.valorOriginalCentavos+j.correcaoAcrescimosCentavos-j.correcaoReducoesCentavos-j.devolvidoCentavos==d.valorCentavos;
+    }
+    function r10Occurrence(o,id) {
+      return o is map && o.keys().hasAll(['schemaVersion','version','serieId','mesReferencia','natureza','revisaoId','revisaoVersion','estado','excecaoIndividual','ultimoEventoId','createdAt','updatedAt'])
+        && o.keys().hasOnly(['schemaVersion','version','serieId','mesReferencia','natureza','revisaoId','revisaoVersion','estado','excecaoIndividual','motivoSupressao','financeiro','capacidadeItem','ultimoEventoId','createdAt','updatedAt'])
+        && o.schemaVersion is int && o.schemaVersion==1 && safeVersion(o.version) && r10Id(o.serieId) && validMonth(o.mesReferencia) && id==r10Oid(o.serieId,o.mesReferencia)
+        && o.natureza in ['receitaExterna','despesaExterna','assinaturaCartao'] && o.revisaoId is string && safeVersion(o.revisaoVersion)
+        && o.excecaoIndividual is bool && r10Event(o.ultimoEventoId) && o.createdAt is timestamp && o.updatedAt==request.time
+        && (o.estado=='pulada' ? externalText(o.motivoSupressao,1000) && o.excecaoIndividual && !o.keys().hasAny(['financeiro','capacidadeItem'])
+          : o.estado in ['persistida','cancelada'] && r10Financial(o.financeiro,o.natureza)
+          && (o.natureza=='assinaturaCartao' ? r10Capacity(o) : !('capacidadeItem' in o))
+          && (o.estado=='cancelada' ? externalText(o.motivoSupressao,1000) && o.excecaoIndividual : !('motivoSupressao' in o)));
+    }
+    function r10Initial(o,v,s,c) {
+      let d=o.financeiro; let date=invoiceDate(invoiceMonthIndex(o.mesReferencia),v.diaAncora);
+      return o.revisaoId==r10Vid(o.serieId,v.inicioMes) && o.revisaoVersion==v.version && o.natureza==s.natureza
+        && (c.tipo=='recPular' ? o.estado=='pulada' : o.estado=='persistida')
+        && o.mesReferencia>=v.inicioMes && (!('fimExclusivo' in v) || o.mesReferencia<v.fimExclusivo)
+        && date>=s.inicio && (!('terminoOriginal' in s) || date<=s.terminoOriginal)
+        && (!('encerradaDesdeMes' in s) || o.mesReferencia<s.encerradaDesdeMes)
+        && (o.estado=='pulada' ? c.tipo=='recPular' && o.motivoSupressao==c.motivo
+          : d.descricao==v.descricao && r10RefPatch(v,d,{}) && d.get('observacao',null)==v.get('observacao',null)
+          && (c.tipo=='recConfirmarValor' ? d.estimado==false && o.excecaoIndividual : d.valorCentavos==v.valorCentavos && d.estimado==v.estimado && !o.excecaoIndividual)
+          && (o.natureza=='assinaturaCartao' ? d.dataCompra==date && o.capacidadeItem.valorOriginalCentavos==d.valorCentavos
+            && o.capacidadeItem.correcaoAcrescimosCentavos==0 && o.capacidadeItem.correcaoReducoesCentavos==0 && o.capacidadeItem.devolvidoCentavos==0
+            : d.get('dataPrevista',d.get('vencimento',null))==date && (o.natureza!='despesaExterna' || d.dataConsumo==date)
+            && d.competenciaPlanejamento==o.mesReferencia && d.liquidadoLiquidoCentavos==0 && d.jaLiquidada==false));
+    }
+    function r10CardNew(u,d) {
+      let card=getAfter(r10Path(u,'cartoes',d.cartaoId)).data; let f=get(r10Path(u,'faturas',d.faturaId)).data;
+      return card.schemaVersion==1 && card.estado=='ativo' && invoiceDoc(f) && f.cartaoId==d.cartaoId
+        && f.competencia==d.competenciaFatura && f.inicio==d.inicioCiclo && f.fechamento==d.fechamentoCiclo && r10Open(f.fechamento);
+    }
+    function r10Editable(a) {
+      return a.estado=='persistida' && (a.natureza=='assinaturaCartao' ? r10Open(a.financeiro.fechamentoCiclo) : a.financeiro.jaLiquidada==false && a.financeiro.liquidadoLiquidoCentavos==0);
+    }
+    function r10Edit(a,b,c) {
+      return r10Editable(a) && b.estado=='persistida'
+        && b.diff(a).affectedKeys().hasOnly(['version','revisaoId','revisaoVersion','excecaoIndividual','financeiro','capacidadeItem','ultimoEventoId','updatedAt'])
+        && r10RefPatch(a.financeiro,b.financeiro,c.referenciasNovas)
+        && (a.natureza=='assinaturaCartao' ? b.capacidadeItem.valorOriginalCentavos==a.capacidadeItem.valorOriginalCentavos
+          && b.capacidadeItem.devolvidoCentavos==a.capacidadeItem.devolvidoCentavos
+          && b.capacidadeItem.correcaoAcrescimosCentavos==a.capacidadeItem.correcaoAcrescimosCentavos+(b.financeiro.valorCentavos>a.financeiro.valorCentavos ? b.financeiro.valorCentavos-a.financeiro.valorCentavos:0)
+          && b.capacidadeItem.correcaoReducoesCentavos==a.capacidadeItem.correcaoReducoesCentavos+(b.financeiro.valorCentavos<a.financeiro.valorCentavos ? a.financeiro.valorCentavos-b.financeiro.valorCentavos:0)
+          && (a.financeiro.faturaId!=b.financeiro.faturaId || b.financeiro.inicioCiclo==a.financeiro.inicioCiclo && b.financeiro.fechamentoCiclo==a.financeiro.fechamentoCiclo)
+          : b.financeiro.liquidadoLiquidoCentavos==0 && b.financeiro.jaLiquidada==false)
+        && (c.tipo=='recConfirmarValor' ? b.financeiro.estimado==false && b.excecaoIndividual
+          && b.financeiro.diff(a.financeiro).affectedKeys().hasOnly(['valorCentavos','estimado'])
+          : c.tipo=='recRevisarFuturas' ? !a.excecaoIndividual && !b.excecaoIndividual : b.excecaoIndividual);
+    }
+    function r10Pay(u,a,b,c) {
+      let f=c.fato; let account=getAfter(r10Path(u,'contas',f.contaId)).data;
+      return a.estado=='persistida' && a.natureza!='assinaturaCartao' && !a.financeiro.estimado && b.estado==a.estado
+        && b.diff(a).affectedKeys().hasOnly(['version','financeiro','ultimoEventoId','updatedAt'])
+        && b.financeiro.diff(a.financeiro).affectedKeys().hasOnly(['liquidadoLiquidoCentavos','jaLiquidada'])
+        && f.keys().hasAll(['tipo','contaId','valorCentavos','dataEfetiva']) && f.keys().hasOnly(['tipo','contaId','valorCentavos','dataEfetiva'])
+        && f.tipo==(a.natureza=='receitaExterna' ? 'recebimento':'pagamento') && c.tipo==(a.natureza=='receitaExterna' ? 'recReceber':'recPagar')
+        && r10Money(f.valorCentavos) && calendarDate(f.dataEfetiva) && notFuture(f.dataEfetiva)
+        && validCatalogDoc('contas',account) && account.schemaVersion==2 && account.estado=='ativo' && 'usoFinanceiro' in account
+        && b.financeiro.jaLiquidada==true && b.financeiro.liquidadoLiquidoCentavos==a.financeiro.liquidadoLiquidoCentavos+f.valorCentavos;
+    }
+    function r10Reverse(u,a,b,c) {
+      let original=get(r10Path(u,'operacoesRecorrentes',c.originalEventoId)).data;
+      let marker=getAfter(r10Path(u,'reversoesRecorrentes',c.originalEventoId)).data;
+      return original.tipo in ['recPagar','recReceber'] && original.serieId==a.serieId && original.comando.ocorrenciaIds==c.ocorrenciaIds
+        && c.fato=={'tipo':(original.fato.tipo=='pagamento' ? 'reversaoPagamento':'reversaoRecebimento'),'contaId':original.fato.contaId,'valorCentavos':original.fato.valorCentavos,'dataEfetiva':original.fato.dataEfetiva,'originalId':c.originalEventoId,'motivo':c.motivo}
+        && a.natureza!='assinaturaCartao' && a.estado=='persistida' && a.financeiro.jaLiquidada && b.financeiro.jaLiquidada
+        && b.diff(a).affectedKeys().hasOnly(['version','financeiro','ultimoEventoId','updatedAt'])
+        && b.financeiro.diff(a.financeiro).affectedKeys().hasOnly(['liquidadoLiquidoCentavos'])
+        && b.financeiro.liquidadoLiquidoCentavos==a.financeiro.liquidadoLiquidoCentavos-c.fato.valorCentavos
+        && marker.originalEventoId==c.originalEventoId && marker.reversaoEventoId==b.ultimoEventoId && marker.serieId==a.serieId;
+    }
+    function r10OccurrenceWrite(u,id,creating) {
+      let b=request.resource.data; let s=getAfter(r10Path(u,'seriesRecorrentes',b.serieId)).data; let c=s.comandoAtual;
+      return r10Occurrence(b,id) && b.natureza==s.natureza && id in c.ocorrencias && c.ocorrencias[id].depois==b && b.ultimoEventoId==s.ultimoEventoId
+        && c.ocorrencias[id].keys().hasAll(['depois']) && c.ocorrencias[id].keys().hasOnly(['antes','depois'])
+        && (creating ? !('antes' in c.ocorrencias[id]) && b.version==1 && b.createdAt==request.time && c.tipo in ['recMaterializar','recConfirmarValor','recPular']
+          : c.ocorrencias[id].antes==resource.data && b.version==resource.data.version+1 && b.createdAt==resource.data.createdAt
+          && b.mesReferencia==resource.data.mesReferencia && b.serieId==resource.data.serieId && b.natureza==resource.data.natureza
+          && (c.tipo in ['recEditarEsta','recConfirmarValor','recRevisarFuturas'] ? r10Edit(resource.data,b,c)
+            : c.tipo in ['recPagar','recReceber'] ? r10Pay(u,resource.data,b,c)
+            : c.tipo=='recReverter' ? r10Reverse(u,resource.data,b,c)
+            : c.tipo=='recCancelar' && r10Editable(resource.data) && b.estado=='cancelada' && b.excecaoIndividual && b.motivoSupressao==c.motivo
+              && b.diff(resource.data).affectedKeys().hasOnly(['version','estado','excecaoIndividual','motivoSupressao','ultimoEventoId','updatedAt'])))
+        && (c.tipo in ['recPagar','recReceber','recReverter','recCancelar','recPular'] ? c.referenciasNovas=={} : r10Refs(u,c.referenciasNovas,b.natureza,false))
+        && (b.natureza=='assinaturaCartao' && b.estado=='persistida' && (creating || resource.data.financeiro.faturaId!=b.financeiro.faturaId) ? r10CardNew(u,b.financeiro) : true);
+    }
+    function r10MonthMax(a,b) { return a>b ? a:b; }
+    function r10Single(u,s,c) {
+      let id=r10Oid(c.serieId,c.mesReferencia); let o=getAfter(r10Path(u,'ocorrenciasRecorrentes',id)).data;
+      return validMonth(c.mesReferencia) && c.ocorrenciaIds==[id] && o==c.ocorrencias[id].depois && o.ultimoEventoId==s.ultimoEventoId
+        && s.ultimoMesOcupado==r10MonthMax(resource.data.get('ultimoMesOcupado',''),c.mesReferencia)
+        && c.revisoes=={} && (c.tipo in ['recMaterializar','recConfirmarValor','recPular'] && !('antes' in c.ocorrencias[id]) ? r10SingleInitial(u,s,o,c) : true);
+    }
+    function r10SingleInitial(u,s,o,c) {
+      let v=get(r10Path(u,'revisoesRecorrentes',c.revisaoId)).data;
+      return c.revisaoId==o.revisaoId && r10Initial(o,v,s,c)
+        && (o.estado=='pulada' ? c.referenciasNovas=={} : r10RefPatch({},o.financeiro,c.referenciasNovas));
+    }
+    function r10IntervalEnd(a,v) {
+      return 'fimExclusivo' in v && v.fimExclusivo<=a.get('ultimoMesOcupado','') ? invoiceMonth(invoiceMonthIndex(v.fimExclusivo)-1) : a.get('ultimoMesOcupado','');
+    }
+    function r10FutureSlot(u,s,c,v,offset) {
+      let month=invoiceMonth(invoiceMonthIndex(c.vigencia)+offset); let id=r10Oid(c.serieId,month);
+      return month>r10IntervalEnd(resource.data,v) ? !(id in c.ocorrencias) : r10FutureExisting(u,s,c,id);
+    }
+    function r10FutureExisting(u,s,c,id) {
+      let before=get(r10Path(u,'ocorrenciasRecorrentes',id));
+      return before==null ? !(id in c.ocorrencias) : r10FutureKnown(u,s,c,id,before.data);
+    }
+    function r10FutureKnown(u,s,c,id,a) {
+      let eligible=r10Editable(a) && !a.excecaoIndividual;
+      return a.natureza=='assinaturaCartao' && eligible ? r10FutureCard(u,s,c,id,a)
+        : (id in c.ocorrencias)==eligible && (!eligible || r10FutureAfter(u,s,c,id,a));
+    }
+    function r10FutureCard(u,s,c,id,a) {
+      let g=get(r10Path(u,'controlesFaturas',a.financeiro.faturaId)).data;
+      return (id in c.ocorrencias)==(g.possuiHistoricoPagamento==false && g.revisaoEstado=='normal')
+        && (!(id in c.ocorrencias) || r10FutureAfter(u,s,c,id,a));
+    }
+    function r10FutureAfter(u,s,c,id,a) {
+      let b=getAfter(r10Path(u,'ocorrenciasRecorrentes',id)).data; let v=c.revisoes[c.revisaoId].depois;
+      let date=invoiceDate(invoiceMonthIndex(a.mesReferencia),v.diaAncora);
+      return c.ocorrencias[id].antes==a && c.ocorrencias[id].depois==b && b.revisaoId==c.revisaoId && b.revisaoVersion==v.version
+        && b.financeiro.descricao==v.descricao && b.financeiro.valorCentavos==v.valorCentavos && b.financeiro.estimado==v.estimado
+        && r10RefPatch(v,b.financeiro,{}) && b.financeiro.get('observacao',null)==v.get('observacao',null)
+        && b.financeiro.get('dataCompra',b.financeiro.get('dataPrevista',b.financeiro.get('vencimento',null)))==date;
+    }
+    function r10Revisions(u,s,c) {
+      let before=get(r10Path(u,'revisoesRecorrentes',c.revisaoAnteriorId)).data;
+      let prior=c.revisaoAnteriorId==c.revisaoId ? null:getAfter(r10Path(u,'revisoesRecorrentes',c.revisaoAnteriorId)).data;
+      let after=getAfter(r10Path(u,'revisoesRecorrentes',c.revisaoId)).data;
+      return r10CurrentMonth(c.vigencia) && before.serieId==c.serieId && before.inicioMes<=c.vigencia && (!('fimExclusivo' in before) || c.vigencia<before.fimExclusivo)
+        && c.revisaoId==r10Vid(c.serieId,c.vigencia) && c.revisoes[c.revisaoId].depois==after && c.revisoes[c.revisaoAnteriorId].antes==before
+        && after.inicioMes==c.vigencia && after.get('fimExclusivo',null)==before.get('fimExclusivo',null)
+        && r10RefPatch(before,after,c.referenciasNovas)
+        && (c.revisaoAnteriorId==c.revisaoId ? c.revisoes.size()==1
+          : c.revisoes.size()==2 && c.revisoes[c.revisaoAnteriorId].depois==prior && prior.fimExclusivo==c.vigencia
+            && prior.diff(before).affectedKeys().hasOnly(['version','fimExclusivo','ultimoEventoId','updatedAt']))
+        && r10IntervalEnd(resource.data,before)<invoiceMonth(invoiceMonthIndex(c.vigencia)+1)
+        && c.ocorrenciaIds.toSet().hasOnly([r10Oid(c.serieId,invoiceMonth(invoiceMonthIndex(c.vigencia)+0)),r10Oid(c.serieId,invoiceMonth(invoiceMonthIndex(c.vigencia)+1)),r10Oid(c.serieId,invoiceMonth(invoiceMonthIndex(c.vigencia)+2)),r10Oid(c.serieId,invoiceMonth(invoiceMonthIndex(c.vigencia)+3)),r10Oid(c.serieId,invoiceMonth(invoiceMonthIndex(c.vigencia)+4)),r10Oid(c.serieId,invoiceMonth(invoiceMonthIndex(c.vigencia)+5)),r10Oid(c.serieId,invoiceMonth(invoiceMonthIndex(c.vigencia)+6)),r10Oid(c.serieId,invoiceMonth(invoiceMonthIndex(c.vigencia)+7)),r10Oid(c.serieId,invoiceMonth(invoiceMonthIndex(c.vigencia)+8)),r10Oid(c.serieId,invoiceMonth(invoiceMonthIndex(c.vigencia)+9)),r10Oid(c.serieId,invoiceMonth(invoiceMonthIndex(c.vigencia)+10)),r10Oid(c.serieId,invoiceMonth(invoiceMonthIndex(c.vigencia)+11))]) && r10FutureSlot(u,s,c,before,0) && r10FutureSlot(u,s,c,before,1) && r10FutureSlot(u,s,c,before,2) && r10FutureSlot(u,s,c,before,3) && r10FutureSlot(u,s,c,before,4) && r10FutureSlot(u,s,c,before,5) && r10FutureSlot(u,s,c,before,6) && r10FutureSlot(u,s,c,before,7) && r10FutureSlot(u,s,c,before,8) && r10FutureSlot(u,s,c,before,9) && r10FutureSlot(u,s,c,before,10) && r10FutureSlot(u,s,c,before,11);
+    }
+    function r10SeriesWrite(u,id,creating) {
+      let b=request.resource.data; let c=b.comandoAtual; let r=getAfter(r10Path(u,'operacoesRecorrentes',b.ultimoEventoId)).data;
+      return r10Id(id) && r10SeriesShape(b) && r10Command(c,id) && r10Budget(c,b.natureza) && b.ultimoEventoId==c.tipo+'__'+c.operationKey && r.comando==c
+        && r.resultVersion==b.version && r.createdAt==request.time && c.expectedVersion==(creating ? 0:resource.data.version)
+        && (creating ? c.tipo=='recCriarSerie' && b.version==1 && b.createdAt==request.time && b.estado=='ativa' && !('ultimoMesOcupado' in b)
+          && c.ocorrencias=={} && c.ocorrenciaIds==[] && c.revisoes.size()==1 && b.primeiraRevisaoId==r10Vid(id,b.inicio[0:7])
+          && r10CreateRevision(u,b,c)
+          : b.version==resource.data.version+1 && b.createdAt==resource.data.createdAt
+          && b.diff(resource.data).affectedKeys().hasOnly(['version','comandoAtual','ultimoMesOcupado','estado','encerradaDesdeMes','ultimoEventoId','updatedAt'])
+          && (c.tipo=='recEncerrar' ? resource.data.estado=='ativa' && b.estado=='encerrada' && r10CurrentMonth(c.encerradaDesdeMes)
+            && b.encerradaDesdeMes==c.encerradaDesdeMes && b.get('ultimoMesOcupado',null)==resource.data.get('ultimoMesOcupado',null) && c.ocorrencias=={} && c.revisoes=={}
+            : b.estado==resource.data.estado && b.get('encerradaDesdeMes',null)==resource.data.get('encerradaDesdeMes',null)
+              && (c.tipo=='recRevisarFuturas' ? resource.data.estado=='ativa' && b.get('ultimoMesOcupado',null)==resource.data.get('ultimoMesOcupado',null) && r10Revisions(u,b,c)
+                : c.tipo!='recCriarSerie' && r10Single(u,b,c))));
+    }
+    function r10CreateRevision(u,s,c) {
+      let v=getAfter(r10Path(u,'revisoesRecorrentes',s.primeiraRevisaoId)).data;
+      return v==c.revisoes[s.primeiraRevisaoId].depois && v.inicioMes==s.inicio[0:7] && !('fimExclusivo' in v)
+        && !('antes' in c.revisoes[s.primeiraRevisaoId]) && c.revisaoId==s.primeiraRevisaoId && r10RefPatch({},v,c.referenciasNovas);
+    }
+    function r10ItemAmount(o,id) {
+      return o.get('estado','')=='persistida' && o.get('natureza','')=='assinaturaCartao' && o.financeiro.faturaId==id ? o.financeiro.valorCentavos:0;
+    }
+    function r10DeltaSlot(c,id,n) {
+      let key=n<c.ocorrenciaIds.size() ? c.ocorrenciaIds[n]:''; let item=c.ocorrencias.get(key,{});
+      return n<c.ocorrenciaIds.size() ? r10ItemAmount(item.depois,id)-r10ItemAmount(item.get('antes',{}),id):0;
+    }
+    function r10FaturaSlot(c,n) {
+      let key=n<c.ocorrenciaIds.size() ? c.ocorrenciaIds[n]:''; let pair=c.ocorrencias.get(key,{});
+      let a=pair.get('antes',{}); let b=pair.get('depois',{});
+      return (a.get('natureza','')=='assinaturaCartao' && a.get('estado','')=='persistida' ? [a.financeiro.faturaId]:[])
+        .concat(b.get('natureza','')=='assinaturaCartao' && b.get('estado','')=='persistida' ? [b.financeiro.faturaId]:[]);
+    }
+    function r10Delta(c,id) { return r10DeltaSlot(c,id,0)+r10DeltaSlot(c,id,1)+r10DeltaSlot(c,id,2)+r10DeltaSlot(c,id,3)+r10DeltaSlot(c,id,4)+r10DeltaSlot(c,id,5)+r10DeltaSlot(c,id,6)+r10DeltaSlot(c,id,7)+r10DeltaSlot(c,id,8)+r10DeltaSlot(c,id,9)+r10DeltaSlot(c,id,10)+r10DeltaSlot(c,id,11); }
+    function r10Receipt(u,id) {
+      let r=request.resource.data; let c=r.comando;
+      return r.keys().hasAll(['schemaVersion','contractVersion','tipo','operationKey','serieId','expectedVersion','resultVersion','comando','createdAt'])
+        && r.keys().hasOnly(['schemaVersion','contractVersion','tipo','operationKey','serieId','expectedVersion','resultVersion','comando','fato','createdAt'])
+        && r.schemaVersion is int && r.schemaVersion==1 && r.contractVersion is int && r.contractVersion==1
+        && r10Event(id) && id==r.tipo+'__'+r.operationKey && c.tipo==r.tipo && c.operationKey==r.operationKey
+        && r.expectedVersion==c.expectedVersion && r.resultVersion==r.expectedVersion+1 && r.createdAt==request.time
+        && (r.tipo=='recInicializarFatura' ? r10InitReceipt(u,id,r) : r10NormalReceipt(u,id,r)) && catalogReady(u);
+    }
+    function r10NormalReceipt(u,id,r) {
+      let s=getAfter(r10Path(u,'seriesRecorrentes',r.serieId)).data; let c=r.comando;
+      return s.ultimoEventoId==id && s.version==r.resultVersion && s.comandoAtual==c && r.serieId==c.serieId
+        && (c.tipo in ['recPagar','recReceber','recReverter'] ? r.fato==c.fato : !('fato' in r))
+        && (!('etiquetaIds' in c.referenciasNovas) || c.referenciasNovas.etiquetaIds==[] || labelShape(c.referenciasNovas.etiquetaIds)) && externalLabels(u,c.referenciasNovas)
+        && c.faturaIds.toSet()==(r10FaturaSlot(c,0).concat(r10FaturaSlot(c,1).concat(r10FaturaSlot(c,2).concat(r10FaturaSlot(c,3).concat(r10FaturaSlot(c,4).concat(r10FaturaSlot(c,5).concat(r10FaturaSlot(c,6).concat(r10FaturaSlot(c,7).concat(r10FaturaSlot(c,8).concat(r10FaturaSlot(c,9).concat(r10FaturaSlot(c,10).concat(r10FaturaSlot(c,11))))))))))))).toSet()
+        && (c.faturaIds.size()<1 || r10AfterControl(u,c,c.faturaIds[0],id))
+        && (c.faturaIds.size()<2 || r10AfterControl(u,c,c.faturaIds[1],id));
+    }
+    function r10AfterControl(u,c,id,event) {
+      let g=getAfter(r10Path(u,'controlesFaturas',id)).data;
+      return g.ultimoEventoId==event && c.deltasFaturas[id]==r10Delta(c,id) && g.version==c.get('versoesFaturas',{}).get(id,-1)+1;
+    }
+    function r10ControlShape(g,id) {
+      return g.keys().hasAll(['schemaVersion','faturaId','cartaoId','competencia','calendarioVersion','version','exigivelCentavos','liquidadoLiquidoCentavos','possuiHistoricoPagamento','revisaoEstado','ultimoEventoTipo','ultimoEventoId','createdAt','updatedAt'])
+        && g.keys().hasOnly(['schemaVersion','faturaId','cartaoId','competencia','calendarioVersion','version','exigivelCentavos','liquidadoLiquidoCentavos','possuiHistoricoPagamento','revisaoEstado','ultimoEventoTipo','ultimoEventoId','createdAt','updatedAt'])
+        && g.schemaVersion is int && g.schemaVersion==2 && id==g.faturaId && id==g.cartaoId+'__'+g.competencia && validMonth(g.competencia)
+        && safeVersion(g.version) && safeVersion(g.calendarioVersion) && r10Nonnegative(g.exigivelCentavos) && r10Nonnegative(g.liquidadoLiquidoCentavos)
+        && g.liquidadoLiquidoCentavos<=g.exigivelCentavos && g.possuiHistoricoPagamento is bool && g.revisaoEstado=='normal'
+        && g.createdAt is timestamp && g.updatedAt==request.time;
+    }
+    function r10ControlWrite(u,id,creating) {
+      return !creating && request.resource.data.ultimoEventoTipo=='calendario006' ? r10CalendarControl(u,id) : r10NormalControl(u,id,creating);
+    }
+    function r10CalendarGuard(u,id) {
+      let before=get(r10Path(u,'controlesFaturas',id));
+      return before==null || r10CalendarAfter(u,id,before.data);
+    }
+    function r10CalendarAfter(u,id,a) {
+      let after=getAfter(r10Path(u,'controlesFaturas',id)).data;
+      return after.version==a.version+1 && after.ultimoEventoTipo=='calendario006' && after.ultimoEventoId==request.resource.data.ultimoEventoId;
+    }
+    function r10CalendarControl(u,id) {
+      let b=request.resource.data; let f=getAfter(r10Path(u,'faturas',id)).data;
+      let r=getAfter(r10Path(u,'operacoesFaturas',b.ultimoEventoId)).data;
+      return r10ControlShape(b,id) && b.version==resource.data.version+1 && b.ultimoEventoTipo=='calendario006'
+        && b.diff(resource.data).affectedKeys().hasOnly(['version','calendarioVersion','ultimoEventoTipo','ultimoEventoId','updatedAt'])
+        && b.calendarioVersion==resource.data.calendarioVersion+1 && b.calendarioVersion==f.version
+        && f.ultimoEventoId==b.ultimoEventoId && f.version==r.resultVersion && r.tipo=='ajustarVencimento' && r.alvoId==id && r.createdAt==request.time;
+    }
+    function r10NormalControl(u,id,creating) {
+      let b=request.resource.data; let r=getAfter(r10Path(u,'operacoesRecorrentes',b.ultimoEventoId)).data;
+      return r10ControlShape(b,id) && b.ultimoEventoTipo==r.tipo && r.createdAt==request.time
+        && (creating ? r.tipo=='recInicializarFatura' && r.comando.faturaId==id && b.version==1 && b.createdAt==request.time
+          && b.exigivelCentavos==0 && b.liquidadoLiquidoCentavos==0 && !b.possuiHistoricoPagamento && r10EmptyCalendar(u,id,b)
+          : id in r.comando.faturaIds && r.comando.versoesFaturas[id]==resource.data.version && b.version==resource.data.version+1
+            && b.diff(resource.data).affectedKeys().hasOnly(['version','exigivelCentavos','ultimoEventoTipo','ultimoEventoId','updatedAt'])
+            && !resource.data.possuiHistoricoPagamento && resource.data.revisaoEstado=='normal'
+            && b.exigivelCentavos==resource.data.exigivelCentavos+r.comando.deltasFaturas[id]);
+    }
+    function r10EmptyCalendar(u,id,g) {
+      let f=get(r10Path(u,'faturas',id)).data; let after=getAfter(r10Path(u,'faturas',id)).data;
+      return after==f && g.calendarioVersion==f.version && invoiceDoc(f) && f.versaoConteudo==1 && f.cartaoId==g.cartaoId && f.competencia==g.competencia;
+    }
+    function r10InitReceipt(u,id,r) {
+      let c=r.comando; let g=getAfter(r10Path(u,'controlesFaturas',c.faturaId)).data;
+      return c.keys().hasAll(['tipo','operationKey','expectedVersion','faturaId']) && c.keys().hasOnly(['tipo','operationKey','expectedVersion','faturaId'])
+        && r.serieId=='' && r.expectedVersion==0 && r.resultVersion==1 && !('fato' in r)
+        && g.ultimoEventoId==id && g.version==1 && g.ultimoEventoTipo==r.tipo;
+    }
+    function r10Marker(u,id) {
+      let m=request.resource.data; let r=getAfter(r10Path(u,'operacoesRecorrentes',m.reversaoEventoId)).data;
+      return m.keys().hasAll(['serieId','originalEventoId','reversaoEventoId','createdAt']) && m.keys().hasOnly(['serieId','originalEventoId','reversaoEventoId','createdAt'])
+        && m.originalEventoId==id && m.createdAt==request.time && r.tipo=='recReverter' && r.serieId==m.serieId && r.comando.originalEventoId==id;
+    }
+    function r10Use(u,c,id) {
+      let d=request.resource.data; let before=resource.data; let use=d.usoFinanceiro;
+      let old=get(r10Path(u,'operacoesRecorrentes',use.eventoId)); let r=getAfter(r10Path(u,'operacoesRecorrentes',use.eventoId)).data;
+      return old==null && r.createdAt==request.time && r10Event(use.eventoId) && use.createdAt==request.time && use.origemId==r.serieId
+        && !('usoFinanceiro' in before) && d.diff(before).affectedKeys().hasOnly(['schemaVersion','usoFinanceiro'])
+        && d.schemaVersion is int && d.schemaVersion==2 && validCatalogDoc(c,d)
+        && (c=='categorias' ? use.papel=='classificacao' && r.tipo in ['recCriarSerie','recEditarEsta','recRevisarFuturas'] && r.comando.referenciasNovas.categoriaId==id
+          : use.papel=='movimentacao' && r.tipo in ['recPagar','recReceber'] && r.fato.contaId==id);
+    }
+    match /users/{uid}/seriesRecorrentes/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit is int && request.query.limit>=1 && request.query.limit<=50;
+      allow create: if own(uid) && r10SeriesWrite(uid,id,true);
+      allow update: if own(uid) && r10SeriesWrite(uid,id,false);
+      allow delete: if false;
+    }
+    match /users/{uid}/revisoesRecorrentes/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit is int && request.query.limit>=1 && request.query.limit<=50;
+      allow create: if own(uid) && r10RevisionWrite(uid,id,true);
+      allow update: if own(uid) && r10RevisionWrite(uid,id,false);
+      allow delete: if false;
+    }
+    match /users/{uid}/ocorrenciasRecorrentes/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit is int && request.query.limit>=1 && request.query.limit<=50;
+      allow create: if own(uid) && r10OccurrenceWrite(uid,id,true);
+      allow update: if own(uid) && r10OccurrenceWrite(uid,id,false);
+      allow delete: if false;
+    }
+    match /users/{uid}/operacoesRecorrentes/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit is int && request.query.limit>=1 && request.query.limit<=50;
+      allow create: if own(uid) && r10Receipt(uid,id);
+      allow update,delete: if false;
+    }
+    match /users/{uid}/reversoesRecorrentes/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow create: if own(uid) && r10Marker(uid,id);
+      allow list,update,delete: if false;
+    }
+    match /users/{uid}/controlesFaturas/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit is int && request.query.limit>=1 && request.query.limit<=50;
+      allow create: if own(uid) && r10ControlWrite(uid,id,true);
+      allow update: if own(uid) && r10ControlWrite(uid,id,false);
+      allow delete: if false;
+    }
+
+    match /users/{uid}/faturas/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit is int && request.query.limit >= 1 && request.query.limit <= 50;
+      allow create: if own(uid) && catalogReady(uid) && invoiceDoc(request.resource.data) && invoiceMutation(uid,id,true);
+      allow update: if own(uid) && catalogReady(uid) && invoiceDoc(request.resource.data) && invoiceMutation(uid,id,false) && r10CalendarGuard(uid,id);
+      allow delete: if false;
+    }
+    match /users/{uid}/operacoesFaturas/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit is int && request.query.limit >= 1 && request.query.limit <= 50;
+      allow create: if own(uid) && invoiceReceiptShape(request.resource.data) && invoiceReceiptCreate(uid,id);
+      allow update, delete: if false;
+    }
+    match /users/{uid}/cartoes/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit is int && request.query.limit >= 1 && request.query.limit <= 50;
+      allow create: if own(uid) && catalogReady(uid) && safeId(id) && cardDoc(request.resource.data) && cardMutation(uid,id,true);
+      allow update: if own(uid) && catalogReady(uid) && safeId(id) && cardDoc(request.resource.data) && cardMutation(uid,id,false);
+      allow delete: if false;
+    }
+    match /users/{uid}/operacoesCartoes/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit is int && request.query.limit >= 1 && request.query.limit <= 50;
+      allow create: if own(uid) && cardReceiptShape(request.resource.data) && cardReceiptCreate(uid,id);
+      allow update, delete: if false;
+    }
+    match /users/{uid}/lancamentosExternos/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit != null && request.query.limit >= 1 && request.query.limit <= 50;
+      allow create: if own(uid) && catalogReady(uid) && externalOriginCreate(uid,id);
+      allow update, delete: if false;
+    }
+    match /users/{uid}/operacoesExternas/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit != null && request.query.limit >= 1 && request.query.limit <= 50;
+      allow create: if own(uid) && externalReceiptCreate(uid,id);
+      allow update, delete: if false;
+    }
+    match /users/{uid}/reversoesExternas/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list, write: if false;
+    }
+
+    match /users/{uid}/titulares/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit != null && request.query.limit >= 1 && request.query.limit <= 50;
+      allow create: if own(uid) && catalogReady(uid) && catalogMutation(uid,'titulares',id,true);
+      allow update: if own(uid) && catalogReady(uid) && catalogMutation(uid,'titulares',id,false);
+      allow delete: if false;
+    }
+    match /users/{uid}/categorias/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit != null && request.query.limit >= 1 && request.query.limit <= 50;
+      allow create: if own(uid) && catalogReady(uid) && catalogMutation(uid,'categorias',id,true);
+      allow update: if own(uid) && (usePatch() ? (r10Event(request.resource.data.usoFinanceiro.eventoId) ? r10Use(uid,'categorias',id) : financialUsePatch(uid,'categorias',id)) : catalogReady(uid) && catalogMutation(uid,'categorias',id,false));
+      allow delete: if false;
+    }
+    match /users/{uid}/contas/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit != null && request.query.limit >= 1 && request.query.limit <= 50;
+      allow create: if own(uid) && catalogReady(uid) && catalogMutation(uid,'contas',id,true);
+      allow update: if own(uid) && (usePatch() ? (r10Event(request.resource.data.usoFinanceiro.eventoId) ? r10Use(uid,'contas',id) : financialUsePatch(uid,'contas',id)) : catalogReady(uid) && catalogMutation(uid,'contas',id,false));
+      allow delete: if false;
+    }
+    match /users/{uid}/etiquetas/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list: if own(uid) && catalogReady(uid) && request.query.limit != null && request.query.limit >= 1 && request.query.limit <= 50;
+      allow create: if own(uid) && catalogReady(uid) && catalogMutation(uid,'etiquetas',id,true);
+      allow update: if own(uid) && catalogReady(uid) && catalogMutation(uid,'etiquetas',id,false);
+      allow delete: if false;
+    }
+    match /users/{uid}/operacoesCadastros/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow create: if own(uid) && catalogReady(uid) && receiptCreate(uid,id);
+      allow list, update, delete: if false;
+    }
+    match /users/{uid}/usoCadastros/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow list, create, update, delete: if false;
+    }
+    match /users/{uid} {
+      allow get: if own(uid);
+      allow create: if own(uid)
+        && request.resource.data.keys().hasAll(['uid','timezone','schemaVersion','primeiro_login','createdAt','updatedAt'])
+        && request.resource.data.keys().hasOnly(['uid','timezone','schemaVersion','primeiro_login','createdAt','updatedAt'])
+        && request.resource.data.uid == uid && request.resource.data.timezone == 'America/Rio_Branco'
+        && request.resource.data.schemaVersion is int && request.resource.data.schemaVersion == 1
+        && request.resource.data.primeiro_login == true
+        && request.resource.data.createdAt == request.time && request.resource.data.updatedAt == request.time;
+      allow list, update, delete: if false;
+    }
+    match /admins/{uid} {
+      allow get: if own(uid) && ready();
+      allow list, create, update, delete: if false;
+    }
+    match /registrationRequests/{id} {
+      allow get: if admin() || (ready() && resource.data.applicantUid == request.auth.uid);
+      allow list: if admin() && request.query.limit != null && request.query.limit <= 25;
+      allow create, update, delete: if false;
+    }
+    match /subscriptions/{id} {
+      allow get: if admin();
+      allow create: if admin() && subscription(id) && request.resource.data.version == 1
+        && request.resource.data.createdAt == request.time;
+      allow update: if admin() && subscription(id)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['startDate','endDate','version','updatedAt','updatedBy'])
+        && request.resource.data.version == resource.data.version + 1;
+      allow list, delete: if false;
+    }
+    match /notificationOutbox/{id} {
+      allow get: if admin();
+      allow list, create, update, delete: if false;
+    }
+    match /firstLoginOperations/{id} { allow read, write: if false; }
+    match /submissionOperations/{id} { allow read, write: if false; }
+    match /operationBudgets/{id} { allow read, write: if false; }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

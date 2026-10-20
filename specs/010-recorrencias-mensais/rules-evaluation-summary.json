@@ -1,0 +1,21 @@
+{
+  "mode": "official-test-only-no-release",
+  "project": "lilicafinancy",
+  "destination": "firebaserules.googleapis.com",
+  "sourceSha256": "f2abb487aeaa8f787b8a0906515bd3ded3c6b6860573a079fc144480b336d533",
+  "suiteSha256": "947abe2577cf5bff377cd591eaa739d0451960f26114fe658e42faec6bfd71d0",
+  "selectedCases": 9,
+  "officialRequestsCompleted": 0,
+  "state": "EVALUATION_UNAVAILABLE",
+  "compiler": "NOT_RUN",
+  "expressions": "NOT_MEASURED",
+  "deployment": "NOT_RUN",
+  "issues": [],
+  "results": [],
+  "ok": false,
+  "error": {
+    "name": "Error",
+    "status": 503,
+    "code": "UNAVAILABLE"
+  }
+}
