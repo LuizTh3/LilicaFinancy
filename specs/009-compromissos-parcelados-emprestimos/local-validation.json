@@ -1,0 +1,19 @@
+{
+  "scope": "local-lexical-and-fixture-checks-only",
+  "ok": true,
+  "sourceSha256": "4cf19f875b0963d82721a52a818d7e52c597ec2280af7de8744a8976d192fe0d",
+  "suiteSha256": "68c168db1a850d8f58297fe76783bc228682e73eeeee007657396fe4c18f71ee",
+  "sourceBytes": 69857,
+  "functions": 106,
+  "maxHelperDepth": 9,
+  "cases": 134,
+  "allow": 53,
+  "deny": 81,
+  "maxPositiveSampleJsonBytes": 5815,
+  "errors": [],
+  "compiler": "NOT_RUN",
+  "officialEvaluation": "BLOCKED_AUTO_REVIEW",
+  "expressions": "NOT_MEASURED",
+  "allInputSizeBound": "NOT_PROVEN",
+  "productionSourceUnchanged": true
+}

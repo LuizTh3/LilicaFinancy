@@ -1,0 +1,15 @@
+{
+  "mode": "official-test-only-no-release",
+  "sourceSha256": "4cf19f875b0963d82721a52a818d7e52c597ec2280af7de8744a8976d192fe0d",
+  "suiteSha256": "68c168db1a850d8f58297fe76783bc228682e73eeeee007657396fe4c18f71ee",
+  "requestedCases": 134,
+  "state": "BLOCKED_AUTO_REVIEW_AUTHORIZATION",
+  "project": "lilicafinancy",
+  "officialRequestsCompleted": 0,
+  "officialResults": [],
+  "compiler": "NOT_RUN",
+  "expressions": "NOT_MEASURED",
+  "deployment": "NOT_RUN",
+  "networkAttempt": "Initial sandbox attempt failed with fetch failed; no official result returned.",
+  "approvalReview": "Rejected: source includes complete internal Rules and synthetic fixtures; explicit authorization required for disclosure to firebaserules.googleapis.com using the existing operational session."
+}
