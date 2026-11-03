@@ -1,0 +1,70 @@
+{
+  "mode": "official-test-only-no-release",
+  "project": "lilicafinancy",
+  "destination": "firebaserules.googleapis.com",
+  "sourceSha256": "fd8c9db55837d5fe4a395b6555e3ad717b243375ce24c0aa3dbece3adb899e24",
+  "suiteSha256": "e385fb993ee35ee8edb698e1ed532bee80a59efbdc61001d1a52e0a69775844b",
+  "selectedCases": 5,
+  "officialRequestsCompleted": 1,
+  "state": "ERROR_EVALUATION",
+  "compiler": "COMPILED",
+  "expressions": "NOT_MEASURED",
+  "deployment": "NOT_RUN",
+  "issues": [
+    {
+      "severity": "WARNING",
+      "line": 339,
+      "description": "Unused function: invoiceDate."
+    },
+    {
+      "severity": "WARNING",
+      "line": 347,
+      "description": "Unused function: invoiceResult."
+    },
+    {
+      "severity": "WARNING",
+      "line": 350,
+      "description": "Unused function: invoiceConfirmPayload."
+    }
+  ],
+  "results": [
+    {
+      "name": "create100by3Purchase",
+      "expected": "ALLOW",
+      "state": "FAILURE",
+      "debug": [
+        "Error: firestore.rules line [555], column [59]. Unable to evaluate the expression as the maximum of 1000 expressions to evaluate has been reached."
+      ],
+      "calls": 5
+    },
+    {
+      "name": "create100by3Receipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 2
+    },
+    {
+      "name": "create100by3Invoice1",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "legacyInitializationDenied",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "freshEmptyV4Calendar",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    }
+  ],
+  "ok": false
+}

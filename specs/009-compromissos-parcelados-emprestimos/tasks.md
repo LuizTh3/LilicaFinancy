@@ -1,5 +1,9 @@
 # Tasks: Compromissos parcelados externos e empréstimos manuais
 
+**Atualização autorizada 26/10/2026:** o comprovante imutável S/R/V foi implementado como candidato local; ver [estado e evidências](witness-status-2026-10-26.md). A criação máxima passa a 18 acessos; substituição máxima de 21 deve ser rejeitada inteira. As contagens anteriores 15/18 são históricas e ficam substituídas por esse protocolo para novas séries. T007 permanece aberto: candidatas anteriores excederam 1000 expressões; a mais recente retornou HTTP 503. Nenhum gate remoto foi concluído.
+
+**Exceção autorizada21/10/2026**: [decisão do responsável](../011-painel-mensal-projecao/local-checkpoint-exception.md) permite implementar/testar contratos, domínio, repositórios e telas localmente antes do PASS de T007. Os checkpoints impeditivos abaixo continuam válidos para habilitação de produção; não impedem mais desenvolvimento local. T007 permanece pendente após HTTP503. Gravações financeiras/produção permanecem bloqueadas.
+
 **Input**: Documentos em `specs/009-compromissos-parcelados-emprestimos/`: spec.md, plan.md, research.md, data-model.md, contracts/ e quickstart.md.
 
 **Prerequisites**: Constituição 1.2.0, contratos 002–005, compatibilidade com cartões 006–008 e decisão A de FR-014a. TypeScript/React/Firebase já configurados; não reinicializar o projeto ou atualizar dependências sem necessidade.
@@ -42,12 +46,12 @@
 
 ### Tests
 
-- [ ] T011 [P] [US1] Criar testes de dinheiro/calendário e entrada em `src/domain/finance/parcelados.test.ts`: divisão residual, 1/1, P=N, 5/10, N12/N13, parcela zero, máximo/overflow, fevereiro/virada de ano, datas irregulares, posições únicas/completas e original ausente.
+- [X] T011 [P] [US1] Criar testes de dinheiro/calendário e entrada em `src/domain/finance/parcelados.test.ts`: divisão residual, 1/1, P=N, 5/10, N12/N13, parcela zero, máximo/overflow, fevereiro/virada de ano, datas irregulares, posições únicas/completas e original ausente.
 - [ ] T012 [P] [US1] Criar testes da porta criarSerie/prepararCriacao em `src/domain/finance/contracts/parcelados.contract.test.ts`, cobrindo prévia sem escrita, confirmação completa, repetição estável, referências próprias e rejeição integral de entrada/orçamento inválidos.
 
 ### Implementation
 
-- [ ] T013 [US1] Implementar normalização e planejamento puro em `src/domain/finance/parceladosValidation.ts` e `src/domain/finance/parcelados.ts`, reutilizando `money.ts`, `calendar.ts` e divisão de `installments.ts`; separar total a gerar/valor por parcela/original opcional, exigir referências comuns na criação e validar modo explícito com valores/datas/competências individuais sem juros ou datas mensais inferidas.
+- [X] T013 [US1] Implementar normalização e planejamento puro em `src/domain/finance/parceladosValidation.ts` e `src/domain/finance/parcelados.ts`, reutilizando `money.ts`, `calendar.ts` e divisão de `installments.ts`; separar total a gerar/valor por parcela/original opcional, exigir referências comuns na criação e validar modo explícito com valores/datas/competências individuais sem juros ou datas mensais inferidas.
 - [ ] T014 [US1] Implementar criarSerie e consultarOperacao em `src/infrastructure/firebase/parceladosRepository.ts` conforme o grafo T007: IDs estáveis, recibo canônico, leituras antes de escritas, comparação de versões, confirmação do conjunto e resolução de resposta perdida sem chave nova automática.
 - [ ] T015 [US1] Integrar somente criação/consulta permitidas em `firestore.rules`, acrescentar consultas necessárias a `firestore.indexes.json` e registrar mudanças/rollback em `docs/firestore-rules-changes.md`; preservar regras válidas e manter comandos posteriores negados até sua entrega.
 - [ ] T016 [US1] Implementar formulário, intenção de cadastro e invalidação de prévia em `src/features/parcelados/ParceladoForm.tsx`, `src/features/parcelados/CronogramaPreview.tsx` e `src/features/parcelados/parceladosState.ts`, incluindo referências opcionais e rótulos distintos para original desconhecido/soma cadastrada; abandono não grava e sucesso depende de confirmação remota.
@@ -207,3 +211,13 @@ T001–T004 concluídas com inventário, cobertura, protocolo e conferência ari
 
 
 
+
+## Atualização local21/10/2026
+
+T011/T013 concluídas sob a exceção de ordem expressamente autorizada (../011-painel-mensal-projecao/local-checkpoint-exception.md): oito testes de entrada/limites/calendário/cronograma e planejador puro validados. As demais tarefas preservam seus critérios integrais; implementação parcial não conclui gravações/eventos/UI/provas remotas. T007 recebeu autorização de envio e a avaliação retornou HTTP503; o bloqueio atual é externo, não falta de autorização. Ver validation.md para os módulos implementados localmente e ainda não habilitados.
+
+## Validação real25/10/2026
+
+T007 continua aberta e agora está ERROR: a mesma candidata compilou; createOneSeries e create5of10Series excederam1000 expressões, enquanto dois recibos isolados passaram. A indisponibilidade503 deixou de ser o bloqueio reproduzido. Nenhuma tarefa dependente ou perfil remoto foi promovido. Ver rules-evaluation-summary.json e validation.md.
+
+Refatoração posterior: criação1/1 passou;5/10 e outros comandos continuam acima do teto. Avaliação experimental interrompida após72/134 resultados por503, preservando falhas já obtidas e compilação confirmada. Ver refactor-status-2026-10-25.md. T007 não concluída; protocolo com comprovanteV proposto separadamente para aprovação, sem mudança deS/R em produção.

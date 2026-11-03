@@ -126,3 +126,7 @@ Harmonizações: controle007 passa a permitir somente projeções008 protegidas,
 ## Complexity Tracking
 
 Sem exceção constitucional. Controles adicionais limitam inversões/ajustes sem percorrer histórico nas Rules, mas aumentam custo; compensação e comandos compostos não têm orçamento fechado. G1/G2 são impeditivos. Arrays limitados do comando não acumulam histórico. Alternativa arquitetural precisa preservar o modelo financeiro e o escopo autorizado.
+
+## Atualização de implementação21/10/2026
+
+A decisão de layout em ../007-compras-cartao-parceladas/contracts/invoice-control-proposal.md é autorizada: substituir G e J da posição por conteudo financeiro na fatura e capacidade dentro da compra. As seções anteriores descrevem o grafo de referência; a nova candidata integral e sua prova ainda faltam. Desenvolvimento local antes da avaliação está autorizado em ../011-painel-mensal-projecao/local-checkpoint-exception.md. Isso não elimina T007–T011 nem promove perfil remoto. Situação, pagamento/reversão, revisão explícita e encargo têm planejadores puros locais; transações/Rules/UI ainda não estão entregues.

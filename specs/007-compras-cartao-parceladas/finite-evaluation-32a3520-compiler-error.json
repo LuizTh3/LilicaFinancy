@@ -1,0 +1,42 @@
+{
+  "mode": "official-test-only-no-release",
+  "project": "lilicafinancy",
+  "destination": "firebaserules.googleapis.com",
+  "sourceSha256": "32a3520fa5d6cd8235205db0d8b005d76b4479a0b0368722656501c062975cf6",
+  "suiteSha256": "0e64ca556aad55bc3f3617b57bfe3e04e461a917ad9871742c76462da83ef56d",
+  "selectedCases": 5,
+  "officialRequestsCompleted": 1,
+  "state": "ERROR_EVALUATION",
+  "compiler": "ERROR",
+  "expressions": "NOT_MEASURED",
+  "deployment": "NOT_RUN",
+  "issues": [
+    {
+      "severity": "ERROR",
+      "line": 511,
+      "description": "Unexpected '/d.quantidadeParcelas'."
+    },
+    {
+      "severity": "ERROR",
+      "line": 511,
+      "description": "mismatched input ')' expecting {'&&', '.', '==', '>', '>=', '[', '<', '<=', '-', '%', '!=', '||', '+', '}', ';', '/', '*', '?', 'in', 'is', PATH_SEGMENT}"
+    },
+    {
+      "severity": "ERROR",
+      "line": 698,
+      "description": "Unexpected 'categorias'."
+    },
+    {
+      "severity": "ERROR",
+      "line": 698,
+      "description": "Unexpected 'categorias'."
+    },
+    {
+      "severity": "ERROR",
+      "line": 762,
+      "description": "Unexpected '}'."
+    }
+  ],
+  "results": [],
+  "ok": false
+}

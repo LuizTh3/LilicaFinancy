@@ -1,5 +1,7 @@
 # Tasks: Recorrências mensais e assinaturas
 
+**Exceção autorizada21/10/2026**: [decisão do responsável](../011-painel-mensal-projecao/local-checkpoint-exception.md) permite implementar/testar contratos, domínio, repositórios e telas localmente antes do PASS de T007. Os checkpoints impeditivos abaixo continuam válidos para habilitação de produção; não impedem mais desenvolvimento local. T007 permanece pendente. Gravações financeiras/produção permanecem bloqueadas.
+
 **Input**: spec.md, plan.md, research.md, data-model.md, contracts/ e quickstart.md em `specs/010-recorrencias-mensais/`.
 
 **Prerequisites**: Constituição1.2.0, contratos003–008 e decisãoA: revisão de maio termina antes do reajuste já agendado em julho. Repositório já inicializado; não reinstalar stack ou criar backend/emulador. Caminhos abaixo são relativos à raiz do projeto.
@@ -240,5 +242,9 @@ T001–T003 concluídas; T004 permanece parcial. Verificador local e cinco teste
 
 ## Retomada autorizada e correção de T004
 
-O layout21 foi substituído pelo controle de item incorporado em O e por G obrigatório/recíproco.26 grafos mínimos/opcionais conferidos; testes10/10, candidata82766 bytes e327 casos (189 ALLOW/138 DENY) gerados. T004–T006 concluídas na construção local. T007 tem runner preparado e nenhum envio realizado; aguarda autorização explícita para fonte/fixtures/destino e avaliação. T008–T060 não iniciadas. Prova de bytes/expressões/compilação não foi marcada como aprovada; ver validation.md e remediation.md. A ponte006 exige o adaptador de vencimento atualizarG/calendarioVersion antes do rollout em T034.
+O layout21 foi substituído pelo controle de item incorporado em O e por G obrigatório/recíproco.26 grafos mínimos/opcionais conferidos; testes10/10, candidata82766 bytes e327 casos (189 ALLOW/138 DENY) gerados. T004–T006 concluídas na construção local. T007 recebeu autorização de envio; tentativas retornaram HTTP503 sem prova de compilação ou semântica. Prova de bytes/expressões/compilação não foi marcada como aprovada; ver validation.md e remediation.md. O layout físico ainda precisa ser harmonizado com o controle embutido de006–008 antes de rollout.
+
+## Bloco2 priorizado —21/10/2026
+
+Sob a exceção de ordem autorizada, foram implementadas partes locais de T008/T011–T013/T016/T019/T023/T038/T040/T043/T048/T050: cadastro, geração externa, confirmação, supressão, encerramento, revisão com vigência, liquidação/reversão, formulário e prévia. As caixas integrais continuam abertas onde faltam contratos físicos, assinatura, transações, integração de rotas ou provas exigidas; não confundir planejador com comando persistido. Regressão473 testes/118 arquivos, tipos, lint e build PASS. Build tem aviso preexistente de chunk maior que500KiB. Ver validation.md para escopo preciso e limitações. Nenhum perfil foi habilitado, nem Rules/índices raiz alterados.
 

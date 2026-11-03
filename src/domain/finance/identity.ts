@@ -5,6 +5,11 @@ import type { Resultado } from './errors'
 export const tiposComando = ['criarCompra', 'criarObrigacaoParcelada', 'registrarLiquidacao', 'aplicarCorrecao', 'corrigirSerie', 'materializarOcorrencias', 'confirmarValorOcorrencia'] as const
 export type TipoComando = typeof tiposComando[number]
 export const idAvulsoValido = (id: unknown): id is string => typeof id === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(id)
+/** Revision is part of the logical identity even when positions share one finite aggregate. */
+export function identidadeParcelaCompra(compraId: unknown, revisao: unknown, numero: unknown): Resultado<string> {
+  if (typeof compraId !== 'string' || !/^[A-Za-z0-9-]{1,64}$/.test(compraId) || !versaoValida(revisao) || typeof numero !== 'number' || !Number.isInteger(numero) || numero < 1 || numero > 12) return falha('valorInvalido', 'Informe compra, revisão e ordinal válidos.')
+  return sucesso(`${compraId}__r${revisao}__n${numero}`)
+}
 export function identidadeNatural(tupla: unknown): Resultado<string> {
   if (!Array.isArray(tupla)) return falha('valorInvalido', 'Informe uma tupla de identidade tipada.')
   const [tag, a, b, c] = tupla

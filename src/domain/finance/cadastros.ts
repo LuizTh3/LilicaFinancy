@@ -9,7 +9,7 @@ export const colecaoValida = (value: unknown): value is Colecao => typeof value 
 export const camposBaseConta = ['saldoInicialCentavos','saldoInicialPosicao','saldoInicialDataBase'] as const
 export function usoFinanceiroValido(c: Colecao, value: unknown): value is UsoFinanceiro {
  if(!registro(value)||!camposPermitidos(value,['eventoId','origemId','papel','createdAt'])||!idCadastroValido(value.origemId)||typeof value.createdAt!=='number'||!Number.isFinite(value.createdAt)||value.createdAt<0) return false
- const pattern=c==='categorias'?/^(criarReceita|criarDespesa|gastoImediato|editarOrigem)__[A-Za-z0-9-]{1,64}$/:c==='contas'?/^(receber|pagar|gastoImediato)__[A-Za-z0-9-]{1,64}$/:undefined
+ const pattern=c==='categorias'?/^(criarReceita|criarDespesa|gastoImediato|editarOrigem|criarCompra|criarSerie|editarParcelas|substituirSerie)__[A-Za-z0-9-]{1,64}$/:c==='contas'?/^(receber|pagar|gastoImediato|pagarParcela)__[A-Za-z0-9-]{1,64}$/:undefined
  return !!pattern&&typeof value.eventoId==='string'&&pattern.test(value.eventoId)&&value.papel===(c==='categorias'?'classificacao':'movimentacao')
 }
 export const camposConteudo = (c: Colecao) => ['nome','estado', ...(c==='categorias'?['natureza']:c==='contas'?['tipo','titularId',...camposBaseConta]:[])]

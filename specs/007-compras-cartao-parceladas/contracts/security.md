@@ -1,5 +1,7 @@
 # Contract: Segurança, atomicidade e orçamento007
 
+**Redesenho autorizado21/10/2026**: o [cronograma finito no agregado](finite-redesign.md) substitui a exigência de P físicos. O grafo e as contagens abaixo descrevem a referência anterior e não são evidência do novo layout. Ainda é necessário derivar e avaliar o grafo novo mantendo controles, isolamento e atomicidade; os perfis de produção continuam bloqueados.
+
 **Estado**: desenho de referência; G0/G1 impeditivos. Não são Rules executáveis, prova remota ou perfil habilitado. Preservar proteção002/004/005 e cartões006. Fontes oficiais consultadas em2026-10-18: [condições das Rules](https://firebase.google.com/docs/firestore/security/rules-conditions), [cotas](https://firebase.google.com/docs/firestore/quotas) e [transações](https://firebase.google.com/docs/firestore/manage-data/transactions).
 
 ## Superfície autorizável

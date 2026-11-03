@@ -1,5 +1,11 @@
 # Contract: Comandos e leitura de compromissos parcelados
 
+## Adendo de persistência aprovado — 26/10/2026
+
+`criarSerie` confirma S/R/V no mesmo commit, mais o patch de primeiro uso da categoria quando necessário. V é `validacoesParceladas/{eventoId}__{serieId}` e contém apenas `schemaVersion:1, serieId, eventoId, resultVersion:1, createdAt`. Os três documentos usam o mesmo timestamp de servidor. A intenção e o comando continuam os mesmos; V é derivado e não é um campo financeiro informado pelo usuário. Repetição e resposta perdida retornam o R original sem outra série ou V. Reutilização divergente da intenção conflita.
+
+Substituição deverá criar o V da nova série junto ao cancelamento explícito da antiga e ao recibo comum; seu escritor ainda não foi implementado. Custos candidatos máximos: criação 18, substituição 21; rejeitar a operação inteira acima de 18, sem confirmação parcial. Esses custos substituem os históricos S/R abaixo. Perfil de produção permanece não habilitado, pois a prova das Rules não passou. Ver [estado da implementação](../witness-status-2026-10-26.md).
+
 Estado: desenho corrigido de agregado finito, documentalmente revalidado, com prova executável de G1/G2 pendente em T005–T007; não é API de backend. Implementar porta TypeScript específica em domain/finance/contracts/parcelados.ts quando gates forem resolvidos, usando Resultado/CodigoErro existentes. Valores de entrada são unknown na fronteira e normalizados/validados em execução.
 
 ## Envelope e identidade

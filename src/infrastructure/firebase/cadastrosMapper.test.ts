@@ -17,3 +17,12 @@ it('schema2 é restrito a categoria/conta e preserva metadado de primeiro uso fo
  const account={...d,tipo:'carteira',schemaVersion:2,usoFinanceiro:{...use,eventoId:'pagar__key-1',papel:'movimentacao'}}
  expect(decodeCadastro('A','contas','id',account).usoFinanceiro?.papel).toBe('movimentacao')
 })
+it('primeiro uso de compra e série externa conserva papel tipado e não aceita pagamento como categoria', () => {
+ for (const tipo of ['criarCompra', 'criarSerie', 'editarParcelas', 'substituirSerie']) {
+  const usoFinanceiro = { eventoId: `${tipo}__intent`, origemId: 'origin', papel: 'classificacao', createdAt: at }
+  expect(decodeCadastro('A', 'categorias', 'cat', { ...d, schemaVersion: 2, natureza: 'despesa', usoFinanceiro }).usoFinanceiro?.eventoId).toBe(usoFinanceiro.eventoId)
+ }
+ const usoFinanceiro = { eventoId: 'pagarParcela__intent', origemId: 'serie', papel: 'movimentacao', createdAt: at }
+ expect(decodeCadastro('A', 'contas', 'account', { ...d, tipo: 'carteira', schemaVersion: 2, usoFinanceiro }).usoFinanceiro?.eventoId).toBe(usoFinanceiro.eventoId)
+ expect(() => decodeCadastro('A', 'categorias', 'cat', { ...d, schemaVersion: 2, natureza: 'despesa', usoFinanceiro })).toThrow()
+})

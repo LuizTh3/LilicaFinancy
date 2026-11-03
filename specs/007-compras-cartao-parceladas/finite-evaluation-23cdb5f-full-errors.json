@@ -1,0 +1,1150 @@
+{
+  "mode": "official-test-only-no-release",
+  "project": "lilicafinancy",
+  "destination": "firebaserules.googleapis.com",
+  "sourceSha256": "23cdb5f122d568ff0d175b48ce0d6600ab1bdc7dd15ada1411d56dda29f835fe",
+  "suiteSha256": "25df6d8c0b2296edbce18c132cb8ed58068479b7d54c31bb14ba18bddac6dd71",
+  "selectedCases": 127,
+  "officialRequestsCompleted": 11,
+  "state": "ERROR_EVALUATION",
+  "compiler": "COMPILED",
+  "expressions": "SEE_FAILURE_DIAGNOSTICS",
+  "deployment": "NOT_RUN",
+  "issues": [
+    {
+      "severity": "WARNING",
+      "line": 339,
+      "description": "Unused function: invoiceDate."
+    },
+    {
+      "severity": "WARNING",
+      "line": 347,
+      "description": "Unused function: invoiceResult."
+    },
+    {
+      "severity": "WARNING",
+      "line": 350,
+      "description": "Unused function: invoiceConfirmPayload."
+    },
+    {
+      "severity": "WARNING",
+      "line": 552,
+      "description": "Unused variable: n."
+    },
+    {
+      "severity": "WARNING",
+      "line": 339,
+      "description": "Unused function: invoiceDate."
+    },
+    {
+      "severity": "WARNING",
+      "line": 347,
+      "description": "Unused function: invoiceResult."
+    },
+    {
+      "severity": "WARNING",
+      "line": 350,
+      "description": "Unused function: invoiceConfirmPayload."
+    },
+    {
+      "severity": "WARNING",
+      "line": 552,
+      "description": "Unused variable: n."
+    },
+    {
+      "severity": "WARNING",
+      "line": 339,
+      "description": "Unused function: invoiceDate."
+    },
+    {
+      "severity": "WARNING",
+      "line": 347,
+      "description": "Unused function: invoiceResult."
+    },
+    {
+      "severity": "WARNING",
+      "line": 350,
+      "description": "Unused function: invoiceConfirmPayload."
+    },
+    {
+      "severity": "WARNING",
+      "line": 552,
+      "description": "Unused variable: n."
+    },
+    {
+      "severity": "WARNING",
+      "line": 339,
+      "description": "Unused function: invoiceDate."
+    },
+    {
+      "severity": "WARNING",
+      "line": 347,
+      "description": "Unused function: invoiceResult."
+    },
+    {
+      "severity": "WARNING",
+      "line": 350,
+      "description": "Unused function: invoiceConfirmPayload."
+    },
+    {
+      "severity": "WARNING",
+      "line": 552,
+      "description": "Unused variable: n."
+    },
+    {
+      "severity": "WARNING",
+      "line": 339,
+      "description": "Unused function: invoiceDate."
+    },
+    {
+      "severity": "WARNING",
+      "line": 347,
+      "description": "Unused function: invoiceResult."
+    },
+    {
+      "severity": "WARNING",
+      "line": 350,
+      "description": "Unused function: invoiceConfirmPayload."
+    },
+    {
+      "severity": "WARNING",
+      "line": 552,
+      "description": "Unused variable: n."
+    },
+    {
+      "severity": "WARNING",
+      "line": 339,
+      "description": "Unused function: invoiceDate."
+    },
+    {
+      "severity": "WARNING",
+      "line": 347,
+      "description": "Unused function: invoiceResult."
+    },
+    {
+      "severity": "WARNING",
+      "line": 350,
+      "description": "Unused function: invoiceConfirmPayload."
+    },
+    {
+      "severity": "WARNING",
+      "line": 552,
+      "description": "Unused variable: n."
+    },
+    {
+      "severity": "WARNING",
+      "line": 339,
+      "description": "Unused function: invoiceDate."
+    },
+    {
+      "severity": "WARNING",
+      "line": 347,
+      "description": "Unused function: invoiceResult."
+    },
+    {
+      "severity": "WARNING",
+      "line": 350,
+      "description": "Unused function: invoiceConfirmPayload."
+    },
+    {
+      "severity": "WARNING",
+      "line": 552,
+      "description": "Unused variable: n."
+    },
+    {
+      "severity": "WARNING",
+      "line": 339,
+      "description": "Unused function: invoiceDate."
+    },
+    {
+      "severity": "WARNING",
+      "line": 347,
+      "description": "Unused function: invoiceResult."
+    },
+    {
+      "severity": "WARNING",
+      "line": 350,
+      "description": "Unused function: invoiceConfirmPayload."
+    },
+    {
+      "severity": "WARNING",
+      "line": 552,
+      "description": "Unused variable: n."
+    },
+    {
+      "severity": "WARNING",
+      "line": 339,
+      "description": "Unused function: invoiceDate."
+    },
+    {
+      "severity": "WARNING",
+      "line": 347,
+      "description": "Unused function: invoiceResult."
+    },
+    {
+      "severity": "WARNING",
+      "line": 350,
+      "description": "Unused function: invoiceConfirmPayload."
+    },
+    {
+      "severity": "WARNING",
+      "line": 552,
+      "description": "Unused variable: n."
+    },
+    {
+      "severity": "WARNING",
+      "line": 339,
+      "description": "Unused function: invoiceDate."
+    },
+    {
+      "severity": "WARNING",
+      "line": 347,
+      "description": "Unused function: invoiceResult."
+    },
+    {
+      "severity": "WARNING",
+      "line": 350,
+      "description": "Unused function: invoiceConfirmPayload."
+    },
+    {
+      "severity": "WARNING",
+      "line": 552,
+      "description": "Unused variable: n."
+    },
+    {
+      "severity": "WARNING",
+      "line": 339,
+      "description": "Unused function: invoiceDate."
+    },
+    {
+      "severity": "WARNING",
+      "line": 347,
+      "description": "Unused function: invoiceResult."
+    },
+    {
+      "severity": "WARNING",
+      "line": 350,
+      "description": "Unused function: invoiceConfirmPayload."
+    },
+    {
+      "severity": "WARNING",
+      "line": 552,
+      "description": "Unused variable: n."
+    }
+  ],
+  "results": [
+    {
+      "name": "create100by3Purchase",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 6
+    },
+    {
+      "name": "create100by3Receipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 2
+    },
+    {
+      "name": "create100by3Invoice1",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "create100by3Invoice2",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "create100by3Invoice3",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "createTwoFirstCategoryPurchase",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 5
+    },
+    {
+      "name": "createTwoFirstCategoryReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 2
+    },
+    {
+      "name": "createTwoFirstCategoryInvoice1",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "createTwoFirstCategoryInvoice2",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "createTwoFirstCategoryCategory",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 2
+    },
+    {
+      "name": "createOneFiveLabelsFirstCategoryPurchase",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 4
+    },
+    {
+      "name": "createOneFiveLabelsFirstCategoryReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "createOneFiveLabelsFirstCategoryInvoice1",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "createOneFiveLabelsFirstCategoryCategory",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 2
+    },
+    {
+      "name": "createThreeTwoLabelsPurchase",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 6
+    },
+    {
+      "name": "createThreeTwoLabelsReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 4
+    },
+    {
+      "name": "createThreeTwoLabelsInvoice1",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "createThreeTwoLabelsInvoice2",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "createThreeTwoLabelsInvoice3",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "missingReceipt",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [
+        "Error: firestore.rules line [564], column [12]. Null value error."
+      ],
+      "calls": 6
+    },
+    {
+      "name": "receiptOtherPurchase",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 3
+    },
+    {
+      "name": "receiptDifferentCommand",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 3
+    },
+    {
+      "name": "wrongRemainder",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "missingPosition",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 3
+    },
+    {
+      "name": "extraOriginalCapital",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 3
+    },
+    {
+      "name": "fakeCapacity",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "missingCapacity",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "wrongIndex",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 3
+    },
+    {
+      "name": "wrongCommandImage",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 2
+    },
+    {
+      "name": "recursiveImage",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 2
+    },
+    {
+      "name": "staleCard",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 3
+    },
+    {
+      "name": "missingInvoiceTransition",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [
+        "Error: firestore.rules line [554], column [13]. Property card__2026-12 is undefined on object."
+      ],
+      "calls": 6
+    },
+    {
+      "name": "categoryArchived",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 3
+    },
+    {
+      "name": "categoryIncome",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 3
+    },
+    {
+      "name": "missingCategoryWitness",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [
+        "Error: firestore.rules line [566], column [108]. Property usoFinanceiro is undefined on object."
+      ],
+      "calls": 6
+    },
+    {
+      "name": "firstUseThreeExceeds18",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 3
+    },
+    {
+      "name": "fourDestinations",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 3
+    },
+    {
+      "name": "threeWithThreeLabels",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 3
+    },
+    {
+      "name": "resetHistory",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "inventedPaid",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "wrongDelta",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "wrongVersion",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "resetCreatedAt",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "wrongOrigin",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [
+        "Error: firestore.rules line [604], column [13]. Null value error."
+      ],
+      "calls": 1
+    },
+    {
+      "name": "financialWriteChangesCalendar",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "legacyInitializationDenied",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "purchaseEditDenied",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 0
+    },
+    {
+      "name": "purchaseDeleteDenied",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 0
+    },
+    {
+      "name": "receiptDeleteDenied",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 0
+    },
+    {
+      "name": "oldPhysicalPositionDenied",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 0
+    },
+    {
+      "name": "oldSeparateControlDenied",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 0
+    },
+    {
+      "name": "visitorReceipt",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [
+        "Error: firestore.rules line [4], column [32]. Property auth is undefined on object."
+      ],
+      "calls": 2
+    },
+    {
+      "name": "otherUidReceipt",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 0
+    },
+    {
+      "name": "pendingReceipt",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "freshEmptyV4Calendar",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "freshEmptyV4Receipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "freshCalendarNonzeroDenied",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "freshEmptyV4Maximum",
+      "expected": "ALLOW",
+      "state": "FAILURE",
+      "debug": [
+        "Error: firestore.rules line [431], column [27]. Unable to evaluate the expression as the maximum of 1000 expressions to evaluate has been reached."
+      ],
+      "calls": 7
+    },
+    {
+      "name": "freshEmptyV4MaximumReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_invoiceEmpty",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_invoiceEmptyReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_invoiceMaximum",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_invoiceMaximumReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_circularOctober",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_circularNovember",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_batchControlOctober",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_batchControlOctoberReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_batchControlNovember",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_batchControlNovemberReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_distanceTwo",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_distanceTwoReverse",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_februaryCoincidence",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_februaryCoincidenceReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_archivedCard",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 3
+    },
+    {
+      "name": "regression006_adjust",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 2
+    },
+    {
+      "name": "regression006_adjustReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_adjustChangesBoundary",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 2
+    },
+    {
+      "name": "regression006_equalDays",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_equalDaysReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_leapFebruary",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_leapFebruaryReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_nonLeapCentury",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_nonLeapCenturyReceipt",
+      "expected": "ALLOW",
+      "state": "FAILURE",
+      "debug": [
+        "Error: firestore.rules line [396], column [30]. Unable to evaluate the expression as the maximum of 1000 expressions to evaluate has been reached."
+      ],
+      "calls": 1
+    },
+    {
+      "name": "regression006_leapCentury",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_leapCenturyReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_crossYear",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_crossYearReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_aprilClamp",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_aprilClampReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_day29",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_day29Receipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_day28",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_day28Receipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_dueBeforeClose",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_dueBeforeCloseReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_year9999",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 5
+    },
+    {
+      "name": "regression006_year9999Receipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_invalidDueDay",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_invalidStartDay",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_invalidClosingDay",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_invalidMonth",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_invalidOriginalDue",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_invalidOriginSchema",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_invalidNominalDay",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_invalidCycleOrder",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_missingReceipt",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [
+        "Error: firestore.rules line [443], column [15]. Null value error."
+      ],
+      "calls": 7
+    },
+    {
+      "name": "regression006_wrongOwner",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 0
+    },
+    {
+      "name": "regression006_visitor",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [
+        "Error: firestore.rules line [4], column [32]. Property auth is undefined on object."
+      ],
+      "calls": 7
+    },
+    {
+      "name": "regression006_unknownInvoiceSchema",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_invoiceExtraField",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_unknownNeighborSchema",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_wrongNeighborCard",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_invalidAdjustmentDue",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_maximumLeap",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_maximumLeapReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_maximumEqual",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_maximumEqualReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_maximumCrossYear",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    },
+    {
+      "name": "regression006_maximumCrossYearReceipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_creationWrongVersion",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 2
+    },
+    {
+      "name": "regression006_creationWrongTimestamp",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 2
+    },
+    {
+      "name": "regression006_creationWrongEvent",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [
+        "Error: firestore.rules line [443], column [15]. Null value error."
+      ],
+      "calls": 7
+    },
+    {
+      "name": "regression006_creationWrongIdentity",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 2
+    },
+    {
+      "name": "regression006_receiptMissingPrimary",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [
+        "Error: firestore.rules line [489], column [15]. Null value error."
+      ],
+      "calls": 1
+    },
+    {
+      "name": "regression006_receiptWrongResult",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "regression006_receiptExtraField",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 0
+    },
+    {
+      "name": "regression006_receiptWrongKey",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 0
+    }
+  ],
+  "rawEvidence": "/C:/Projetos/LilicaFinancy/.integration/compras-finite-rules/23cdb5f122d5-2026-10-21T22-06-32-261Z/",
+  "ok": false
+}

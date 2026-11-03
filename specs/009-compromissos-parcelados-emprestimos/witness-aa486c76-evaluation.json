@@ -1,0 +1,204 @@
+{
+  "mode": "official-test-only-no-release",
+  "project": "lilicafinancy",
+  "destination": "firebaserules.googleapis.com",
+  "sourceSha256": "aa486c76cee81d70d0f15166f4f088456b740bc22e2022b848104d9c1b78c0e2",
+  "suiteSha256": "ea4a12e6de2f519ffd002c0bfa7d1dd71d70f104ce9b192d9f0b118f759f71e6",
+  "selectedCases": 9,
+  "officialRequestsCompleted": 1,
+  "state": "ERROR_EVALUATION",
+  "compiler": "COMPILED",
+  "expressions": "NOT_MEASURED",
+  "deployment": "NOT_RUN",
+  "issues": [
+    {
+      "severity": "WARNING",
+      "line": 339,
+      "description": "Unused function: invoiceDate."
+    },
+    {
+      "severity": "WARNING",
+      "line": 347,
+      "description": "Unused function: invoiceResult."
+    },
+    {
+      "severity": "WARNING",
+      "line": 350,
+      "description": "Unused function: invoiceConfirmPayload."
+    },
+    {
+      "severity": "WARNING",
+      "line": 643,
+      "description": "Unused variable: first."
+    },
+    {
+      "severity": "WARNING",
+      "line": 650,
+      "description": "Unused variable: r."
+    },
+    {
+      "severity": "WARNING",
+      "line": 654,
+      "description": "Invalid type. Received one of [null]. Expected one of [int, float, string, duration, timestamp]."
+    },
+    {
+      "severity": "WARNING",
+      "line": 656,
+      "description": "Ternary operator result if condition is true has a different type than if condition is false."
+    },
+    {
+      "severity": "WARNING",
+      "line": 657,
+      "description": "Ternary operator result if condition is true has a different type than if condition is false."
+    },
+    {
+      "severity": "WARNING",
+      "line": 658,
+      "description": "Ternary operator result if condition is true has a different type than if condition is false."
+    },
+    {
+      "severity": "WARNING",
+      "line": 659,
+      "description": "Ternary operator result if condition is true has a different type than if condition is false."
+    },
+    {
+      "severity": "WARNING",
+      "line": 665,
+      "description": "Invalid type. Received one of [null]. Expected one of [int, float, string, duration, timestamp]."
+    },
+    {
+      "severity": "WARNING",
+      "line": 667,
+      "description": "Ternary operator result if condition is true has a different type than if condition is false."
+    },
+    {
+      "severity": "WARNING",
+      "line": 668,
+      "description": "Ternary operator result if condition is true has a different type than if condition is false."
+    },
+    {
+      "severity": "WARNING",
+      "line": 669,
+      "description": "Ternary operator result if condition is true has a different type than if condition is false."
+    },
+    {
+      "severity": "WARNING",
+      "line": 670,
+      "description": "Ternary operator result if condition is true has a different type than if condition is false."
+    },
+    {
+      "severity": "WARNING",
+      "line": 672,
+      "description": "Unused variable: r."
+    },
+    {
+      "severity": "WARNING",
+      "line": 676,
+      "description": "Invalid type. Received one of [null]. Expected one of [int, float, string, duration, timestamp]."
+    },
+    {
+      "severity": "WARNING",
+      "line": 678,
+      "description": "Ternary operator result if condition is true has a different type than if condition is false."
+    },
+    {
+      "severity": "WARNING",
+      "line": 679,
+      "description": "Ternary operator result if condition is true has a different type than if condition is false."
+    },
+    {
+      "severity": "WARNING",
+      "line": 680,
+      "description": "Ternary operator result if condition is true has a different type than if condition is false."
+    },
+    {
+      "severity": "WARNING",
+      "line": 681,
+      "description": "Ternary operator result if condition is true has a different type than if condition is false."
+    },
+    {
+      "severity": "WARNING",
+      "line": 687,
+      "description": "Ternary operator result if condition is true has a different type than if condition is false."
+    }
+  ],
+  "results": [
+    {
+      "name": "create5of10Series",
+      "expected": "ALLOW",
+      "state": "FAILURE",
+      "debug": [
+        "Error: firestore.rules line [501], column [38]. Unable to evaluate the expression as the maximum of 1000 expressions to evaluate has been reached."
+      ],
+      "calls": 1
+    },
+    {
+      "name": "create5of10Receipt",
+      "expected": "ALLOW",
+      "state": "FAILURE",
+      "debug": [
+        "Error: firestore.rules line [627], column [19]. Unable to evaluate the expression as the maximum of 1000 expressions to evaluate has been reached."
+      ],
+      "calls": 2
+    },
+    {
+      "name": "create5of10Witness",
+      "expected": "ALLOW",
+      "state": "FAILURE",
+      "debug": [
+        "Error: firestore.rules line [680], column [35]. Unable to evaluate the expression as the maximum of 1000 expressions to evaluate has been reached."
+      ],
+      "calls": 2
+    },
+    {
+      "name": "createOneSeries",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 3
+    },
+    {
+      "name": "createOneReceipt",
+      "expected": "ALLOW",
+      "state": "FAILURE",
+      "debug": [
+        "Error: firestore.rules line [667], column [14]. Unable to evaluate the expression as the maximum of 1000 expressions to evaluate has been reached."
+      ],
+      "calls": 2
+    },
+    {
+      "name": "createOneWitness",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 2
+    },
+    {
+      "name": "replaceNew",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 3
+    },
+    {
+      "name": "replaceReceipt",
+      "expected": "ALLOW",
+      "state": "FAILURE",
+      "debug": [
+        "Error: firestore.rules line [622], column [42]. Unable to evaluate the expression as the maximum of 1000 expressions to evaluate has been reached."
+      ],
+      "calls": 3
+    },
+    {
+      "name": "replaceWitness",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 2
+    }
+  ],
+  "rawEvidence": "C:\\Projetos\\LilicaFinancy\\.integration\\parcelados-rules\\aa486c76cee8-2026-10-26T05-05-31-905Z\\",
+  "ok": false,
+  "cleanPassedCases": 4,
+  "remainingCases": 0
+}

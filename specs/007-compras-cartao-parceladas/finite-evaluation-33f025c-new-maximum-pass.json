@@ -1,0 +1,46 @@
+{
+  "mode": "official-test-only-no-release",
+  "project": "lilicafinancy",
+  "destination": "firebaserules.googleapis.com",
+  "sourceSha256": "33f025cb49e5c98fb814a1828b83ebe84936d410851aee836474dd27d77e60d8",
+  "suiteSha256": "25df6d8c0b2296edbce18c132cb8ed58068479b7d54c31bb14ba18bddac6dd71",
+  "selectedCases": 1,
+  "officialRequestsCompleted": 1,
+  "state": "SELECTED_CASES_PASSED",
+  "compiler": "COMPILED",
+  "expressions": "NO_LIMIT_DIAGNOSTIC_IN_SELECTED_CASES",
+  "deployment": "NOT_RUN",
+  "issues": [
+    {
+      "severity": "WARNING",
+      "line": 339,
+      "description": "Unused function: invoiceDate."
+    },
+    {
+      "severity": "WARNING",
+      "line": 347,
+      "description": "Unused function: invoiceResult."
+    },
+    {
+      "severity": "WARNING",
+      "line": 350,
+      "description": "Unused function: invoiceConfirmPayload."
+    },
+    {
+      "severity": "WARNING",
+      "line": 552,
+      "description": "Unused variable: n."
+    }
+  ],
+  "results": [
+    {
+      "name": "freshEmptyV4Maximum",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    }
+  ],
+  "rawEvidence": "/C:/Projetos/LilicaFinancy/.integration/compras-finite-rules/33f025cb49e5-2026-10-21T22-09-46-041Z/",
+  "ok": true
+}

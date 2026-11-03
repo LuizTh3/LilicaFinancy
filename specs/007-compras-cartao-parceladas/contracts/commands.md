@@ -1,5 +1,7 @@
 # Contract: Comandos de compras
 
+**Revisão21/10/2026**: [redesenho finito autorizado](finite-redesign.md). Referências abaixo a N documentos de parcelas descrevem o layout anterior: no novo layout, a confirmação deve gravar o mapa completo no agregado. Envelope, eventos, versões e fronteira dos controles ainda serão reconciliados/provados antes da implementação de escrita. O decoder e a prévia locais não constituem porta transacional habilitada.
+
 Contratos de aplicação, não endpoints HTTP nem autorização para adaptar o repositório genérico003. Formato final tipado em src/domain/finance/contracts/compras.ts, após gates do plano.
 
 ## Operações

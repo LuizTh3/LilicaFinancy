@@ -1,0 +1,28 @@
+{
+  "scope": "finite-creation-existing-v4-invoices-and-explicit-fresh-calendar-only",
+  "baseSha256": "d305c3b7a39c8690a5022f04b297c95229178a97da0f1c8667522a9a699b87c8",
+  "candidateSha256": "33f025cb49e5c98fb814a1828b83ebe84936d410851aee836474dd27d77e60d8",
+  "bytes": 55157,
+  "productionEnabled": false,
+  "compiler": "NOT_RUN",
+  "officialEvaluation": "NOT_RUN",
+  "sdkTests": "NOT_RUN",
+  "limits": {
+    "nominalPositions": 12,
+    "candidateDestinations": 3,
+    "accesses": 18,
+    "perWrite": 8
+  },
+  "denied": [
+    "purchase-edit",
+    "purchase-cancel",
+    "invoice-payment",
+    "refund",
+    "legacy-initialization",
+    "calendar-update-v4"
+  ],
+  "suiteSha256": "d94fdf48a6bf54a362bf279e843381269921b48dd655fc141cddce568919dda3",
+  "cases": 137,
+  "allow": 66,
+  "deny": 71
+}

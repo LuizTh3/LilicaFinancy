@@ -26,8 +26,11 @@ function add(name,c,id,method,data,before,mocks=[],allow=true,auth={uid:'fixture
 }
 function pair(prefix,obj,allow=true) {
  const m=[mock('getAfter',path('seriesParceladas',obj.id),{data:obj.s}),mock('getAfter',path('operacoesParceladas',obj.event),{data:obj.r})]
+ const witness={schemaVersion:1,serieId:obj.id,eventoId:obj.event,resultVersion:1,createdAt:time}
+ if(!obj.before)m.push(mock('getAfter',path('validacoesParceladas',obj.event+'__'+obj.id),{data:witness}))
  add(prefix+'Series','seriesParceladas',obj.id,obj.before?'update':'create',obj.s,obj.before,m,allow)
  add(prefix+'Receipt','operacoesParceladas',obj.event,'create',obj.r,undefined,m,allow)
+ if(!obj.before)add(prefix+'Witness','validacoesParceladas',obj.event+'__'+obj.id,'create',witness,undefined,m,allow)
  return m
 }
 const core=makeSeries();pair('create5of10',core)
@@ -53,8 +56,10 @@ let reverse=mutation('reverterPagamento');reverse.before=clone(pay.s);reverse.be
 const marker={serieId:'serie',parcela:'p05',originalEventoId:pay.event,reversaoEventoId:reverse.event,createdAt:time};let rm=[mock('get',path('operacoesParceladas',pay.event),{data:pay.r}),mock('getAfter',path('reversoesParceladas',pay.event),{data:marker})];
 for(const [name,c,id,data,before] of [['reverseSeries','seriesParceladas','serie',reverse.s,reverse.before],['reverseReceipt','operacoesParceladas',reverse.event,reverse.r],['reverseMarker','reversoesParceladas',pay.event,marker]])add(name,c,id,before?'update':'create',data,before,[...rm,mock('getAfter',path('seriesParceladas','serie'),{data:reverse.s}),mock('getAfter',path('operacoesParceladas',reverse.event),{data:reverse.r})])
 let replacement=mutation('substituirSerie');replacement.r.comando={serieId:'serie',novaSerieId:'newserie',alvos:['p05'],motivo:'Renegociacao manual',nova:null};Object.assign(replacement.s.parcelas.p05,{estadoObrigacao:'cancelada',canceledAt:time,cancelamentoMotivo:replacement.r.comando.motivo,ultimoEventoParcelaId:replacement.event});const next=makeSeries({n:1,p:1,id:'newserie',key:'replacement'});next.s.ultimoEventoId=replacement.event;next.s.parcelas.p01.ultimoEventoParcelaId=replacement.event;next.s.substituiSerieId='serie';next.s.substituicaoEventoId=replacement.event;next.r.comando.criacao.dados.parcelas=clone(next.s.parcelas);replacement.r.comando.nova=next.r.comando.criacao;replacement.r.seriesIds=['serie','newserie'];replacement.r.expectedVersions.newserie=0;replacement.r.resultVersions.newserie=1;
-const replaceMocks=[mock('getAfter',path('seriesParceladas','serie'),{data:replacement.s}),mock('getAfter',path('seriesParceladas','newserie'),{data:next.s}),mock('getAfter',path('operacoesParceladas',replacement.event),{data:replacement.r})]
+const replaceWitness={schemaVersion:1,serieId:'newserie',eventoId:replacement.event,resultVersion:1,createdAt:time}
+const replaceMocks=[mock('getAfter',path('seriesParceladas','serie'),{data:replacement.s}),mock('getAfter',path('seriesParceladas','newserie'),{data:next.s}),mock('getAfter',path('operacoesParceladas',replacement.event),{data:replacement.r}),mock('getAfter',path('validacoesParceladas',replacement.event+'__newserie'),{data:replaceWitness})]
 add('replaceOld','seriesParceladas','serie','update',replacement.s,replacement.before,replaceMocks);add('replaceNew','seriesParceladas','newserie','create',next.s,undefined,replaceMocks);add('replaceReceipt','operacoesParceladas',replacement.event,'create',replacement.r,undefined,replaceMocks)
+add('replaceWitness','validacoesParceladas',replacement.event+'__newserie','create',replaceWitness,undefined,replaceMocks)
 let link=mutation('vincularReceita');link.r.comando.receitaId='income';link.s.receitaVinculadaId='income';const v={serieId:'serie',receitaId:'income',operacaoId:link.event,createdAt:time},income={natureza:'receita',schemaVersion:1};const lm=[mock('get',path('lancamentosExternos','income'),{data:income}),mock('getAfter',path('vinculosReceitasEmprestimos','income'),{data:v}),mock('getAfter',path('seriesParceladas','serie'),{data:link.s}),mock('getAfter',path('operacoesParceladas',link.event),{data:link.r})];
 add('linkSeries','seriesParceladas','serie','update',link.s,link.before,lm);add('linkReceipt','operacoesParceladas',link.event,'create',link.r,undefined,lm);add('linkMarker','vinculosReceitasEmprestimos','income','create',v,undefined,lm)
 // Adversarial cases retain all unrelated dependencies: a missing mock is never the denial oracle.
@@ -147,6 +152,42 @@ for(const [uid,auth,pending] of [['fixture',{uid:'fixture',token:{auth_time:1792
 }
 negative('readOwnPending','readOwn-seriesParceladas',t=>{t.functionMocks[0].result.value.data.primeiro_login=true})
 negative('readOwnCutoffExpired','readOwn-seriesParceladas',t=>{t.request.auth.token.auth_time=1})
+// Checks delegated by the atomic S/R/V protocol are exercised at their enforcing write.
+for(const [name,target] of [['extraPreviousSlot','Receipt'],['unknownPrincipalZero','Receipt'],['unknownField','Receipt'],['wrongCompetencias','Witness'],['invalidCalendar','Witness'],['ordinalMismatch','Series']]) {
+ const item=cases.find(c=>c.name===name), mutated=clone(item.test.request.resource.data)
+ const receipt=clone(core.r);receipt.comando.criacao.dados=business(mutated)
+ const witness={schemaVersion:1,serieId:core.id,eventoId:core.event,resultVersion:1,createdAt:time}
+ const t=clone(cases.find(c=>c.name==='create5of10'+target).test)
+ t.expectation='DENY';t.request.resource.data=target==='Receipt'?receipt:target==='Series'?mutated:witness
+ for(const m of t.functionMocks)if(m.function==='getAfter') {
+  if(m.args[0].exactValue.endsWith('/seriesParceladas/'+core.id))m.result.value={data:mutated}
+  if(m.args[0].exactValue.endsWith('/operacoesParceladas/'+core.event))m.result.value={data:receipt}
+ }
+ item.test=t
+}
+negative('missingCreationWitness','create5of10Series',t=>{for(const m of t.functionMocks)if(m.args[0].exactValue.includes('/validacoesParceladas/'))m.result={value:null}})
+negative('createCannotOverwriteExisting','createOneSeries',t=>{t.request.method='update';t.resource={data:clone(t.request.resource.data)};t.resource.data.createdAt=old;t.resource.data.updatedAt=old})
+negative('witnessWrongLink','createOneSeries',t=>{for(const m of t.functionMocks)if(m.args[0].exactValue.includes('/validacoesParceladas/'))m.result.value.data.serieId='other'})
+negative('witnessNoSeries','createOneWitness',t=>{for(const m of t.functionMocks)if(m.args[0].exactValue.includes('/seriesParceladas/'))m.result={value:null}})
+negative('witnessNoReceipt','createOneWitness',t=>{for(const m of t.functionMocks)if(m.args[0].exactValue.includes('/operacoesParceladas/'))m.result={value:null}})
+negative('witnessWrongVersion','createOneWitness',t=>{t.request.resource.data.resultVersion=2})
+negative('witnessUnknownField','createOneWitness',t=>{t.request.resource.data.pago=true})
+negative('witnessStale','createOneWitness',t=>{t.request.resource.data.createdAt=old})
+negative('witnessForeignUser','createOneWitness',t=>{t.request.auth.uid='admin'})
+negative('witnessImmutableUpdate','createOneWitness',t=>{t.request.method='update';t.resource={data:clone(t.request.resource.data)}})
+negative('witnessImmutableDelete','createOneWitness',t=>{t.request.method='delete';t.resource={data:clone(t.request.resource.data)};delete t.request.resource})
+for(let n=5;n<=10;n++)for(const field of ['numero','valorCentavos','vencimento']) {
+ const mutated=clone(core.s), k='p'+String(n).padStart(2,'0')
+ mutated.parcelas[k][field]=field==='vencimento'?'2026-02-30':mutated.parcelas[k][field]+1
+ const receipt=clone(core.r);receipt.comando.criacao.dados=business(mutated)
+ const target=n===5?(field==='vencimento'?'Witness':'Series'):['Series','Receipt','Witness'][(n-1)%3], t=clone(cases.find(c=>c.name==='create5of10'+target).test)
+ t.expectation='DENY';t.request.resource.data=target==='Series'?mutated:target==='Receipt'?receipt:t.request.resource.data
+ for(const m of t.functionMocks)if(m.function==='getAfter') {
+  if(m.args[0].exactValue.endsWith('/seriesParceladas/'+core.id))m.result.value={data:mutated}
+  if(m.args[0].exactValue.endsWith('/operacoesParceladas/'+core.event))m.result.value={data:receipt}
+ }
+ cases.push({name:`creationPart-${n}-${field}`,test:t})
+}
 const output={schemaVersion:1,purpose:'Official test-only synthetic evaluation; no release or real fixtures.',cases}
 fs.writeFileSync(new URL('rules-evaluation-cases.json',folder),JSON.stringify(output,null,2)+'\n')
 console.log(JSON.stringify({cases:cases.length,allow:cases.filter(c=>c.test.expectation==='ALLOW').length,deny:cases.filter(c=>c.test.expectation==='DENY').length,network:false}))

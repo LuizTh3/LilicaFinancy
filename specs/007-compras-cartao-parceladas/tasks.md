@@ -2,6 +2,8 @@
 
 **Input**: [spec.md](spec.md), [plan.md](plan.md), [research.md](research.md), [data-model.md](data-model.md), [commands.md](contracts/commands.md), [security.md](contracts/security.md), [queries-ui.md](contracts/queries-ui.md) e [quickstart.md](quickstart.md).
 
+**Retomada21/10/2026**: autorizado implementar dependências007–010 e redesenhar compra como agregado finito. [finite-redesign.md](contracts/finite-redesign.md) registra o contrato local novo; tarefas de documentos-filho precisam de reconciliaçãoT010 antes da persistência. Os módulos puros/decoder foram implementados isoladamente; não concluem T008–T017 nem liberam escrita. T018 possui testes locais aprovados, mas a sequência de gates/histórias permanece aberta até reconciliação. Nenhuma caixa remota foi marcada por inferência.
+
 **Prerequisites**: Constituição1.2.0 e base002–006. G0/G1 permanecem impeditivos: esta lista não declara viabilidade comprovada nem autoriza deploy/migração. Caminhos novos são alvos futuros.
 
 **Tests**: Incluídos porque FR-028 e SC-001–008 exigem testes de domínio, persistência, concorrência e isolamento. Preparar testes antes da implementação e verificar que revelam o comportamento ausente; nenhum emulador.

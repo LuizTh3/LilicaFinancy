@@ -1,0 +1,193 @@
+{
+  "scope": "proposed-layout-arithmetic-only",
+  "scenarios": [
+    {
+      "name": "create3-existing-no-new-labels-used-category",
+      "affectedInvoices": 3,
+      "newLabels": 0,
+      "firstUse": false,
+      "total": 16,
+      "accessesPerWrite": [
+        6,
+        1,
+        1,
+        1,
+        2
+      ],
+      "transactionReadAuthorizations": 5,
+      "mutations": 5,
+      "acceptedByArithmeticOnly": true
+    },
+    {
+      "name": "create2-existing-first-category-use",
+      "affectedInvoices": 2,
+      "newLabels": 0,
+      "firstUse": true,
+      "total": 16,
+      "accessesPerWrite": [
+        5,
+        1,
+        1,
+        2,
+        2
+      ],
+      "transactionReadAuthorizations": 5,
+      "mutations": 5,
+      "acceptedByArithmeticOnly": true
+    },
+    {
+      "name": "create1-five-labels-first-category-use",
+      "affectedInvoices": 1,
+      "newLabels": 5,
+      "firstUse": true,
+      "total": 18,
+      "accessesPerWrite": [
+        4,
+        1,
+        7,
+        2
+      ],
+      "transactionReadAuthorizations": 4,
+      "mutations": 4,
+      "acceptedByArithmeticOnly": true
+    },
+    {
+      "name": "create4-rejected",
+      "affectedInvoices": 4,
+      "newLabels": 0,
+      "firstUse": false,
+      "total": 19,
+      "accessesPerWrite": [
+        7,
+        1,
+        1,
+        1,
+        1,
+        2
+      ],
+      "transactionReadAuthorizations": 6,
+      "mutations": 6,
+      "acceptedByArithmeticOnly": false
+    },
+    {
+      "name": "nominal12-rejected",
+      "affectedInvoices": 12,
+      "newLabels": 0,
+      "firstUse": false,
+      "total": 43,
+      "accessesPerWrite": [
+        15,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2
+      ],
+      "transactionReadAuthorizations": 14,
+      "mutations": 14,
+      "acceptedByArithmeticOnly": false
+    },
+    {
+      "name": "edit3-same-destinations",
+      "affectedInvoices": 3,
+      "newLabels": 0,
+      "firstUse": false,
+      "total": 16,
+      "accessesPerWrite": [
+        6,
+        1,
+        1,
+        1,
+        2
+      ],
+      "transactionReadAuthorizations": 5,
+      "mutations": 5,
+      "acceptedByArithmeticOnly": true
+    },
+    {
+      "name": "edit-union6-rejected",
+      "affectedInvoices": 6,
+      "newLabels": 0,
+      "firstUse": false,
+      "total": 25,
+      "accessesPerWrite": [
+        9,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2
+      ],
+      "transactionReadAuthorizations": 8,
+      "mutations": 8,
+      "acceptedByArithmeticOnly": false
+    },
+    {
+      "name": "cancel3",
+      "affectedInvoices": 3,
+      "newLabels": 0,
+      "firstUse": false,
+      "total": 14,
+      "accessesPerWrite": [
+        4,
+        1,
+        1,
+        1,
+        2
+      ],
+      "transactionReadAuthorizations": 5,
+      "mutations": 5,
+      "acceptedByArithmeticOnly": true
+    },
+    {
+      "name": "cancel5-rejected",
+      "affectedInvoices": 5,
+      "newLabels": 0,
+      "firstUse": false,
+      "total": 20,
+      "accessesPerWrite": [
+        6,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2
+      ],
+      "transactionReadAuthorizations": 7,
+      "mutations": 7,
+      "acceptedByArithmeticOnly": false
+    },
+    {
+      "name": "separate-control-create3-still-rejected",
+      "affectedInvoices": 3,
+      "newLabels": 0,
+      "firstUse": false,
+      "total": 22,
+      "accessesPerWrite": [
+        6,
+        2,
+        2,
+        2,
+        2
+      ],
+      "transactionReadAuthorizations": 8,
+      "mutations": 5,
+      "acceptedByArithmeticOnly": false
+    }
+  ],
+  "remoteCompiler": "NOT_RUN",
+  "expressions": "NOT_MEASURED",
+  "allInputSizeBound": "NOT_PROVEN",
+  "productionEnabled": false
+}

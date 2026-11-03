@@ -1,5 +1,7 @@
 # Contract: Consultas e interação007
 
+**Revisão21/10/2026**: [redesenho finito autorizado](finite-redesign.md). Novas consultas devem descobrir agregados por competenciasFaturas e expandir apenas as posições da revisão corrente; não consultar documentos-filho obrigatórios do layout anterior. Paginação, snapshot, classificação e limites abaixo continuam necessários. Porta/índices/UI ainda não implementados ou habilitados.
+
 ## Rotas e jornadas
 
 Estender rotas existentes sob SessionGate, sem alterar administração/auth:

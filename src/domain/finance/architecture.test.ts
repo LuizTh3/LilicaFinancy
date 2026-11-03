@@ -8,16 +8,21 @@ import ts from 'typescript'
 function violations(entries: readonly string[], read: (path: string) => string | undefined) {
   const seen = new Set<string>()
   const errors: string[] = []
+  const sources = new Map<string, string | undefined>()
+  function readOnce(path: string) {
+    if (!sources.has(path)) sources.set(path, read(path))
+    return sources.get(path)
+  }
   function visit(path: string) {
     if (seen.has(path)) return
     seen.add(path)
-    const source = read(path)
+    const source = readOnce(path)
     if (source === undefined) { errors.push(`Unresolved: ${path}`); return }
     const ast = ts.createSourceFile(path, source, ts.ScriptTarget.Latest, true)
     function dependency(name: string) {
       if (!name.startsWith('.') || /(?:^|\/)(?:app|features|infrastructure)(?:\/|$)/.test(name)) { errors.push(`Forbidden import: ${name}`); return }
       const base = resolve(dirname(path), name)
-      const target = [base, `${base}.ts`, `${base}.tsx`, resolve(base, 'index.ts')].find(item => read(item) !== undefined)
+      const target = [base, `${base}.ts`, `${base}.tsx`, resolve(base, 'index.ts')].find(item => readOnce(item) !== undefined)
       if (!target || /(?:\.test\.|\.testSupport\.)/.test(target)) { errors.push(`Unresolved or test import: ${name}`); return }
       visit(target)
     }

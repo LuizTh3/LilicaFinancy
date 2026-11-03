@@ -1,15 +1,24 @@
 {
   "mode": "official-test-only-no-release",
-  "sourceSha256": "4cf19f875b0963d82721a52a818d7e52c597ec2280af7de8744a8976d192fe0d",
-  "suiteSha256": "68c168db1a850d8f58297fe76783bc228682e73eeeee007657396fe4c18f71ee",
-  "requestedCases": 134,
-  "state": "BLOCKED_AUTO_REVIEW_AUTHORIZATION",
   "project": "lilicafinancy",
+  "destination": "firebaserules.googleapis.com",
+  "sourceSha256": "0f00ba6c9122f31589cfce76a0429f9ac09e62791f681c38d75a620b984f978d",
+  "suiteSha256": "ea4a12e6de2f519ffd002c0bfa7d1dd71d70f104ce9b192d9f0b118f759f71e6",
+  "selectedCases": 9,
   "officialRequestsCompleted": 0,
-  "officialResults": [],
+  "state": "EVALUATION_UNAVAILABLE",
   "compiler": "NOT_RUN",
   "expressions": "NOT_MEASURED",
   "deployment": "NOT_RUN",
-  "networkAttempt": "Initial sandbox attempt failed with fetch failed; no official result returned.",
-  "approvalReview": "Rejected: source includes complete internal Rules and synthetic fixtures; explicit authorization required for disclosure to firebaserules.googleapis.com using the existing operational session."
+  "issues": [],
+  "results": [],
+  "rawEvidence": "C:\\Projetos\\LilicaFinancy\\.integration\\parcelados-rules\\0f00ba6c9122-2026-10-26T05-13-07-892Z\\",
+  "ok": false,
+  "error": {
+    "name": "Error",
+    "status": 503,
+    "code": "UNAVAILABLE"
+  },
+  "cleanPassedCases": 0,
+  "remainingCases": 9
 }

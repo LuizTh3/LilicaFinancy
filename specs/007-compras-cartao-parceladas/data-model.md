@@ -1,5 +1,7 @@
 # Data Model: Compras no cartão e parcelas
 
+**Revisão21/10/2026**: o responsável autorizou substituir documentos-filho obrigatórios por cronograma finito no agregado. O contrato implementado localmente e as harmonizações pendentes estão em [finite-redesign.md](contracts/finite-redesign.md). O desenho por documentos abaixo é referência histórica; não usá-lo como layout dos novos módulos schema2. G1 remoto continua pendente.
+
 Desenho de referência para implementação após gates do [plano](plan.md). Não é migração executada ou autorização de coleções. Todos os caminhos abaixo são relativos a users/{uid}; UID vem da sessão, nunca do formulário.
 
 ## Convenções

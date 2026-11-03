@@ -14,7 +14,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           <span className="brand">Lilica<span>Financy</span></span>
           <nav aria-label="Navegação principal">
             <NavLink className="nav-link" to="/">Início</NavLink>
-            {ready ? <NavLink className="nav-link" to="/app">Minha área</NavLink> : <NavLink className="nav-link" to="/login">Entrar</NavLink>}
+            {ready ? <NavLink className="nav-link" end to="/app">Painel mensal</NavLink> : <NavLink className="nav-link" to="/login">Entrar</NavLink>}
+            {ready && <NavLink className="nav-link" to="/app/projecao">Visão de 12 meses</NavLink>}
             {ready && <NavLink className="nav-link" to="/app/cadastros">Cadastros</NavLink>}
             {ready && <NavLink className="nav-link" to="/app/lancamentos">Receitas e despesas</NavLink>}
             {ready && <NavLink className="nav-link" to="/app/cartoes">Cartões</NavLink>}

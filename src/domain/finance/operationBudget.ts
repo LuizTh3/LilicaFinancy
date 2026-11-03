@@ -20,6 +20,12 @@ export function perfilFinanceiroRemoto(tipo: string) {
  if(tipo==='criarReceita'||tipo==='criarDespesa')return {status:'validadoNoProjeto',contractVersion:1,acessosPorEscrita:[5,6,2],leiturasTransacionais:1,acessosMaximos:14,mutacoesMaximas:3,substituicao:false} as const
  return {status:'naoHabilitado'} as const
 }
+export type PerfilParceladosRemoto = Readonly<{ status: 'naoHabilitado' }> | Readonly<{ status: 'validadoNoProjeto'; evidencia: string; acessosMaximos: number; acessosPorEscrita: readonly number[]; mutacoesMaximas: number }>
+// Local implementation is authorized; no remote profile has passed evaluation/SDK.
+export function perfilParceladosRemoto(_tipo: string): PerfilParceladosRemoto { return { status: 'naoHabilitado' } }
+export type PerfilComprasFinitaRemoto = Readonly<{ status: 'naoHabilitado' }> | Readonly<{ status: 'validadoNoProjeto'; evidencia: string; acessosMaximos: number; acessosPorEscrita: readonly number[]; mutacoesMaximas: number }>
+// Official candidate evaluation is not active-source publication or a real SDK PASS.
+export function perfilComprasFinitaRemoto(_tipo: string): PerfilComprasFinitaRemoto { return { status: 'naoHabilitado' } }
 export function avaliarOrcamento(custo: unknown, perfil?: unknown): Resultado<{ finalidade: 'testeDeContrato'; mutacoes: number; acessos: number }> {
   const reject = () => falha('limiteOperacional', 'A operação não tem orçamento seguro comprovado ou excede seus limites. Nenhuma série foi criada.', { recuperacao: 'corrigir' })
   if (!registro(perfil) || !camposPermitidos(perfil, ['status', 'contractVersion']) || perfil.status !== 'simulacao' || perfil.contractVersion !== 1 || !registro(custo) || !camposPermitidos(custo, ['parcelas', 'ocorrencias', 'mutacoes', 'bytesRequisicao', 'bytesDocumentos', 'acessosPorOperacao', 'expressoes', 'incluiMetadados']) || custo.incluiMetadados !== true) return reject()

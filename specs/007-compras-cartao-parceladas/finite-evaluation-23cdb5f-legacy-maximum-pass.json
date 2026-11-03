@@ -1,0 +1,46 @@
+{
+  "mode": "official-test-only-no-release",
+  "project": "lilicafinancy",
+  "destination": "firebaserules.googleapis.com",
+  "sourceSha256": "23cdb5f122d568ff0d175b48ce0d6600ab1bdc7dd15ada1411d56dda29f835fe",
+  "suiteSha256": "f171c904abf9c220b75953cbc54f1fc5a3f0c80351e7f7398a1228f4b2237143",
+  "selectedCases": 1,
+  "officialRequestsCompleted": 1,
+  "state": "SELECTED_CASES_PASSED",
+  "compiler": "COMPILED",
+  "expressions": "NO_LIMIT_DIAGNOSTIC_IN_SELECTED_CASES",
+  "deployment": "NOT_RUN",
+  "issues": [
+    {
+      "severity": "WARNING",
+      "line": 339,
+      "description": "Unused function: invoiceDate."
+    },
+    {
+      "severity": "WARNING",
+      "line": 347,
+      "description": "Unused function: invoiceResult."
+    },
+    {
+      "severity": "WARNING",
+      "line": 350,
+      "description": "Unused function: invoiceConfirmPayload."
+    },
+    {
+      "severity": "WARNING",
+      "line": 552,
+      "description": "Unused variable: n."
+    }
+  ],
+  "results": [
+    {
+      "name": "regression006_invoiceMaximum",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    }
+  ],
+  "rawEvidence": "/C:/Projetos/LilicaFinancy/.integration/compras-finite-rules/23cdb5f122d5-2026-10-21T22-05-35-430Z/",
+  "ok": true
+}

@@ -23,7 +23,9 @@ let source=String.raw`
     }
     function p9References(uid,d) {
       let c=getAfter(p9Path(uid,'categorias',d.categoriaId)).data;
-      return validCatalogDoc('categorias',c) && c.schemaVersion==2 && c.estado=='ativo' && c.natureza=='despesa' && 'usoFinanceiro' in c
+      // Catalog writers enforce the closed metadata schema. Financial references
+      // consume the supported schema, active expense role and protected use witness.
+      return c.schemaVersion is int && c.schemaVersion==2 && c.estado=='ativo' && c.natureza=='despesa' && c.usoFinanceiro.papel=='classificacao'
         && (!('titularId' in d) || externalHolder(uid,d.titularId))
         && (!('contaPrevistaId' in d) || externalPlannedAccount(uid,d.contaPrevistaId));
     }
@@ -45,17 +47,12 @@ let source=String.raw`
     }
     function p9Amount(s,k) { return k in s.parcelas ? s.parcelas[k].valorCentavos : 0; }
     function p9Sum(s) { return __SUM__; }
-    function p9Competencias(s) { return __COMP__; }
+    function p9Competencias(s) { return [__COMP__].toSet().difference([''].toSet()); }
     function p9CompOrder(v) {
-      return (v.size()<2 || v[0]<v[1]) && (v.size()<3 || v[1]<v[2]) && (v.size()<4 || v[2]<v[3])
-        && (v.size()<5 || v[3]<v[4]) && (v.size()<6 || v[4]<v[5]) && (v.size()<7 || v[5]<v[6])
-        && (v.size()<8 || v[6]<v[7]) && (v.size()<9 || v[7]<v[8]) && (v.size()<10 || v[8]<v[9])
-        && (v.size()<11 || v[9]<v[10]) && (v.size()<12 || v[10]<v[11]);
+      return __COMP_ORDER__;
     }
-    function p9Series(s) {
-      let comp=p9Competencias(s).toSet();
-      return s is map && s.keys().hasAll(['schemaVersion','version','tipo','origemDados','quantidadeOriginal','numeroInicial','descricao','modo','parcelas','competencias','ultimoEventoId','createdAt','updatedAt'])
-        && s.keys().hasOnly(['schemaVersion','version','tipo','origemDados','quantidadeOriginal','numeroInicial','descricao','modo','diaAncora','valorOriginalCentavos','dataContratacao','dataConsumo','parcelas','competencias','ultimoEventoId','createdAt','updatedAt','receitaVinculadaId','substituiSerieId','substituicaoEventoId'])
+    function p9SeriesHeader(s) {
+      return s is map && s.keys().hasOnly(['schemaVersion','version','tipo','origemDados','quantidadeOriginal','numeroInicial','descricao','modo','diaAncora','valorOriginalCentavos','dataContratacao','dataConsumo','parcelas','competencias','ultimoEventoId','createdAt','updatedAt','receitaVinculadaId','substituiSerieId','substituicaoEventoId'])
         && s.schemaVersion is int && s.schemaVersion==1 && safeVersion(s.version) && s.tipo in ['compromissoExterno','emprestimo']
         && s.quantidadeOriginal is int && s.quantidadeOriginal>=1 && s.quantidadeOriginal<=12
         && s.numeroInicial is int && s.numeroInicial>=1 && s.numeroInicial<=s.quantidadeOriginal
@@ -65,35 +62,100 @@ let source=String.raw`
         && (!('valorOriginalCentavos' in s) || p9Money(s.valorOriginalCentavos))
         && (!('dataContratacao' in s) || calendarDate(s.dataContratacao)) && (!('dataConsumo' in s) || calendarDate(s.dataConsumo))
         && s.parcelas is map && s.parcelas.keys().hasOnly(p9Keys()) && s.parcelas.size()==s.quantidadeOriginal-s.numeroInicial+1
-        && s.competencias is list && s.competencias.size()==comp.size() && s.competencias.toSet()==comp && p9CompOrder(s.competencias)
+        && s.competencias is list
         && p9EventId(s.ultimoEventoId) && s.createdAt is timestamp && s.updatedAt is timestamp && s.updatedAt>=s.createdAt
         && (!('receitaVinculadaId' in s) || s.tipo=='emprestimo' && safeId(s.receitaVinculadaId))
         && (!('substituiSerieId' in s) || safeId(s.substituiSerieId) && p9EventId(s.substituicaoEventoId))
-        && (!('substituicaoEventoId' in s) || 'substituiSerieId' in s)
-        && __POSITIONS__;
+        && (!('substituicaoEventoId' in s) || 'substituiSerieId' in s);
     }
-    function p9InitialSlot(s,r,k,n,cmd) {
-      let d=s.parcelas.get(k,{}); let first=s.parcelas[p9Keys()[s.numeroInicial-1]]; let count=s.quantidadeOriginal-s.numeroInicial+1;
-      return !(k in s.parcelas) || d.estadoObrigacao=='ativa' && d.liquidadoLiquidoCentavos==0 && d.jaLiquidada==false
-        && d.ultimoEventoParcelaId==r.tipo+'__'+r.operationKey && p9RefSame(d,cmd.referencias)
-        && (s.modo!='mensal' || p9Index(d.vencimento)==p9Index(first.vencimento)+n-s.numeroInicial
-          && int(d.vencimento[8:10])==(s.diaAncora>p9Days(d.vencimento) ? p9Days(d.vencimento):s.diaAncora))
-        && (n==s.numeroInicial || d.vencimento>=s.parcelas[p9Keys()[n-2]].vencimento)
-        && (cmd.calculo.tipo=='explicito' || d.valorCentavos==(cmd.calculo.tipo=='porParcela' ? cmd.calculo.valorCentavos : cmd.calculo.q+(n-s.numeroInicial<cmd.calculo.resto ? 1:0)));
+    function p9Series(s) {
+      return p9SeriesHeader(s) && p9CalendarIndex(s) && p9CompOrder(s.competencias) && __POSITIONS__;
     }
-    function p9Create(s,r,cmd,id) {
-      let count=s.quantidadeOriginal-s.numeroInicial+1; let calc=cmd.calculo; let total=p9Sum(s);
-      return cmd.keys().hasAll(['dados','referencias','calculo']) && cmd.keys().hasOnly(['dados','referencias','calculo'])
-        && s.diff(cmd.dados).affectedKeys().hasOnly(['schemaVersion','version','ultimoEventoId','createdAt','updatedAt','substituiSerieId','substituicaoEventoId'])
-        && !cmd.dados.keys().hasAny(['schemaVersion','version','ultimoEventoId','createdAt','updatedAt','substituiSerieId','substituicaoEventoId','receitaVinculadaId'])
-        && s.version==1 && s.createdAt==request.time && s.updatedAt==request.time && !('receitaVinculadaId' in s)
-        && p9Refs(cmd.referencias) && p9Money(total) && p9Money(calc.totalCentavos) && total==calc.totalCentavos
+    function p9CalendarIndex(s) {
+      let comp=p9Competencias(s);
+      return s.competencias.size()==comp.size() && s.competencias.toSet()==comp;
+    }
+    function p9CreationReferences(uid,refs,s,r) {
+      let c=getAfter(p9Path(uid,'categorias',refs.categoriaId)).data;
+      // Full use metadata is enforced by the catalog/first-use writers. Its
+      // protected event and classification role are the authority consumed here.
+      return c.schemaVersion is int && c.schemaVersion==2 && c.estado=='ativo' && c.natureza=='despesa' && c.usoFinanceiro.papel=='classificacao'
+        && (!('titularId' in refs) || externalHolder(uid,refs.titularId))
+        && (!('contaPrevistaId' in refs) || externalPlannedAccount(uid,refs.contaPrevistaId))
+        && (r.tipo=='substituirSerie' ? 11:8)+('titularId' in refs ? 1:0)+('contaPrevistaId' in refs ? 1:0)+refs.get('etiquetaIds',[]).size()+(c.usoFinanceiro.eventoId==s.ultimoEventoId ? 3:0)<=18;
+    }
+    function p9WitnessLink(uid,id,s) {
+      let v=getAfter(p9Path(uid,'validacoesParceladas',s.ultimoEventoId+'__'+id)).data;
+      return v.schemaVersion==1 && v.serieId==id && v.eventoId==s.ultimoEventoId && v.resultVersion==s.version && v.createdAt==request.time;
+    }
+    function p9CalendarPosition(s,k,n,firstMonth,previousKey) {
+      let d=s.parcelas[k];
+      let index=firstMonth+n-s.numeroInicial;
+      let month=invoiceMonth(index);
+      let days=p9Days(month);
+      return (s.modo=='mensal' ? index<=119999 && d.vencimento==month+'-'+invoiceTwo(s.diaAncora>days ? days:s.diaAncora)
+          : calendarDate(d.vencimento))
+        && (d.competenciaPlanejamento==d.vencimento[0:7] ? true : validMonth(d.competenciaPlanejamento))
+        && (n==s.numeroInicial ? true : d.vencimento>=s.parcelas[previousKey].vencimento);
+    }
+    function p9Witness(uid,id) {
+      let v=request.resource.data;
+      let s=getAfter(p9Path(uid,'seriesParceladas',v.serieId)).data;
+      let r=getAfter(p9Path(uid,'operacoesParceladas',v.eventoId)).data;
+      let firstKey=p9Keys()[s.numeroInicial-1];
+      let first=s.parcelas[firstKey];
+      let firstMonth=p9Index(first.vencimento);
+      let cmd=r.tipo=='criarSerie' ? r.comando.criacao:r.comando.nova;
+      return v.keys().hasOnly(['schemaVersion','serieId','eventoId','resultVersion','createdAt'])
+        && v.schemaVersion is int && v.schemaVersion==1 && safeId(v.serieId) && p9EventId(v.eventoId)
+        && v.resultVersion is int && v.resultVersion==1 && v.createdAt==request.time && id==v.eventoId+'__'+v.serieId
+        && s.version==1 && s.ultimoEventoId==v.eventoId && s.createdAt==request.time && s.updatedAt==request.time
+        && r.createdAt==request.time && r.tipo in ['criarSerie','substituirSerie'] && r.seriesIds.hasAny([v.serieId])
+        && r.expectedVersions[v.serieId]==0 && r.resultVersions[v.serieId]==1
+        && validMonth(first.vencimento[0:7]) && p9CalendarIndex(s) && p9CompOrder(s.competencias)
+        && p9CalendarPosition(s,firstKey,s.numeroInicial,firstMonth,firstKey) && (s.quantidadeOriginal<3 ? true : p9CreationPart2(s,r,cmd));
+    }
+    function p9InitialCommon(d,s,r,refs) {
+      return d is map
+        && d.keys().hasOnly(['numero','quantidadeOriginal','descricao','categoriaId','valorCentavos','competenciaPlanejamento','vencimento','estadoObrigacao','liquidadoLiquidoCentavos','jaLiquidada','ultimoEventoParcelaId','titularId','contaPrevistaId','etiquetaIds','observacao'])
+        && d.quantidadeOriginal is int && d.quantidadeOriginal==s.quantidadeOriginal
+        && externalText(d.descricao,120) && p9Money(d.valorCentavos)
+        && (!('observacao' in d) || externalText(d.observacao,1000))
+        && d.estadoObrigacao=='ativa' && d.liquidadoLiquidoCentavos is int && d.liquidadoLiquidoCentavos==0 && d.jaLiquidada==false
+        && d.ultimoEventoParcelaId==r.tipo+'__'+r.operationKey && p9RefSame(d,refs);
+    }
+    function p9InitialSlot(s,k,n,expected,first) {
+      let d=s.parcelas[k];
+      return k in s.parcelas
+        && (n==s.numeroInicial ? true : d.diff(first).affectedKeys().hasOnly(['numero','valorCentavos','competenciaPlanejamento','vencimento']))
+        && d.numero is int && d.numero==n && d.quantidadeOriginal is int
+        && d.liquidadoLiquidoCentavos is int
+        && d.valorCentavos is int
+        && (expected==null ? p9Money(d.valorCentavos) : d.valorCentavos==expected);
+    }
+    function p9CreationCalculation(s,cmd) {
+      let count=s.quantidadeOriginal-s.numeroInicial+1; let calc=cmd.calculo; let total=calc.totalCentavos;
+      return p9Money(total) && (calc.tipo=='explicito' ? p9Sum(s)==total : true)
         && calc.keys().hasAll(['tipo','totalCentavos']) && calc.keys().hasOnly(['tipo','totalCentavos','q','resto','valorCentavos'])
         && calc.tipo in ['total','porParcela','explicito'] && (s.modo=='explicito')==(calc.tipo=='explicito') && (calc.tipo=='total' ? calc.keys().hasOnly(['tipo','totalCentavos','q','resto']) : calc.tipo=='porParcela' ? calc.keys().hasOnly(['tipo','totalCentavos','valorCentavos']) : calc.keys().hasOnly(['tipo','totalCentavos']))
-        && (calc.tipo!='total' || p9Money(calc.q) && calc.resto is int && calc.resto>=0 && calc.resto<count && calc.q*count+calc.resto==total)
-        && (calc.tipo!='porParcela' || p9Money(calc.valorCentavos) && calc.valorCentavos*count==total)
+        && (calc.tipo=='total' ? p9Money(calc.q) && calc.resto is int && calc.resto>=0 && calc.resto<count && calc.q*count+calc.resto==total
+          : calc.tipo=='porParcela' ? p9Money(calc.valorCentavos) && calc.valorCentavos*count==total : true);
+    }
+    function p9CreationEnvelope(s,r,cmd,id) {
+      return cmd.keys().hasOnly(['dados','referencias','calculo'])
+        && !cmd.dados.keys().hasAny(['schemaVersion','version','ultimoEventoId','createdAt','updatedAt','substituiSerieId','substituicaoEventoId','receitaVinculadaId'])
+        && s.version==1 && s.createdAt==request.time && s.updatedAt==request.time && !('receitaVinculadaId' in s)
         && (!('substituiSerieId' in s) || r.tipo=='substituirSerie' && s.substituiSerieId==r.comando.serieId && s.substituiSerieId!=id && s.substituicaoEventoId==s.ultimoEventoId)
-        && __INITIAL__;
+        && p9CreationCalculation(s,cmd);
+    }
+    __CREATION_FUNCTIONS__
+    function p9Create(s,r,cmd,id) {
+      let firstKey=p9Keys()[s.numeroInicial-1];
+      let first=s.parcelas[firstKey];
+      let c=cmd.calculo;
+      let expected=c.tipo=='porParcela' ? c.valorCentavos:c.tipo=='total' ? c.q+(c.resto>0 ? 1:0):null;
+      return p9CreationEnvelope(s,r,cmd,id) && s.diff(cmd.dados).affectedKeys().hasOnly(['schemaVersion','version','ultimoEventoId','createdAt','updatedAt','substituiSerieId','substituicaoEventoId'])
+        && p9InitialSlot(s,firstKey,s.numeroInicial,expected,first) && p9CreationPart0(s,r,cmd);
     }
     function p9EditRefs(d) {
       return d is map && d.keys().hasOnly(['categoriaId','titularId','contaPrevistaId','etiquetaIds'])
@@ -169,14 +231,13 @@ let source=String.raw`
     function p9SeriesWrite(uid,id,creating) {
       let s=request.resource.data; let r=getAfter(p9Path(uid,'operacoesParceladas',s.ultimoEventoId)).data;
       let replacing=creating && r.tipo=='substituirSerie'; let cmd=replacing ? r.comando.nova : r.comando.get('criacao',{});
-      return safeId(id) && p9Series(s) && r.seriesIds.hasAny([id]) && r.resultVersions[id]==s.version && r.createdAt==request.time
+      return (creating ? r.tipo in ['criarSerie','substituirSerie'] : r.tipo in ['editarParcelas','cancelarParcelas','substituirSerie','pagarParcela','reverterPagamento','vincularReceita']) ? safeId(id) && (creating ? true : p9Series(s)) && r.seriesIds.hasAny([id]) && r.resultVersions[id]==s.version && r.createdAt==request.time
         && (creating ? r.expectedVersions[id]==0 && (r.tipo=='criarSerie' && r.comando.serieId==id || replacing && r.comando.novaSerieId==id)
-          && (!('substituiSerieId' in s) ? !replacing : replacing) && p9Create(s,r,cmd,id) && p9References(uid,cmd.referencias)
-          : r.expectedVersions[id]==resource.data.version && r.comando.serieId==id && p9Update(uid,resource.data,s,r));
+          && (!('substituiSerieId' in s) ? !replacing : replacing) && p9Create(s,r,cmd,id) && p9CreationReferences(uid,cmd.referencias,s,r) && p9WitnessLink(uid,id,s)
+          : r.expectedVersions[id]==resource.data.version && r.comando.serieId==id && p9Update(uid,resource.data,s,r)) : false;
     }
     function p9ReceiptShape(r,id) {
-      return r.keys().hasAll(['schemaVersion','contractVersion','tipo','operationKey','seriesIds','expectedVersions','resultVersions','comando','createdAt'])
-        && r.keys().hasOnly(['schemaVersion','contractVersion','tipo','operationKey','seriesIds','expectedVersions','resultVersions','comando','createdAt','fato','contextoParcela'])
+      return r.keys().hasOnly(['schemaVersion','contractVersion','tipo','operationKey','seriesIds','expectedVersions','resultVersions','comando','createdAt','fato','contextoParcela'])
         && r.schemaVersion is int && r.contractVersion is int && r.schemaVersion==1 && r.contractVersion==1 && safeId(r.operationKey) && p9EventId(id) && id==r.tipo+'__'+r.operationKey && r.createdAt==request.time
         && r.seriesIds is list && r.expectedVersions is map && r.resultVersions is map && r.comando is map
         && r.seriesIds.size()>=1 && r.seriesIds.size()<=2 && r.seriesIds.toSet().size()==r.seriesIds.size() && r.expectedVersions.keys().toSet()==r.seriesIds.toSet() && r.resultVersions.keys().toSet()==r.seriesIds.toSet()
@@ -188,7 +249,7 @@ let source=String.raw`
         && r.expectedVersions[c.serieId] is int && r.expectedVersions[c.serieId]>=0 && r.resultVersions[c.serieId] is int && r.resultVersions[c.serieId]==r.expectedVersions[c.serieId]+1
         && (r.tipo=='substituirSerie' ? safeId(c.novaSerieId) && c.novaSerieId!=c.serieId && r.seriesIds==[c.serieId,c.novaSerieId]
           && p9Replacement(uid,id,r) && externalLabels(uid,c.nova.referencias)
-        : r.seriesIds==[c.serieId] && (r.tipo=='criarSerie' ? c.keys().hasOnly(['serieId','criacao']) && r.expectedVersions[c.serieId]==0 && externalLabels(uid,c.criacao.referencias)
+        : r.seriesIds==[c.serieId] && (r.tipo=='criarSerie' ? c.keys().hasOnly(['serieId','criacao']) && r.expectedVersions[c.serieId]==0 && p9SeriesHeader(s) && p9CreationPart1(s,r,c.criacao) && p9Refs(c.criacao.referencias) && externalLabels(uid,c.criacao.referencias)
         : r.tipo=='editarParcelas' ? externalLabels(uid,c.referencias)
         : r.tipo=='cancelarParcelas' ? c.keys().hasOnly(['serieId','alvos','motivo'])
         : r.tipo=='pagarParcela' ? r.fato.tipo=='pagamento'
@@ -198,7 +259,7 @@ let source=String.raw`
     function p9Replacement(uid,id,r) {
       let s=getAfter(p9Path(uid,'seriesParceladas',r.comando.novaSerieId)).data;
       return r.comando.keys().hasOnly(['serieId','novaSerieId','alvos','motivo','nova']) && r.expectedVersions[r.comando.novaSerieId] is int && r.expectedVersions[r.comando.novaSerieId]==0
-        && r.resultVersions[r.comando.novaSerieId] is int && r.resultVersions[r.comando.novaSerieId]==1 && s.version==1 && s.ultimoEventoId==id && s.substituiSerieId==r.comando.serieId && s.substituicaoEventoId==id;
+        && r.resultVersions[r.comando.novaSerieId] is int && r.resultVersions[r.comando.novaSerieId]==1 && s.version==1 && s.ultimoEventoId==id && s.substituiSerieId==r.comando.serieId && s.substituicaoEventoId==id && p9SeriesHeader(s) && p9CreationPart1(s,r,r.comando.nova) && p9Refs(r.comando.nova.referencias);
     }
     function p9Original(uid,r) {
       let o=get(p9Path(uid,'operacoesParceladas',r.comando.originalEventoId)).data;
@@ -239,6 +300,11 @@ let source=String.raw`
       allow update: if own(uid) && p9SeriesWrite(uid,id,false);
       allow delete: if false;
     }
+    match /users/{uid}/validacoesParceladas/{id} {
+      allow get: if own(uid) && catalogReady(uid);
+      allow create: if own(uid) && p9Witness(uid,id);
+      allow list,update,delete: if false;
+    }
     match /users/{uid}/operacoesParceladas/{id} {
       allow get: if own(uid) && catalogReady(uid);
       allow list: if own(uid) && catalogReady(uid) && request.query.limit>=1 && request.query.limit<=50;
@@ -257,9 +323,17 @@ let source=String.raw`
     }
 `
 source=source.replace('__SUM__',keys.map(k=>`p9Amount(s,'${k}')`).join('+'))
-source=source.replace('__COMP__',keys.map(k=>`(${JSON.stringify(k)} in s.parcelas ? [s.parcelas.${k}.competenciaPlanejamento]:[])`).join('.concat(')+')'.repeat(11))
+source=source.replace('__COMP__',keys.map(k=>`s.parcelas.get('${k}',{'competenciaPlanejamento':''}).competenciaPlanejamento`).join(','))
+source=source.replace('__COMP_ORDER__',Array.from({length:11},(_,i)=>`(v.size()<${i+2} ? true : v[${i}]<v[${i+1}]${i<10?' && ':''}`).join('')+')'.repeat(11))
 source=source.replace('__POSITIONS__',all((k,n)=>`p9Position(s,'${k}',${n})`))
-source=source.replace('__INITIAL__',all((k,n)=>`p9InitialSlot(s,r,'${k}',${n},cmd)`))
+source=source.replace('__CREATION_FUNCTIONS__',Array.from({length:3},(_,part)=>`function p9CreationPart${part}(s,r,cmd) {
+      let first=s.parcelas[p9Keys()[s.numeroInicial-1]];
+      let firstMonth=p9Index(first.vencimento);
+      let calc=cmd.calculo;
+      let unit=calc.tipo=='porParcela' ? calc.valorCentavos : calc.tipo=='total' ? calc.q:null;
+      let remainder=calc.tipo=='total' ? calc.resto:0;
+      return ${part===1?'p9InitialCommon(first,s,r,cmd.referencias) && ':''}(s.numeroInicial==s.quantidadeOriginal ? true : ${keys.map((k,i)=>({k,n:i+1})).filter(({n})=>(n-1)%3===part).map(({k,n})=>`(${n}<=s.numeroInicial || ${n}>s.quantidadeOriginal ? true : p9InitialSlot(s,'${k}',${n},unit==null ? null:unit+(${n}-s.numeroInicial<remainder ? 1:0),first) && p9CalendarPosition(s,'${k}',${n},firstMonth,'${keys[Math.max(0,n-2)]}'))`).join('\n        && ')});
+    }`).join('\n    '))
 source=source.replace('__EDIT__',all((k,n)=>`p9EditSlot(a,b,r,'${k}',${n})`))
 source=source.replace('__CANCEL__',all(k=>`p9CancelSlot(a,b,r,'${k}')`))
 // Preserve old consumer branches; recognize the new immutable use witness only in its own branch.
@@ -268,7 +342,7 @@ candidate=candidate.replace("^(pagar|receber|gastoImediato)__", "^(pagar|receber
 for(const c of ['categorias','contas'])candidate=candidate.replace(`usePatch() ? financialUsePatch(uid,'${c}',id)`, `usePatch() ? (p9EventId(request.resource.data.usoFinanceiro.eventoId) ? p9Use(uid,'${c}',id) : financialUsePatch(uid,'${c}',id))`)
 candidate=candidate.replace('\n    match /',()=>source+'\n    match /')
 fs.writeFileSync(new URL('firestore-parcelados.candidate.rules',out),candidate)
-fs.writeFileSync(new URL('candidate-manifest.json',out),JSON.stringify({baseSha256:crypto.createHash('sha256').update(base).digest('hex'),candidateSha256:crypto.createHash('sha256').update(candidate).digest('hex'),bytes:Buffer.byteLength(candidate),mode:'candidate-only-no-deploy',collections:['seriesParceladas','operacoesParceladas','reversoesParceladas','vinculosReceitasEmprestimos']},null,2)+'\n')
+fs.writeFileSync(new URL('candidate-manifest.json',out),JSON.stringify({baseSha256:crypto.createHash('sha256').update(base).digest('hex'),candidateSha256:crypto.createHash('sha256').update(candidate).digest('hex'),bytes:Buffer.byteLength(candidate),mode:'candidate-only-no-deploy',protocol:'S-R-V-candidate-not-enabled',collections:['seriesParceladas','operacoesParceladas','validacoesParceladas','reversoesParceladas','vinculosReceitasEmprestimos']},null,2)+'\n')
 console.log(JSON.stringify({candidateBytes:Buffer.byteLength(candidate),network:false,productionChanged:false}))
 
 

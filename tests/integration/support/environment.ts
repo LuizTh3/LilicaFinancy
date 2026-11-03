@@ -1,3 +1,4 @@
+import { painelManifest } from './painelFixtures'
 export function integrationEnvironment(values: Record<string, string | undefined>) {
   const required = ['TEST_EXPECTED_PROJECT_ID', 'TEST_RUN_ID', 'VITE_FIREBASE_PROJECT_ID', 'VITE_FIREBASE_API_KEY', 'VITE_FIREBASE_AUTH_DOMAIN', 'VITE_FIREBASE_APP_ID', 'TEST_USER_A_UID', 'TEST_USER_B_UID', 'TEST_USER_A_EMAIL', 'TEST_USER_A_PASSWORD', 'TEST_USER_B_EMAIL', 'TEST_USER_B_PASSWORD']
   const missing = required.filter(key => !values[key])
@@ -18,15 +19,23 @@ export function cadastrosEnvironment(values: Record<string, string | undefined>)
 }
 // Financial integration has the same four-role isolation gate as catalog tests.
 export const externosEnvironment = cadastrosEnvironment
-export const integrationGroups = ['access', 'session', 'firstLogin', 'registration', 'admin', 'trusted-api', 'notifications', 'cadastros', 'externos', 'cartoesFaturas', 'comprasCartao', 'liquidacoesFaturas'] as const
+export function painelEnvironment(values: Record<string, string | undefined>) {
+ const scope = cadastrosEnvironment(values)
+ if (scope.projectId !== 'lilicafinancy') throw Error('PROJECT_MISMATCH: painel011')
+ if (values.TEST_PAINEL_READS_AUTHORIZED !== 'yes' || values.TEST_PAINEL_FIXTURES_READY !== 'yes') throw Error('PAINEL_READS_OR_FIXTURES_NOT_CONFIRMED')
+ painelManifest(scope, values.TEST_PAINEL_MONTH ?? '')
+ return scope
+}
+export const integrationGroups = ['access', 'session', 'firstLogin', 'registration', 'admin', 'trusted-api', 'notifications', 'cadastros', 'externos', 'cartoesFaturas', 'comprasCartao', 'liquidacoesFaturas', 'painel'] as const
 export function integrationGroup(group = 'access') {
   if (!(integrationGroups as readonly string[]).includes(group)) throw new Error('TEST_INTEGRATION_GROUP inválido')
   return group
 }
 export function integrationClientLabels(group?: string): readonly string[] {
-  return ['cadastros', 'externos', 'cartoesFaturas', 'comprasCartao', 'liquidacoesFaturas'].includes(integrationGroup(group))
+  return ['cadastros', 'externos', 'cartoesFaturas', 'comprasCartao', 'liquidacoesFaturas', 'painel'].includes(integrationGroup(group))
     ? ['A', 'B', 'visitor', 'ADMIN', 'PENDING'] as const : ['A', 'B', 'visitor'] as const
 }
 export function environmentForGroup(values: Record<string, string | undefined>) {
+  if (integrationGroup(values.TEST_INTEGRATION_GROUP) === 'painel') return painelEnvironment(values)
   return integrationClientLabels(values.TEST_INTEGRATION_GROUP).length === 5 ? cadastrosEnvironment(values) : integrationEnvironment(values)
 }

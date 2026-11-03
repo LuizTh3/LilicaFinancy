@@ -6,6 +6,10 @@
 
 ## Summary
 
+**Atualização 26/10/2026:** aprovado e implementado localmente o protocolo S/R/V de [validation-witness-proposal.md](contracts/validation-witness-proposal.md). Substitui as contagens históricas de criação/substituição abaixo: criação máxima 18; substituição máxima 21, rejeitada integralmente. A candidata não foi aprovada na avaliação oficial; produção continua desabilitada. Ver [evidências atuais](witness-status-2026-10-26.md).
+
+**Validação real25/10/2026:** candidata compilada, mas smoke central falhou na criação1/1 e5/10 por exceder1000 expressões; recibos isolados passaram. T007 está ERROR, substituindo a anterior indisponibilidadeHTTP503. Não habilitar produção. Detalhes em validation.md e rules-evaluation-summary.json.
+
 Cadastrar séries externas finitas, completas ou em andamento, incluindo empréstimos com cronograma manual. Cada série guarda um mapa fixo de até12 obrigações; pagamentos, reversões e revisões ficam em eventos imutáveis separados. A identidade (serieId,ordinal) preserva pagamentos individuais sem exigir um documento-filho por parcela. Reutilizar dinheiro, calendário, divisão e liquidações do domínio; não alterar schema de receitas/despesas avulsas005 nem domínio de cartões006–008.
 
 **Resultado: planejamento documental concluído, sem violação constitucional identificada no desenho corrigido.** A inspeção e a contagem local sustentam criação15, edição16 e substituição18 acessos máximos no grafo descrito, sem cache. Isso remove a inviabilidade aritmética do grafo anterior; não comprova Rules compiladas, limite de expressões, bytes reais ou persistência remota. T005–T007 continuam gates de implementação antes das tarefas dependentes; perfil remoto009 continua não habilitado. Não confundir conclusão da fase de desenho com aprovação das verificações futuras.

@@ -1,5 +1,13 @@
 # Contract: Segurança, atomicidade e orçamento 009
 
+## Adendo vigente — comprovante autorizado em 26/10/2026
+
+O protocolo candidato de novas séries passa a S/R/V, conforme [contrato do comprovante](validation-witness-proposal.md). A criação usa `8+H+P+L+3K` acessos (máximo 18); substituição usa `11+H+P+L+3K` (máximo 21, rejeição integral acima de 18). Essas fórmulas substituem as contagens S/R históricas abaixo para criação e substituição. Edição e demais comandos não ganham V automaticamente. O script `../validate-design-budget.ps1` verifica 48 combinações por comando estrutural e identifica oito combinações de substituição acima de 18; não compila Rules.
+
+V tem cinco campos fechados, identidade evento/série, timestamp do commit e versão inicial 1. Create-only; list/update/delete negados. S exige V no pós-estado, V exige S/R novos e recíprocos. O repositório usa identidade estável e consulta R para recuperar repetição/resposta perdida, sem criar outro comprovante. A ausência de S no preflight não substitui enforcement: o ramo update rejeita comandos de criação. Toda a composição e os máximos ainda exigem prova oficial e SDK real.
+
+A autorização de envio foi concedida e utilizada; as referências históricas abaixo à falta de autorização estão superadas. A última avaliação concluída do protocolo ainda excedeu 1000 expressões. A variante seguinte retornou HTTP 503 duas vezes. T007 continua ERROR/pendente, sem habilitação ou publicação. Ver [evidências atuais](../witness-status-2026-10-26.md).
+
 **Estado: desenho documental revalidado; prova executável e habilitação pendentes de T005–T007.** O grafo anterior, com origem/evento por parcela, foi descartado. O novo orçamento é candidato verificável e não prova Rules compiladas, número de expressões ou teste remoto. Nenhuma escrita 009 está habilitada por este documento.
 
 ## Grafo finito

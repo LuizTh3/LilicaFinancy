@@ -5,7 +5,7 @@ import { firebase, configurationError } from '../../infrastructure/firebase/clie
 import { observeAuth, logout } from '../../infrastructure/firebase/auth'
 import { loadProfile } from '../../infrastructure/firebase/profileRepository'
 import { accessState, endSession, SessionGeneration } from '../../domain/session'
-import { financeTimezone, clearPrivateIntents } from './financeSession'
+import { financeTimezone, clearPrivateIntents, advancePrivateFinanceGeneration } from './financeSession'
 
 import { SessionContext } from './useSession'
 import type { SessionState } from './useSession'
@@ -18,7 +18,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const listeners = useRef<(() => void)[]>([])
   const lastUid = useRef<string | null>(null)
   const leaving = useRef(false)
-  const clear = useCallback(() => { generation.current.next(); listeners.current.splice(0).forEach(stop => stop()) }, [])
+  const clear = useCallback(() => { advancePrivateFinanceGeneration(generation.current); listeners.current.splice(0).forEach(stop => stop()) }, [])
   const invalidate = useCallback(() => { clearCadastroIntent(); clear(); setState({ status: 'error', user: null, message: 'Acesso indisponível. Resolva a sessão novamente.' }) }, [clear])
   const exit = useCallback(async () => {
     clearCadastroIntent()

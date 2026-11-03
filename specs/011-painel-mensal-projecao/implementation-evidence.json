@@ -1,0 +1,70 @@
+{
+  "scope": "local-only-partial-implementation",
+  "tasksDone": 17,
+  "tasksTotal": 68,
+  "gates": {
+    "g0Local": "PASS",
+    "g0Remoto": "PENDING",
+    "g1": "PENDING",
+    "g2": "PENDING",
+    "g3": "PENDING"
+  },
+  "productionEnabled": false,
+  "remoteEvaluation": "NOT_RUN",
+  "deployment": "NOT_RUN",
+  "financialWrites": "NOT_RUN",
+  "hashes": {
+    "firestore.rules": "d305c3b7a39c8690a5022f04b297c95229178a97da0f1c8667522a9a699b87c8",
+    "firestore.indexes.json": "7f73422e3df401c243b5d2bf7387ea94203ec8fef9f39cc61d35bb042d69964a",
+    "src/infrastructure/firebase/financeiroSnapshotReader.ts": "efae9fbaf2bd559b05a6f948d30360a028f64342cc9748e60745fc35efef7d56",
+    "src/infrastructure/firebase/painelQueries.ts": "61e7a6275bd80a5ecaf7dcc9b9d9f9eed3d7c68362e609603893c7711edf3d6d",
+    "src/domain/finance/painel.ts": "7808bb79a44677c3d9cc8c86137fda6e8fa8f3f15c59d7d3a77fbcca8e533ac6",
+    "src/domain/finance/painelBases.ts": "882856feb73cf231bf6afab6cdc77652f411faf4f05d3398d24e3ced77ac998d",
+    "src/domain/finance/painelWindow.ts": "9418716ef702195ed394c8b909652a5e393b6c9b1c9e011d9239cc43ae7bfb15",
+    "src/features/painel/painelCache.ts": "cc42a17f0b1dd8ec36f891040d9882207b4aa1c77ce56fb50b104d6d1ee504e5",
+    "src/features/painel/PainelPage.tsx": "18128c88d41ccecdc62f7a28a155381bae9e050406e97997dd73b46edcb1ebdf"
+  },
+  "checks": {
+    "localTests": {
+      "files": 122,
+      "tests": 488,
+      "status": "PASS"
+    },
+    "typecheck": "PASS",
+    "lint": "PASS",
+    "build": "PASS_WITH_CHUNK_SIZE_WARNING",
+    "remoteIntegration": "PARTIAL_PASS_READ_ONLY_3_TESTS"
+  },
+  "routedViews": [
+    "/app",
+    "/app/projecao"
+  ],
+  "financialQueriesEnabled": false,
+  "parceladosWitnessAttempt": {
+    "clientDate": "2026-10-26",
+    "protocol": "S-R-V-candidate-not-enabled",
+    "currentSourceSha256": "0f00ba6c9122f31589cfce76a0429f9ac09e62791f681c38d75a620b984f978d",
+    "currentState": "EVALUATION_UNAVAILABLE_HTTP_503",
+    "lastCompletedSourceSha256": "aa486c76cee81d70d0f15166f4f088456b740bc22e2022b848104d9c1b78c0e2",
+    "lastCompletedSmokeCases": 9,
+    "lastCompletedCleanPassed": 4,
+    "blocker": "1000_EXPRESSIONS_IN_FIVE_COMPLETED_CASES",
+    "productionEnabled": false,
+    "report": "../009-compromissos-parcelados-emprestimos/witness-status-2026-10-26.md"
+  },
+  "finalValidation": {
+    "clientDate": "2026-10-25",
+    "overall": "NOT_APPROVED",
+    "sdkReadOnlyTests": 3,
+    "sdkReadOnlyPassed": 3,
+    "official007Cases": 137,
+    "official007Passed": 137,
+    "official009SmokeCases": 4,
+    "official009SmokePassed": 2,
+    "official009Blocker": "1000_EXPRESSIONS_CREATE_ONE_AND_5_OF_10",
+    "activeRulesMatchLocal": true,
+    "financialWrites": "NOT_RUN",
+    "publication": "NOT_RUN",
+    "report": "final-validation-2026-10-25.md"
+  }
+}

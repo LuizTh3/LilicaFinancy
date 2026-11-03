@@ -1,5 +1,7 @@
 # Feature Specification: Compras no cartão e parcelas
 
+**Decisão autorizada21/10/2026**: compra guarda cronograma corrente finito de até12 obrigações no próprio agregado, com histórico em eventos separados. Cada parcela conserva identidade lógica por compra/revisão/ordinal; não é obrigatório um documento físico por posição. A decisão altera a persistência, preservando cálculo, atomicidade, histórico, bloqueios e isolamento. Detalhes locais e harmonizações pendentes: [finite-redesign.md](contracts/finite-redesign.md). Não dispensa prova de Rules nem autoriza publicação/migração.
+
 **Feature Branch**: sem criação de branch; nenhum hook configurado (branch atual: develop)
 
 **Created**: 2026-10-18

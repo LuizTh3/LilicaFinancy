@@ -4,6 +4,8 @@ import { FaturasPage } from '../features/cartoes/FaturasPage'
 import { FaturaDetailPage } from '../features/cartoes/FaturaDetailPage'
 import { ExternosPage } from '../features/externos/ExternosPage'
 import { ExternoDetailPage } from '../features/externos/ExternoDetailPage'
+import { PainelPage } from '../features/painel/PainelPage'
+import { PainelAnualPage } from '../features/painel/PainelAnualPage'
 import { Link, Route, Routes } from 'react-router'
 import { HomePage } from '../features/home/HomePage'
 import { LoginPage } from '../features/auth/LoginPage'
@@ -29,7 +31,8 @@ export function AppRoutes() {
       <Route path="/app/lancamentos/:origemId" element={<ExternoDetailPage />} />
       <Route path="/app/cadastros" element={<CadastrosPage />} />
       <Route path="/app/cadastros/:colecao" element={<CadastrosPage />} />
-      <Route path="/app" element={<section><h1>Minha área</h1><p>Sessão confirmada. Organize seus titulares, categorias, contas e etiquetas na área de cadastros.</p></section>} />
+      <Route path="/app" element={<PainelPage />} />
+      <Route path="/app/projecao" element={<PainelAnualPage />} />
       <Route element={<AdminGate />}>
         <Route path="/admin/solicitacoes" element={<RequestsPage />} />
         <Route path="/admin/solicitacoes/:requestId" element={<RequestDetailPage />} />

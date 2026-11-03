@@ -1,5 +1,7 @@
 # Implementation Plan: Compras no cartão e parcelas
 
+**Retomada21/10/2026**: escopo ampliado com autorização do responsável para007–010 e redesenho finito da compra. [Contrato do redesenho](contracts/finite-redesign.md) prevalece sobre o layout separado deste plano. Prévia, identidade, agregado e decoder locais estão implementados; grafos, persistência e harmonização008–011 continuam pendentes. Não há aprovação de G1 ou habilitação de produto.
+
 **Branch**: `develop` (checkout real; setup-plan identificou a feature lógica `007-compras-cartao-parceladas`, sem criar branch) | **Date**: 2026-10-18 | **Spec**: [spec.md](spec.md)
 
 **Input**: `specs/007-compras-cartao-parceladas/spec.md`, incluindo decisão A de bloquear cadastro retroativo em fatura fechada sem pagamento.

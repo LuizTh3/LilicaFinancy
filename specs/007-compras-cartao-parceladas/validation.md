@@ -1,5 +1,15 @@
 # Validation: Compras no cartão e parcelas
 
+## Incremento local autorizado em21/10/2026
+
+Escopo ampliado pelo responsável para implementar as dependências007–010 do painel011. Redesenho finito da compra autorizado explicitamente: até12 posições no agregado, histórico em eventos separados. Contrato e harmonizações pendentes em contracts/finite-redesign.md. Não houve dispensa de prova remota ou autorização de publicação/migração.
+
+Implementados contratos locais de entrada/prévia/agregado, normalização e cálculo puro em compras.ts, identidade lógica revisionada em identity.ts, construção/validação/resolução em comprasAggregate.ts e decoder fechado em comprasMapper.ts. O layout novo usa schemaVersion2; não lê schema1 como se fosse agregado finito. Uma compra cancelada conserva valores, mas não oferece parcelas exigíveis. Categoria, total e vencimento não são copiados para cada documento-filho; vencimento continua resolvido pela fatura.
+
+Testes escritos antes do comportamento: compras.test.ts, comprasAggregate.test.ts e comprasMapper.test.ts falharam inicialmente por módulo ausente. Primeira tentativa no sandbox falhou em EPERM no cache temporário; execuções locais autorizadas fora do sandbox resolveram esse impedimento. Depois passaram20 testes novos e a regressão completa85 arquivos/345 testes. Typecheck, lint e build passaram; build conserva aviso anterior de chunk>500kB. Sem novas dependências, deploy ou escrita financeira.
+
+G1 continua pendente: cronograma embutido elimina documentos-filho obrigatórios, mas ainda exige redesenho/prova concreta dos controles, Rules, comandos e histórico. T008–T017 permanecem abertas. T018 tem cobertura local dos cenários principais; T021/T023 estão parcialmente construídas, sem declarar história concluída ou liberar disponibilidade. A validação local não aprova reciprocidade/atomicidade no servidor.
+
 ## Baseline — 2026-10-18
 
 - Checkout real develop, alterações documentais007 já existentes preservadas. Node25.8.1/npm11.18.0; package.json/lock mantidos, Firebase13/TypeScript6/React19/Vitest4. Nenhuma atualização de dependências.
@@ -45,3 +55,21 @@ A refatoração final passou68/68 casos oficiais sem1000 expressões; T006 concl
 ## G0 publicado e testado durante008 — 2026-10-19
 
 Publicação autorizada e fonte ativa verificada; matriz final SDK cartões/faturas13/13 aprovada, runId faturas006-final-20261019-04. T007 concluída após essa evidência; nenhum gate007 de parcelamento foi promovido. Fonte raiz sincronizada e rollback anterior preservado; UI/perfis006 habilitados. G1 e dependentes007 seguem sem prova própria. Ver validation008 para correção do conflito concorrente e regressão263 testes/tipos/lint/build.
+
+## Redesenho autorizado e avaliação oficial da criação — 21/10/2026
+
+O responsável autorizou o controle junto da fatura/capacidade na compra e, depois, o envio da candidata completa006/007, fixtures e correções restritas à criação finita e confirmação de fatura nova vazia para projects/lilicafinancy:test. Não foi autorizada publicação, migração ou gravação de finanças reais por esta avaliação.
+
+Candidata final de criação:55.157 bytes, SHA25633f025cb49e5c98fb814a1828b83ebe84936d410851aee836474dd27d77e60d8. Suíte SHA256d94fdf48a6bf54a362bf279e843381269921b48dd655fc141cddce568919dda3. Matriz137/137 SUCCESS em12 requisições oficiais, fonte compilada e nenhuma negativa mascarada por estouro de expressões. São66 positivos/71 negativos, incluindo68 regressões006;100/3 em três faturas, máximo monetário seguro, primeiro uso/etiquetas, histórico, versões, reciprocidade, ausência/legado e fatura nova vazia com quatro vizinhos. Resumo sanitizado em finite-rules-evaluation-summary.json; respostas completas em.integration/compras-finite-rules, ignoradas pelo Git. Tentativas anteriores com erros foram preservadas nos relatórios finite-evaluation-*.
+
+O custo conservador100/3 é16 acessos sem desconto de cache:compra6, recibo2, três faturas1 cada, cinco leituras transacionais. Fatura nova vazia é uma confirmação explícita006, nunca uma etapa oculta da compra. Controle zero é provado apenas na criação do documento; conversão de fatura preexistente continua negada.
+
+Para caber em1000 expressões, a compra prova corpo, referências, orçamento e todos os destinos recíprocos; o recibo create-only obrigatório prova perfil, imagem canônica e etiquetas; cada fatura obrigatória prova posição/divisão/calendário/capacidade e seu próprio delta. Igualdade da transição e versões/ponteiros fecham o compromisso inteiro. A validação de calendário foi redistribuída entre primário/recibo: vencimento coincide com original na confirmação, e sua âncora já prova a data gregoriana. Não foram removidas as condições de domínio; cenários separam a escrita responsável e incluem as duas metades positivas.
+
+Este PASS cobre somente criação em faturas existentes compatíveis e confirmação de fatura nova vazia. Não conclui G1 completo, edição/cancelamento007, pagamentos008, publicação, SDK real, índices ou UI. Fonte raiz e índices permanecem d305c3b7a39c8690a5022f04b297c95229178a97da0f1c8667522a9a699b87c8 /7f73422e3df401c243b5d2bf7387ea94203ec8fef9f39cc61d35bb042d69964a. Perfis de produção novos seguem negados. Regressão local425 testes/105 arquivos, typecheck e lint PASS; build PASS com aviso preexistente de tamanho de chunk.
+
+## Bloco1 — prévias de alteração local
+
+Em21/10/2026, `comprasAlteracoes.ts` passou a propor edição e cancelamento da compra inteira. Valida união dos destinos antigos/novos, calendários e controles completos, propriedade, cartão ativo, ausência de histórico de pagamento/revisão e capacidades ainda intocadas. Fatura ausente, fechada, paga ou com ajuste bloqueia o comando; não há conversão de legado ou criação implícita de destino. Cancelamento mantém o cronograma histórico e retira seus valores das faturas. Edição cria nova revisão e aplica diferenças líquidas por destino, preservando os metadados do calendário. Edição sem alteração é recusada sem novo evento.
+
+Trata-se de planejador puro: resultado contém antes/depois e versões dos destinos, mas não é um novo schema persistido ou perfil comprovado. Selagem do comando, histórico imutável, limites do grafo de alteração, transação e Rules de edição/cancelamento continuam pendentes. A prova oficial anterior não se estende a estes comandos. Rastreamento dos quatro blocos em `../011-painel-mensal-projecao/implementation-blocks.md`.

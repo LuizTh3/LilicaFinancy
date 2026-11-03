@@ -1,0 +1,10 @@
+{
+  "status": "PASS_STATIC_ARTIFACT_CHECKS_ONLY",
+  "cases": 137,
+  "candidateSha256": "33f025cb49e5c98fb814a1828b83ebe84936d410851aee836474dd27d77e60d8",
+  "suiteSha256": "d94fdf48a6bf54a362bf279e843381269921b48dd655fc141cddce568919dda3",
+  "compiler": "NOT_RUN",
+  "officialEvaluation": "NOT_RUN",
+  "expressions": "NOT_MEASURED",
+  "productionEnabled": false
+}

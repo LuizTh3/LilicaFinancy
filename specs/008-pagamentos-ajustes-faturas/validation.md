@@ -64,3 +64,31 @@ Publicador restrito preparado localmente: valida projeto, backup/release atual e
 - Regressão263 testes/71 arquivos aprovada; tipos/lint/build aprovados. Após promover flags/perfis006,13 testes locais direcionados aprovados e tipos/lint/build aprovados novamente. Avisos existentes:chunk>500KiB e aviso do futuro carregador nativo do Vite; sem falha.
 - UI local de confirmar/ajustar fatura liberada e perfis específicos006 promovidos. Não há compra, item ou pagamento de fatura implementado/habilitado. G0 encerrado na publicação/SDK; G1/G2 e tarefas008 de funcionalidade permanecem pendentes.
 - Fixtures fictícias de cada execução permanecem nos manifestos.integrations próprios; não houve limpeza, migração ou uso de finanças pessoais. Relatório operacional em.integration/faturas-final-readiness.json. Código frontend atualizado/construído localmente, sem hospedagem frontend publicada nesta ação. Conferência visual/teclado/celular e medição assistida com cinco participantes permanecem pendentes, sem marcar esses critérios como concluídos.
+
+## Continuidade local autorizada — 21/10/2026
+
+O responsável autorizou o cronograma finito007, o desenvolvimento local antes do PASS remoto009/010 e o controle financeiro junto da fatura com capacidade de item na compra. A decisão específica está em ../007-compras-cartao-parceladas/contracts/invoice-control-proposal.md e ../011-painel-mensal-projecao/local-checkpoint-exception.md. Ela permite construir/harmonizar localmente; não promove G1/G2, publicação, migração ou gravações financeiras.
+
+Implementação local parcial008: contracts/liquidacoesFaturas.ts, liquidacoesFaturas.ts, faturaFinanceira.ts e liquidacoesFaturasMapper.ts. O novo formato explícito versaoConteudo4 conserva revisão/timestamps do calendário006 e controle schema2 com revisão/timestamps próprios. O decoder006 continua recusando esse formato; não há escritor remoto novo ou conversão silenciosa de legado. IDs de propriedade são derivados do caminho ao decodificar conteudo. Controle ausente não é zero.
+
+Pagamentos parciais/integral conservam exigível; reversão integral herda conta/data e exige marcador ausente e capacidade original intocada (sem reembolso). Histórico é monotônico. Encargo informado requer valor, categoria, descrição, motivo/data e produz capacidade de item, sem fato de caixa ou juros inferidos. Estes são planejadores puros: a porta futura ainda deve provar controles/marcadores/referências no commit, e não confiar em valores fornecidos pela interface.
+
+Capacidade finita está agora em cada posição da CompraFinita007. Validação recusa ausência, excesso de devolução, redução além do valor corrigido e overflow; a criação inicializa apenas a nova compra validada. Eventos/histórico/pagamentos não são anexados ao agregado. comandoAtual/reciprocidade e candidata integral continuam pendentes.
+
+Regressão local: 407 testes em100 arquivos PASS, typecheck PASS e lint PASS. Casos adicionais de reversão após reembolso e capacidade ausente passaram no recorte11 testes. Gates remotos, transações/Rules novas, consultas/UI008 e validação real permanecem pendentes. Nenhuma tarefa que exige essas provas foi concluída por estes testes locais.
+
+## Prova parcial da fundação007 — 21/10/2026
+
+A candidata de criação finita e fatura nova vazia passou137/137 avaliações oficiais; hash/fonte/escopo em validation007. Não abrange edição/cancelamento007, pagamentos/correções/devoluções008, publicação ou SDK real. T007–T011008/G1/G2 integrais permanecem pendentes. As leituras de calendário e financeiras continuam com revisões independentes, e nenhuma conversão de legado foi autorizada.
+
+## Bloco1 — incremento local de21/10/2026
+
+`correcaoFaturas.ts` produz proposta de correção monetária ou reclassificação com motivo/data, versão conferida e competência de consumo derivada da data original. Conserva valor original, pagamentos e devoluções; redução não pode gerar exigível inferior ao liquidado ou exceder capacidade líquida. Não produz caixa. Compensação vinculada a ajuste anterior ainda não foi implementada.
+
+`devolucaoFaturas.ts` propõe devolução por uma fatura com distribuição exata entre itens ativos. Abatimento na fatura limita-se à pendência; reembolso exige distribuição por pagamentos originais, capacidade não revertida, conta própria ativa e datas válidas. Reembolso reduz exigível e liquidado igualmente. IDs dos efeitos seguem ordem canônica por item/pagamento. Coordenação entre várias faturas, prova transacional das capacidades e persistência continuam pendentes; estes dados de entrada não constituem autorização de escrita.
+
+Componentes locais `PagamentoFaturaForm`, `EncargoFaturaForm` e `FaturaFinanceiraSummary`: campos obrigatórios, prévia, invalidação quando alterados, bloqueio durante envio e distinção entre obrigação/pagamento/pendência/sem exigibilidade. Não estão conectados às rotas ou habilitados para gravação. Testes de apresentação por renderização estática não substituem interação em navegador ou ensaio assistido.
+
+Os três novos planejadores tiveram testes executados antes de sua implementação, com falha por módulo ausente e aprovação posterior. A suíte completa intermediária passou452 testes/112 arquivos. Um timeout anterior no teste de arquitetura foi tratado com cache de leitura por execução do próprio teste, sem remover verificações nem aumentar timeout; a suíte seguinte passou. A checagem de tipos final do incremento passou após fixar o literal versaoConteudo1. Nenhum gate remoto ou tarefa integral foi marcado por inferência.
+
+Verificação final deste incremento: `npm test`453/453 em112 arquivos PASS; `npm run typecheck`, `npm run lint` e `npm run build` PASS. Build mantém aviso preexistente de chunk maior que500KiB. Hashes de Rules/índices raiz conferidos e inalterados: d305c3b7a39c8690a5022f04b297c95229178a97da0f1c8667522a9a699b87c8 e7f73422e3df401c243b5d2bf7387ea94203ec8fef9f39cc61d35bb042d69964a. Não houve envio remoto, publicação, migração ou gravação financeira neste incremento.

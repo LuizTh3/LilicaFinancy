@@ -1,0 +1,73 @@
+{
+  "mode": "official-test-only-no-release",
+  "project": "lilicafinancy",
+  "destination": "firebaserules.googleapis.com",
+  "sourceSha256": "993b2d1721ad1c87ab6250d6afff0319841a8bf8217b735740c3a2112f178d9b",
+  "suiteSha256": "f171c904abf9c220b75953cbc54f1fc5a3f0c80351e7f7398a1228f4b2237143",
+  "selectedCases": 5,
+  "officialRequestsCompleted": 1,
+  "state": "SELECTED_CASES_PASSED",
+  "compiler": "COMPILED",
+  "expressions": "NOT_MEASURED",
+  "deployment": "NOT_RUN",
+  "issues": [
+    {
+      "severity": "WARNING",
+      "line": 339,
+      "description": "Unused function: invoiceDate."
+    },
+    {
+      "severity": "WARNING",
+      "line": 347,
+      "description": "Unused function: invoiceResult."
+    },
+    {
+      "severity": "WARNING",
+      "line": 350,
+      "description": "Unused function: invoiceConfirmPayload."
+    },
+    {
+      "severity": "WARNING",
+      "line": 552,
+      "description": "Unused variable: n."
+    }
+  ],
+  "results": [
+    {
+      "name": "create100by3Purchase",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 6
+    },
+    {
+      "name": "create100by3Receipt",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 2
+    },
+    {
+      "name": "create100by3Invoice1",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "legacyInitializationDenied",
+      "expected": "DENY",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 1
+    },
+    {
+      "name": "freshEmptyV4Calendar",
+      "expected": "ALLOW",
+      "state": "SUCCESS",
+      "debug": [],
+      "calls": 7
+    }
+  ],
+  "ok": true
+}

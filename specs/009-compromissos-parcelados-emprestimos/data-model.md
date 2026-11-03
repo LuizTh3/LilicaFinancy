@@ -1,5 +1,11 @@
 # Data Model: Séries externas e empréstimos manuais
 
+## Protocolo de criação aprovado em 26/10/2026 — candidato não habilitado
+
+Além de S/R, cada nova série exige `users/{uid}/validacoesParceladas/{eventoId}__{serieId}` (V), com campos fechados `schemaVersion:1`, `serieId`, `eventoId`, `resultVersion:1`, `createdAt`. A identidade é determinística e V não guarda valores nem cronograma. S/R/V devem ser confirmados atomicamente com o mesmo timestamp de servidor; V é imutável, sem list/update/delete. S exige V; V exige a série nova e o recibo de criação/substituição recíprocos. Comprovante antigo, órfão ou divergente não autoriza uma criação. Séries antigas não recebem comprovantes presumidos nas leituras.
+
+O repositório candidato de criação implementa o protocolo, ainda desabilitado para produção. Substituição ainda depende de seu escritor completo. O orçamento candidato de criação máxima é 18 acessos e de substituição máxima é 21, exigindo rejeição integral acima de 18. Esse adendo substitui as contagens históricas para novas séries abaixo. A prova oficial ainda não passou: ver [estado atual](witness-status-2026-10-26.md).
+
 ## Decisão de persistência
 
 Uma série é um agregado finito em `users/{uid}/seriesParceladas/{serieId}`, com um mapa de no máximo 12 obrigações. Não há documentos-filho obrigatórios por parcela ou alterações nos schemas de `lancamentosExternos`/`operacoesExternas`. Pagamentos, reversões e revisões são eventos imutáveis separados em `operacoesParceladas`. Reutilizar cálculo de `settlement.ts`, dinheiro e calendário; não reutilizar o armazenamento avulso como se empréstimo fosse despesa avulsa com data de consumo obrigatória.
